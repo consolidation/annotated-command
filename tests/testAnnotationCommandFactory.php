@@ -57,6 +57,23 @@ class AnnotationCommandFactoryTests extends \PHPUnit_Framework_TestCase
         $this->assertEquals('alphabet', $commandOutput);
     }
 
+    function testState()
+    {
+        $commandFileInstance = new \Consolidation\TestUtils\TestCommandFile('secret secret');
+        $commandInfo = new CommandInfo($commandFileInstance, 'testState');
+        $commandFactory = new AnnotationCommandFactory();
+
+        $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
+
+        $this->assertInstanceOf(Command::class, $command);
+        $this->assertEquals('test:state', $command->getName());
+
+        $input = new StringInput('test:state');
+        $commandOutput = $this->runCommand($command, $input);
+
+        $this->assertEquals('secret secret', $commandOutput);
+    }
+
     function runCommand($command, $input, $expectedStatusCode = 0)
     {
         $output = new BufferedOutput();

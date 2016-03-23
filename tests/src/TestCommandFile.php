@@ -3,6 +3,13 @@ namespace Consolidation\TestUtils;
 
 class TestCommandFile
 {
+    protected $state;
+
+    public function __construct($state = '')
+    {
+        $this->state = $state;
+    }
+
     /**
      * This is the my:cat command
      *
@@ -47,5 +54,16 @@ class TestCommandFile
         // Integer return codes are exit codes (errors), so
         // return a the result as a string so that it will be printed.
         return "$result";
+    }
+
+    /**
+     * This is the test:state command
+     *
+     * This command tests to see if the state of the Commandfile instance
+     * is available to the command method.
+     */
+    public function testState()
+    {
+        return $this->state;
     }
 }
