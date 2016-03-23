@@ -2,9 +2,11 @@
 
 Initialize Symfony Console commands from annotated command class methods.
 
+[![Circle CI](https://circleci.com/gh/consolidation-org/annotation-command.svg?style=svg)](https://circleci.com/gh/consolidation-org/annotation-command) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/consolidation-org/annotation-command/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/consolidation-org/annotation-command/?branch=master) [![Latest Stable Version](https://poser.pugx.org/consolidation-org/annotation-command/v/stable)](https://packagist.org/packages/consolidation-org/annotation-command) [![Total Downloads](https://poser.pugx.org/consolidation-org/annotation-command/downloads)](https://packagist.org/packages/consolidation-org/annotation-command) [![Latest Unstable Version](https://poser.pugx.org/consolidation-org/annotation-command/v/unstable)](https://packagist.org/packages/consolidation-org/annotation-command) [![License](https://poser.pugx.org/consolidation-org/annotation-command/license)](https://packagist.org/packages/consolidation-org/annotation-command)
+
 ## Component Status
 
-In the process of factoring out of https://github.com/Codegyre/Robo
+Waiting for [Factor out consolidation/annotation-command](https://github.com/Codegyre/Robo/pull/301) to be reviewed and merged in [Robo](https://github.com/Codegyre/Robo).
 
 ## Motivation
 
