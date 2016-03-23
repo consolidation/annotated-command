@@ -19,8 +19,8 @@ class AnnotationCommandFactory
     {
         $commandInfoList = [];
 
-        // Ignore special functions, such as __construct() and __call(), and
-        // accessor methods such as getFoo() and setFoo(), while allowing
+        // Ignore special functions, such as __construct and __call, and
+        // accessor methods such as getFoo and setFoo, while allowing
         // set or setup.
         $commandMethodNames = array_filter(get_class_methods($classNameOrInstance), function ($m) {
             return !preg_match('#^(_|get[A-Z]|set[A-Z])#', $m);
