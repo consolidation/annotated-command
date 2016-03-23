@@ -146,35 +146,34 @@ class CommandInfo
     {
         $args = [];
         $params = $this->reflection->getParameters();
-        foreach ($params as $key => $param) {
-
-            // last array value is option, not argument
-            if (($key == count($params)-1) && $param->isDefaultValueAvailable()) {
-                if ($this->isAssoc($param->getDefaultValue())) {
-                    break;
-                }
+        if (!empty($this->getOptions())) {
+            array_pop($params);
+        }
+        foreach ($params as $param) {
+            $val = $this->getArgumentType($param);
+            if (isset($val)) {
+                $args[$param->name] = $val;
             }
-
-            // arrays are array arguments
-            if ($param->isArray()) {
-                if ($param->isDefaultValueAvailable()) {
-                    if (!$this->isAssoc($param->getDefaultValue())) {
-                        $args[$param->name] = $param->getDefaultValue();
-                    }
-                } else {
-                    $args[$param->name] = [];
-                }
-                continue;
-            }
-
-            // default values are optional arguments
-            $val = $param->isDefaultValueAvailable()
-                ? $param->getDefaultValue()
-                : self::PARAM_IS_REQUIRED;
-
-            $args[$param->name] = $val;
         }
         return $args;
+    }
+
+    protected function getArgumentType($param)
+    {
+        // arrays are array arguments
+        if (!$param->isArray()) {
+            if ($param->isDefaultValueAvailable()) {
+                return $param->getDefaultValue();
+            }
+            return self::PARAM_IS_REQUIRED;
+        }
+        if (!$param->isDefaultValueAvailable()) {
+            return [];
+        }
+        if (!$this->isAssoc($param->getDefaultValue())) {
+            return $param->getDefaultValue();
+        }
+        return null;
     }
 
     public function getOptions()
