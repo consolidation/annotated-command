@@ -22,6 +22,4 @@ class PassThroughArgsInput extends ArgvInput
 
         parent::__construct($argv, $definition);
     }
-
-
 }
