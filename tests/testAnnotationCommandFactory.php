@@ -29,9 +29,7 @@ class AnnotationCommandFactoryTests extends \PHPUnit_Framework_TestCase
         $this->assertEquals('test:arithmatic 2 2 --negate', implode(',', $command->getUsages()));
 
         $input = new StringInput('arithmatic 2 3 --negate');
-        $commandOutput = $this->runCommand($command, $input);
-
-        $this->assertEquals('-5', $commandOutput);
+        $this->assertRunCommandViaApplicationEquals($command, $input, '-5');
     }
 
     function testMyCatCommand()
@@ -52,9 +50,11 @@ class AnnotationCommandFactoryTests extends \PHPUnit_Framework_TestCase
         $this->assertEquals('my:cat bet alpha --flip', implode(',', $command->getUsages()));
 
         $input = new StringInput('my:cat bet alpha --flip');
-        $commandOutput = $this->runCommand($command, $input);
+        $this->assertRunCommandViaApplicationEquals($command, $input, 'alphabet');
 
-        $this->assertEquals('alphabet', $commandOutput);
+        // Run the same command again with new inputs
+        $input = new StringInput('my:cat some one');
+        $this->assertRunCommandViaApplicationEquals($command, $input, 'someone');
     }
 
     function testState()
@@ -69,12 +69,10 @@ class AnnotationCommandFactoryTests extends \PHPUnit_Framework_TestCase
         $this->assertEquals('test:state', $command->getName());
 
         $input = new StringInput('test:state');
-        $commandOutput = $this->runCommand($command, $input);
-
-        $this->assertEquals('secret secret', $commandOutput);
+        $this->assertRunCommandViaApplicationEquals($command, $input, 'secret secret');
     }
 
-    function runCommand($command, $input, $expectedStatusCode = 0)
+    function assertRunCommandViaApplicationEquals($command, $input, $expectedOutput, $expectedStatusCode = 0)
     {
         $output = new BufferedOutput();
 
@@ -85,8 +83,18 @@ class AnnotationCommandFactoryTests extends \PHPUnit_Framework_TestCase
         $statusCode = $application->run($input, $output);
         $commandOutput = trim($output->fetch());
 
+        $this->assertEquals($expectedOutput, $commandOutput);
         $this->assertEquals($expectedStatusCode, $statusCode);
+    }
 
-        return $commandOutput;
+    function assertRunCommandDirectlyEquals($command, $input, $expectedOutput, $expectedStatusCode = 0)
+    {
+        $output = new BufferedOutput();
+
+        $statusCode = $command->run($input, $output);
+        $commandOutput = trim($output->fetch());
+
+        $this->assertEquals($expectedOutput, $commandOutput);
+        $this->assertEquals($expectedStatusCode, $statusCode);
     }
 }
