@@ -18,25 +18,34 @@ class AnnotationCommand extends Command
         $this->passThrough = $passThrough;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function getArgsWithPassThrough($input)
     {
-        // get passthru args
+        $definition = $this->getDefinition();
+        $argumentDefinitions = $definition->getArguments();
+        $alteredByApplication = (key($argumentDefinitions) == 'command');
         $args = $input->getArguments();
-        array_shift($args);
+        if ($alteredByApplication) {
+            array_shift($args);
+        }
         if ($this->passThrough) {
             $args[key(array_slice($args, -1, 1, true))] = $this->passThrough;
         }
-        $args[] = $input->getOptions();
+        return $args;
+    }
 
-        // TODO: Call any validate / pre-hooks registered for this command
-
-        $status = 0;
+    protected function runCommandCallback($args, &$status)
+    {
+        $result = false;
         try {
             $result = call_user_func_array($this->commandCallback, $args);
         } catch (\Exception $e) {
             $status = $e->getCode();
         }
+        return $result;
+    }
 
+    protected function processCommandResults($result, &$status)
+    {
         // TODO:  Process result and decide what to do with it.
         // Allow client to add transformation / interpretation
         // callbacks.
@@ -48,13 +57,37 @@ class AnnotationCommand extends Command
             $status = $result->getExitCode();
         }
 
-        // TODO:  If result is non-zero, call rollback hooks
-        // (unless we can just rely on Collection rollbacks)
+        return $result;
+    }
 
+    protected function writeCommandOutput($result, OutputInterface $output)
+    {
         // If $res is a string, then print it.
         if (is_string($result)) {
             $output->writeln($result);
         }
+    }
+
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
+        // Get passthrough args, and add the options on the end.
+        $args = $this->getArgsWithPassThrough($input);
+        $args[] = $input->getOptions();
+
+        // TODO: Call any validate / pre-hooks registered for this command
+
+        // Run!
+        $status = 0;
+        $result = $this->runCommandCallback($args, $status);
+
+        // Process!
+        $result = $this->processCommandResults($result, $status);
+
+        // TODO:  If status is non-zero, call rollback hooks
+        // (unless we can just rely on Collection rollbacks)
+
+        // Output!
+        $this->writeCommandOutput($result, $output);
 
         return $status;
     }
