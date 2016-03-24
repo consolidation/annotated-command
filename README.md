@@ -2,7 +2,7 @@
 
 Initialize Symfony Console commands from annotated command class methods.
 
-[![Circle CI](https://circleci.com/gh/consolidation-org/annotation-command.svg?style=svg)](https://circleci.com/gh/consolidation-org/annotation-command) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/consolidation-org/annotation-command/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/consolidation-org/annotation-command/?branch=master) [![License](https://poser.pugx.org/consolidation/annotation-command/license)](https://packagist.org/packages/consolidation/annotation-command)
+[![Travis CI](https://travis-ci.org/consolidation-org/annotation-command.svg?branch=master)](https://travis-ci.org/consolidation-org/annotation-command) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/consolidation-org/annotation-command/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/consolidation-org/annotation-command/?branch=master) [![License](https://poser.pugx.org/consolidation/annotation-command/license)](https://packagist.org/packages/consolidation/annotation-command)
 
 ## Component Status
 
