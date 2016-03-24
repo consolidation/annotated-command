@@ -6,7 +6,7 @@ Initialize Symfony Console commands from annotated command class methods.
 
 ## Component Status
 
-Waiting for [Factor out consolidation/annotation-command](https://github.com/Codegyre/Robo/pull/301) to be reviewed and merged in [Robo](https://github.com/Codegyre/Robo).
+Currently in use in [Robo](https://github.com/Codegyre/Robo).
 
 ## Motivation
 
