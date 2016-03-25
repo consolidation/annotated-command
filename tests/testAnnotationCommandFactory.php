@@ -86,12 +86,13 @@ class AnnotationCommandFactoryTests extends \PHPUnit_Framework_TestCase
         $commandInfo = new CommandInfo($commandFileInstance, 'testPassthrough');
         $commandFactory = new AnnotationCommandFactory();
 
-        $command = $commandFactory->createCommand($commandInfo, $commandFileInstance, ['x', 'y', 'z']);
+        $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
 
         $this->assertInstanceOf(Command::class, $command);
         $this->assertEquals('test:passthrough', $command->getName());
 
         $input = new StringInput('test:passthrough a b c');
+        $input = new PassThroughArgsInput(['x', 'y', 'z'], $input);
         $this->assertRunCommandViaApplicationEquals($command, $input, 'a,b,c,x,y,z');
     }
 
@@ -101,11 +102,12 @@ class AnnotationCommandFactoryTests extends \PHPUnit_Framework_TestCase
         $commandInfo = new CommandInfo($commandFileInstance, 'myCat');
         $commandFactory = new AnnotationCommandFactory();
 
-        $command = $commandFactory->createCommand($commandInfo, $commandFileInstance, ['x', 'y', 'z']);
+        $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
 
         // If we run the command using the Application, though, then it alters the
         // command definition.
         $input = new StringInput('my:cat bet --flip');
+        $input = new PassThroughArgsInput(['x', 'y', 'z'], $input);
         $this->assertRunCommandViaApplicationEquals($command, $input, 'x y zbet');
     }
 

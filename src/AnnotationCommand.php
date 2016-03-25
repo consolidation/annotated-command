@@ -28,6 +28,9 @@ class AnnotationCommand extends Command
             array_shift($args);
             array_shift($argumentDefinitions);
         }
+        if ($input instanceof PassThroughArgsInput) {
+            $this->passThrough = $input->getPassThroughArgs();
+        }
         if (isset($this->passThrough)) {
             $lastParameter = end($argumentDefinitions);
             if ($lastParameter && $lastParameter->isArray()) {
