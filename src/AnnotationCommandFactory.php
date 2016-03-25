@@ -9,10 +9,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class AnnotationCommandFactory
 {
-    public function createCommandsFromClass($commandFileInstance, $passThrough = null)
+    public function createCommandsFromClass($commandFileInstance)
     {
         $commandInfoList = $this->getCommandInfoListFromClass($commandFileInstance);
-        return $this->createCommandsFromClassInfo($commandInfoList, $commandFileInstance, $passThrough);
+        return $this->createCommandsFromClassInfo($commandInfoList, $commandFileInstance);
     }
 
     public function getCommandInfoListFromClass($classNameOrInstance)
@@ -33,22 +33,22 @@ class AnnotationCommandFactory
         return $commandInfoList;
     }
 
-    public function createCommandsFromClassInfo($commandInfoList, $commandFileInstance, $passThrough = null)
+    public function createCommandsFromClassInfo($commandInfoList, $commandFileInstance)
     {
         $commandList = [];
 
         foreach ($commandInfoList as $commandInfo) {
-            $command = $this->createCommand($commandInfo, $commandFileInstance, $passThrough);
+            $command = $this->createCommand($commandInfo, $commandFileInstance);
             $commandList[] = $command;
         }
 
         return $commandList;
     }
 
-    public function createCommand(CommandInfo $commandInfo, $commandFileInstance, $passThrough = null)
+    public function createCommand(CommandInfo $commandInfo, $commandFileInstance)
     {
         $commandCallback = [$commandFileInstance, $commandInfo->getMethodName()];
-        $command = new AnnotationCommand($commandInfo->getName(), $commandCallback, $passThrough);
+        $command = new AnnotationCommand($commandInfo->getName(), $commandCallback);
         $this->setCommandInfo($command, $commandInfo);
         $this->setCommandArguments($command, $commandInfo);
         $this->setCommandOptions($command, $commandInfo);

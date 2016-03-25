@@ -8,14 +8,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 class AnnotationCommand extends Command
 {
     protected $commandCallback;
-    protected $passThrough;
 
-    public function __construct($name, $commandCallback, $passThrough = null)
+    public function __construct($name, $commandCallback)
     {
         parent::__construct($name);
 
         $this->commandCallback = $commandCallback;
-        $this->passThrough = $passThrough;
     }
 
     protected function getArgsWithPassThrough($input)
@@ -29,14 +27,12 @@ class AnnotationCommand extends Command
             array_shift($argumentDefinitions);
         }
         if ($input instanceof PassThroughArgsInput) {
-            $this->passThrough = $input->getPassThroughArgs();
-        }
-        if (isset($this->passThrough)) {
+            $passThrough = $input->getPassThroughArgs();
             $lastParameter = end($argumentDefinitions);
             if ($lastParameter && $lastParameter->isArray()) {
-                $args[$lastParameter->getName()] = array_merge($args[$lastParameter->getName()], $this->passThrough);
+                $args[$lastParameter->getName()] = array_merge($args[$lastParameter->getName()], $passThrough);
             } else {
-                $args[$lastParameter->getName()] = implode(' ', $this->passThrough);
+                $args[$lastParameter->getName()] = implode(' ', $passThrough);
             }
         }
         return $args;
