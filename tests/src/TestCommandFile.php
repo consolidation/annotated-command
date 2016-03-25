@@ -23,7 +23,7 @@ class TestCommandFile
      * @usage bet alpha --flip
      *   Concatinate "alpha" and "bet".
      */
-    public function myCat($one, $two, $options = ['flip' => false])
+    public function myCat($one, $two = '', $options = ['flip' => false])
     {
         if ($options['flip']) {
             return "{$two}{$one}";
@@ -65,5 +65,16 @@ class TestCommandFile
     public function testState()
     {
         return $this->state;
+    }
+
+    /**
+     * This is the test:passthrough command
+     *
+     * This command takes a variable number of parameters as
+     * an array and returns them as a csv.
+     */
+    public function testPassthrough(array $params)
+    {
+        return implode(',', $params);
     }
 }

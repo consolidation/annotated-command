@@ -10,7 +10,7 @@ class AnnotationCommand extends Command
     protected $commandCallback;
     protected $passThrough;
 
-    public function __construct($name, $commandCallback, $passThrough)
+    public function __construct($name, $commandCallback, $passThrough = null)
     {
         parent::__construct($name);
 
@@ -26,9 +26,15 @@ class AnnotationCommand extends Command
         $args = $input->getArguments();
         if ($alteredByApplication) {
             array_shift($args);
+            array_shift($argumentDefinitions);
         }
-        if ($this->passThrough) {
-            $args[key(array_slice($args, -1, 1, true))] = $this->passThrough;
+        if (isset($this->passThrough)) {
+            $lastParameter = end($argumentDefinitions);
+            if ($lastParameter && $lastParameter->isArray()) {
+                $args[$lastParameter->getName()] = array_merge($args[$lastParameter->getName()], $this->passThrough);
+            } else {
+                $args[$lastParameter->getName()] = implode(' ', $this->passThrough);
+            }
         }
         return $args;
     }

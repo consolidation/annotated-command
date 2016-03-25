@@ -46,7 +46,7 @@ class AnnotationCommandFactoryTests extends \PHPUnit_Framework_TestCase
         $this->assertEquals("This command will concatinate two parameters. If the --flip flag\nis provided, then the result is the concatination of two and one.", $command->getHelp());
         $this->assertEquals('c', implode(',', $command->getAliases()));
         // Symfony Console composes the synopsis; perhaps we should not test it. Remove if this gives false failures.
-        $this->assertEquals('my:cat [--flip] [--] <one> <two>', $command->getSynopsis());
+        $this->assertEquals('my:cat [--flip] [--] <one> [<two>]', $command->getSynopsis());
         $this->assertEquals('my:cat bet alpha --flip', implode(',', $command->getUsages()));
 
         // The first time we run a command directly, it only expects the parameters
@@ -78,6 +78,35 @@ class AnnotationCommandFactoryTests extends \PHPUnit_Framework_TestCase
 
         $input = new StringInput('test:state');
         $this->assertRunCommandViaApplicationEquals($command, $input, 'secret secret');
+    }
+
+    function testPassthroughArray()
+    {
+        $commandFileInstance = new \Consolidation\TestUtils\TestCommandFile;
+        $commandInfo = new CommandInfo($commandFileInstance, 'testPassthrough');
+        $commandFactory = new AnnotationCommandFactory();
+
+        $command = $commandFactory->createCommand($commandInfo, $commandFileInstance, ['x', 'y', 'z']);
+
+        $this->assertInstanceOf(Command::class, $command);
+        $this->assertEquals('test:passthrough', $command->getName());
+
+        $input = new StringInput('test:passthrough a b c');
+        $this->assertRunCommandViaApplicationEquals($command, $input, 'a,b,c,x,y,z');
+    }
+
+    function testPassThroughNonArray()
+    {
+        $commandFileInstance = new \Consolidation\TestUtils\TestCommandFile;
+        $commandInfo = new CommandInfo($commandFileInstance, 'myCat');
+        $commandFactory = new AnnotationCommandFactory();
+
+        $command = $commandFactory->createCommand($commandInfo, $commandFileInstance, ['x', 'y', 'z']);
+
+        // If we run the command using the Application, though, then it alters the
+        // command definition.
+        $input = new StringInput('my:cat bet --flip');
+        $this->assertRunCommandViaApplicationEquals($command, $input, 'x y zbet');
     }
 
     function assertRunCommandViaApplicationEquals($command, $input, $expectedOutput, $expectedStatusCode = 0)
