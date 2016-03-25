@@ -47,12 +47,11 @@ class AnnotationCommandFactory
 
     public function createCommand(CommandInfo $commandInfo, $commandFileInstance, $passThrough = null)
     {
-        $command = new Command($commandInfo->getName());
+        $commandCallback = [$commandFileInstance, $commandInfo->getMethodName()];
+        $command = new AnnotationCommand($commandInfo->getName(), $commandCallback, $passThrough);
         $this->setCommandInfo($command, $commandInfo);
         $this->setCommandArguments($command, $commandInfo);
         $this->setCommandOptions($command, $commandInfo);
-        $commandCallback = [$commandFileInstance, $commandInfo->getMethodName()];
-        $this->setCommandHandler($command, $commandCallback, $passThrough);
         return $command;
     }
 
@@ -104,48 +103,5 @@ class AnnotationCommandFactory
                 $command->addOption($fullName, $shortcut, InputOption::VALUE_OPTIONAL, $description, $val);
             }
         }
-    }
-
-    protected function setCommandHandler($command, $commandCallback, $passThrough)
-    {
-        $command->setCode(function (InputInterface $input, OutputInterface $output) use ($commandCallback, $passThrough) {
-            // get passthru args
-            $args = $input->getArguments();
-            array_shift($args);
-            if ($passThrough) {
-                $args[key(array_slice($args, -1, 1, true))] = $passThrough;
-            }
-            $args[] = $input->getOptions();
-
-            // TODO: Call any validate / pre-hooks registered for this command
-
-            $status = 0;
-            try {
-                $result = call_user_func_array($commandCallback, $args);
-            } catch (\Exception $e) {
-                $status = $e->getCode();
-            }
-
-            // TODO:  Process result and decide what to do with it.
-            // Allow client to add transformation / interpretation
-            // callbacks.
-
-            // If the result (post-processing) is an object that
-            // implements ExitCodeInterface, then we will ask it
-            // to give us the status code. Otherwise, we assume success.
-            if ($result instanceof ExitCodeInterface) {
-                $status = $result->getExitCode();
-            }
-
-            // TODO:  If result is non-zero, call rollback hooks
-            // (unless we can just rely on Collection rollbacks)
-
-            // If $res is a string, then print it.
-            if (is_string($result)) {
-                $output->writeln($result);
-            }
-
-            return $status;
-        });
     }
 }
