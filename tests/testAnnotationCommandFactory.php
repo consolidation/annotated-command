@@ -49,20 +49,8 @@ class AnnotationCommandFactoryTests extends \PHPUnit_Framework_TestCase
         $this->assertEquals('my:cat [--flip] [--] <one> [<two>]', $command->getSynopsis());
         $this->assertEquals('my:cat bet alpha --flip', implode(',', $command->getUsages()));
 
-        // The first time we run a command directly, it only expects the parameters
-        // that the command defines.
-        $input = new StringInput('some one');
-        $this->assertRunCommandDirectlyEquals($command, $input, 'someone');
-
-        // If we run the command using the Application, though, then it alters the
-        // command definition.
         $input = new StringInput('my:cat bet alpha --flip');
         $this->assertRunCommandViaApplicationEquals($command, $input, 'alphabet');
-
-        // Now the command expects that its first parameter should be the application name.
-        // This does not exactly seem to be friendly behavior.
-        $input = new StringInput('my:cat some one');
-        $this->assertRunCommandDirectlyEquals($command, $input, 'someone');
     }
 
     function testState()
@@ -120,17 +108,6 @@ class AnnotationCommandFactoryTests extends \PHPUnit_Framework_TestCase
         $application->add($command);
 
         $statusCode = $application->run($input, $output);
-        $commandOutput = trim($output->fetch());
-
-        $this->assertEquals($expectedOutput, $commandOutput);
-        $this->assertEquals($expectedStatusCode, $statusCode);
-    }
-
-    function assertRunCommandDirectlyEquals($command, $input, $expectedOutput, $expectedStatusCode = 0)
-    {
-        $output = new BufferedOutput();
-
-        $statusCode = $command->run($input, $output);
         $commandOutput = trim($output->fetch());
 
         $this->assertEquals($expectedOutput, $commandOutput);

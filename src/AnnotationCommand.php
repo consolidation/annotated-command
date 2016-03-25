@@ -18,22 +18,29 @@ class AnnotationCommand extends Command
 
     protected function getArgsWithPassThrough($input)
     {
+        $args = $input->getArguments();
+
+        // When called via the Application, the first argument
+        // will be the command name. The Application alters the
+        // input definition to match, adding a 'command' argument
+        // to the beginning.
+        array_shift($args);
+        if ($input instanceof PassThroughArgsInput) {
+            return $this->appendPassThroughArgs($input, $args);
+        }
+        return $args;
+    }
+
+    protected function appendPassThroughArgs($input, $args)
+    {
+        $passThrough = $input->getPassThroughArgs();
         $definition = $this->getDefinition();
         $argumentDefinitions = $definition->getArguments();
-        $alteredByApplication = (key($argumentDefinitions) == 'command');
-        $args = $input->getArguments();
-        if ($alteredByApplication) {
-            array_shift($args);
-            array_shift($argumentDefinitions);
-        }
-        if ($input instanceof PassThroughArgsInput) {
-            $passThrough = $input->getPassThroughArgs();
-            $lastParameter = end($argumentDefinitions);
-            if ($lastParameter && $lastParameter->isArray()) {
-                $args[$lastParameter->getName()] = array_merge($args[$lastParameter->getName()], $passThrough);
-            } else {
-                $args[$lastParameter->getName()] = implode(' ', $passThrough);
-            }
+        $lastParameter = end($argumentDefinitions);
+        if ($lastParameter && $lastParameter->isArray()) {
+            $args[$lastParameter->getName()] = array_merge($args[$lastParameter->getName()], $passThrough);
+        } else {
+            $args[$lastParameter->getName()] = implode(' ', $passThrough);
         }
         return $args;
     }
