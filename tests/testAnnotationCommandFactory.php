@@ -14,8 +14,8 @@ class AnnotationCommandFactoryTests extends \PHPUnit_Framework_TestCase
     function testAnnotationCommandCreation()
     {
         $commandFileInstance = new \Consolidation\TestUtils\TestCommandFile;
-        $commandInfo = new CommandInfo($commandFileInstance, 'testArithmatic');
         $commandFactory = new AnnotationCommandFactory();
+        $commandInfo = $commandFactory->createCommandInfo($commandFileInstance, 'testArithmatic');
 
         $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
 
@@ -35,8 +35,8 @@ class AnnotationCommandFactoryTests extends \PHPUnit_Framework_TestCase
     function testMyCatCommand()
     {
         $commandFileInstance = new \Consolidation\TestUtils\TestCommandFile;
-        $commandInfo = new CommandInfo($commandFileInstance, 'myCat');
         $commandFactory = new AnnotationCommandFactory();
+        $commandInfo = $commandFactory->createCommandInfo($commandFileInstance, 'myCat');
 
         $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
 
@@ -46,30 +46,18 @@ class AnnotationCommandFactoryTests extends \PHPUnit_Framework_TestCase
         $this->assertEquals("This command will concatinate two parameters. If the --flip flag\nis provided, then the result is the concatination of two and one.", $command->getHelp());
         $this->assertEquals('c', implode(',', $command->getAliases()));
         // Symfony Console composes the synopsis; perhaps we should not test it. Remove if this gives false failures.
-        $this->assertEquals('my:cat [--flip] [--] <one> <two>', $command->getSynopsis());
+        $this->assertEquals('my:cat [--flip] [--] <one> [<two>]', $command->getSynopsis());
         $this->assertEquals('my:cat bet alpha --flip', implode(',', $command->getUsages()));
 
-        // The first time we run a command directly, it only expects the parameters
-        // that the command defines.
-        $input = new StringInput('some one');
-        $this->assertRunCommandDirectlyEquals($command, $input, 'someone');
-
-        // If we run the command using the Application, though, then it alters the
-        // command definition.
         $input = new StringInput('my:cat bet alpha --flip');
         $this->assertRunCommandViaApplicationEquals($command, $input, 'alphabet');
-
-        // Now the command expects that its first parameter should be the application name.
-        // This does not exactly seem to be friendly behavior.
-        $input = new StringInput('my:cat some one');
-        $this->assertRunCommandDirectlyEquals($command, $input, 'someone');
     }
 
     function testState()
     {
         $commandFileInstance = new \Consolidation\TestUtils\TestCommandFile('secret secret');
-        $commandInfo = new CommandInfo($commandFileInstance, 'testState');
         $commandFactory = new AnnotationCommandFactory();
+        $commandInfo = $commandFactory->createCommandInfo($commandFileInstance, 'testState');
 
         $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
 
@@ -78,6 +66,52 @@ class AnnotationCommandFactoryTests extends \PHPUnit_Framework_TestCase
 
         $input = new StringInput('test:state');
         $this->assertRunCommandViaApplicationEquals($command, $input, 'secret secret');
+    }
+
+    function testSpecialCommandParameter()
+    {
+        $commandFileInstance = new \Consolidation\TestUtils\TestCommandFile();
+        $commandFactory = new AnnotationCommandFactory();
+        $commandInfo = $commandFactory->createCommandInfo($commandFileInstance, 'testCommand');
+
+        $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
+
+        $this->assertInstanceOf(Command::class, $command);
+        $this->assertEquals('test:command', $command->getName());
+
+        $input = new StringInput('test:command Message');
+        $this->assertRunCommandViaApplicationEquals($command, $input, '[test] Message');
+    }
+
+    function testPassthroughArray()
+    {
+        $commandFileInstance = new \Consolidation\TestUtils\TestCommandFile;
+        $commandFactory = new AnnotationCommandFactory();
+        $commandInfo = $commandFactory->createCommandInfo($commandFileInstance, 'testPassthrough');
+
+        $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
+
+        $this->assertInstanceOf(Command::class, $command);
+        $this->assertEquals('test:passthrough', $command->getName());
+
+        $input = new StringInput('test:passthrough a b c');
+        $input = new PassThroughArgsInput(['x', 'y', 'z'], $input);
+        $this->assertRunCommandViaApplicationEquals($command, $input, 'a,b,c,x,y,z');
+    }
+
+    function testPassThroughNonArray()
+    {
+        $commandFileInstance = new \Consolidation\TestUtils\TestCommandFile;
+        $commandFactory = new AnnotationCommandFactory();
+        $commandInfo = $commandFactory->createCommandInfo($commandFileInstance, 'myCat');
+
+        $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
+
+        // If we run the command using the Application, though, then it alters the
+        // command definition.
+        $input = new StringInput('my:cat bet --flip');
+        $input = new PassThroughArgsInput(['x', 'y', 'z'], $input);
+        $this->assertRunCommandViaApplicationEquals($command, $input, 'x y zbet');
     }
 
     function assertRunCommandViaApplicationEquals($command, $input, $expectedOutput, $expectedStatusCode = 0)
@@ -89,17 +123,6 @@ class AnnotationCommandFactoryTests extends \PHPUnit_Framework_TestCase
         $application->add($command);
 
         $statusCode = $application->run($input, $output);
-        $commandOutput = trim($output->fetch());
-
-        $this->assertEquals($expectedOutput, $commandOutput);
-        $this->assertEquals($expectedStatusCode, $statusCode);
-    }
-
-    function assertRunCommandDirectlyEquals($command, $input, $expectedOutput, $expectedStatusCode = 0)
-    {
-        $output = new BufferedOutput();
-
-        $statusCode = $command->run($input, $output);
         $commandOutput = trim($output->fetch());
 
         $this->assertEquals($expectedOutput, $commandOutput);

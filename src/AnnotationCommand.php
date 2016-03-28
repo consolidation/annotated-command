@@ -8,27 +8,45 @@ use Symfony\Component\Console\Output\OutputInterface;
 class AnnotationCommand extends Command
 {
     protected $commandCallback;
-    protected $passThrough;
+    protected $specialParameterClasses;
 
-    public function __construct($name, $commandCallback, $passThrough)
+    public function __construct($name, $commandCallback)
     {
         parent::__construct($name);
 
         $this->commandCallback = $commandCallback;
-        $this->passThrough = $passThrough;
+    }
+
+    public function setSpecialParameterClasses($specialParameterClasses)
+    {
+        $this->specialParameterClasses = $specialParameterClasses;
     }
 
     protected function getArgsWithPassThrough($input)
     {
+        $args = $input->getArguments();
+
+        // When called via the Application, the first argument
+        // will be the command name. The Application alters the
+        // input definition to match, adding a 'command' argument
+        // to the beginning.
+        array_shift($args);
+        if ($input instanceof PassThroughArgsInput) {
+            return $this->appendPassThroughArgs($input, $args);
+        }
+        return $args;
+    }
+
+    protected function appendPassThroughArgs($input, $args)
+    {
+        $passThrough = $input->getPassThroughArgs();
         $definition = $this->getDefinition();
         $argumentDefinitions = $definition->getArguments();
-        $alteredByApplication = (key($argumentDefinitions) == 'command');
-        $args = $input->getArguments();
-        if ($alteredByApplication) {
-            array_shift($args);
-        }
-        if ($this->passThrough) {
-            $args[key(array_slice($args, -1, 1, true))] = $this->passThrough;
+        $lastParameter = end($argumentDefinitions);
+        if ($lastParameter && $lastParameter->isArray()) {
+            $args[$lastParameter->getName()] = array_merge($args[$lastParameter->getName()], $passThrough);
+        } else {
+            $args[$lastParameter->getName()] = implode(' ', $passThrough);
         }
         return $args;
     }
@@ -36,12 +54,31 @@ class AnnotationCommand extends Command
     protected function runCommandCallback($args, &$status)
     {
         $result = false;
+        $specialParameters = $this->getSpecialParameters();
+        $args = array_merge($specialParameters, $args);
         try {
             $result = call_user_func_array($this->commandCallback, $args);
         } catch (\Exception $e) {
             $status = $e->getCode();
         }
         return $result;
+    }
+
+    protected function getSpecialParameters()
+    {
+        $specialParameters = [];
+        foreach ($this->specialParameterClasses as $className => $callback) {
+            if (is_array($callback) && (count($callback) == 1)) {
+                array_unshift($callback, $this);
+            }
+            $specialParameters[] = $callback($className, $this);
+        }
+        return $specialParameters;
+    }
+
+    protected function getCommandReference()
+    {
+        return $this;
     }
 
     protected function processCommandResults($result, &$status)

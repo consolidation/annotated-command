@@ -11,8 +11,6 @@ use phpDocumentor\Reflection\DocBlock;
  */
 class CommandInfo
 {
-    const PARAM_IS_REQUIRED = '__param_is_required__';
-
     /**
      * @var \ReflectionMethod
      */
@@ -48,6 +46,11 @@ class CommandInfo
     /**
      * @var array
      */
+    protected $arguments = [];
+
+    /**
+     * @var array
+     */
     protected $argumentDescriptions = [];
 
     /**
@@ -79,11 +82,17 @@ class CommandInfo
     {
         $this->reflection = new \ReflectionMethod($classNameOrInstance, $methodName);
         $this->methodName = $methodName;
+        $this->calculateAgumentCache();
     }
 
     public function getMethodName()
     {
         return $this->methodName;
+    }
+
+    public function getParameters()
+    {
+        return $this->reflection->getParameters();
     }
 
     /**
@@ -142,7 +151,7 @@ class CommandInfo
         return $name;
     }
 
-    public function getArguments()
+    protected function calculateAgumentCache()
     {
         $args = [];
         $params = $this->reflection->getParameters();
@@ -150,28 +159,30 @@ class CommandInfo
             array_pop($params);
         }
         foreach ($params as $param) {
-            $val = $this->getArgumentType($param);
-            if (isset($val)) {
-                $args[$param->name] = $val;
+            $defaultValue = $this->getArgumentDefaultValue($param);
+            if ($defaultValue !== false) {
+                $args[$param->name] = $defaultValue;
             }
         }
-        return $args;
+        $this->arguments = $args;
     }
 
-    protected function getArgumentType($param)
+    public function getArguments()
     {
-        // arrays are array arguments
-        if (!$param->isArray()) {
-            if ($param->isDefaultValueAvailable()) {
-                return $param->getDefaultValue();
+        return $this->arguments;
+    }
+
+    protected function getArgumentDefaultValue($param)
+    {
+        if ($param->isDefaultValueAvailable()) {
+            $defaultValue = $param->getDefaultValue();
+            if ($this->isAssoc($defaultValue)) {
+                return false;
             }
-            return self::PARAM_IS_REQUIRED;
+            return $defaultValue;
         }
-        if (!$param->isDefaultValueAvailable()) {
+        if ($param->isArray()) {
             return [];
-        }
-        if (!$this->isAssoc($param->getDefaultValue())) {
-            return $param->getDefaultValue();
         }
         return null;
     }

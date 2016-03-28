@@ -9,10 +9,19 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class AnnotationCommandFactory
 {
-    public function createCommandsFromClass($commandFileInstance, $passThrough = null)
+    protected $specialParameterClasses = [
+        Command::class => ['getCommandReference'],
+    ];
+
+    public function __construct($specialParameterClasses = [])
+    {
+        $this->specialParameterClasses += $specialParameterClasses;
+    }
+
+    public function createCommandsFromClass($commandFileInstance)
     {
         $commandInfoList = $this->getCommandInfoListFromClass($commandFileInstance);
-        return $this->createCommandsFromClassInfo($commandInfoList, $commandFileInstance, $passThrough);
+        return $this->createCommandsFromClassInfo($commandInfoList, $commandFileInstance);
     }
 
     public function getCommandInfoListFromClass($classNameOrInstance)
@@ -33,22 +42,27 @@ class AnnotationCommandFactory
         return $commandInfoList;
     }
 
-    public function createCommandsFromClassInfo($commandInfoList, $commandFileInstance, $passThrough = null)
+    public function createCommandInfo($classNameOrInstance, $commandMethodName)
+    {
+        return new CommandInfo($classNameOrInstance, $commandMethodName);
+    }
+
+    public function createCommandsFromClassInfo($commandInfoList, $commandFileInstance)
     {
         $commandList = [];
 
         foreach ($commandInfoList as $commandInfo) {
-            $command = $this->createCommand($commandInfo, $commandFileInstance, $passThrough);
+            $command = $this->createCommand($commandInfo, $commandFileInstance);
             $commandList[] = $command;
         }
 
         return $commandList;
     }
 
-    public function createCommand(CommandInfo $commandInfo, $commandFileInstance, $passThrough = null)
+    public function createCommand(CommandInfo $commandInfo, $commandFileInstance)
     {
         $commandCallback = [$commandFileInstance, $commandInfo->getMethodName()];
-        $command = new AnnotationCommand($commandInfo->getName(), $commandCallback, $passThrough);
+        $command = new AnnotationCommand($commandInfo->getName(), $commandCallback);
         $this->setCommandInfo($command, $commandInfo);
         $this->setCommandArguments($command, $commandInfo);
         $this->setCommandOptions($command, $commandInfo);
@@ -73,16 +87,61 @@ class AnnotationCommandFactory
     protected function setCommandArguments($command, $commandInfo)
     {
         $args = $commandInfo->getArguments();
-        foreach ($args as $name => $val) {
+        $params = $commandInfo->getParameters();
+        $this->setCommandSpecialParameterClasses($command, $args, $params);
+
+        foreach ($args as $name => $defaultValue) {
             $description = $commandInfo->getArgumentDescription($name);
-            if ($val === CommandInfo::PARAM_IS_REQUIRED) {
-                $command->addArgument($name, InputArgument::REQUIRED, $description);
-            } elseif (is_array($val)) {
-                $command->addArgument($name, InputArgument::IS_ARRAY, $description, $val);
-            } else {
-                $command->addArgument($name, InputArgument::OPTIONAL, $description, $val);
+            $parameterMode = $this->getCommandArgumentMode($defaultValue);
+            $command->addArgument($name, $parameterMode, $description, $defaultValue);
+        }
+    }
+
+    protected function setCommandSpecialParameterClasses($command, &$args, $params)
+    {
+        $specialParams = [];
+        while (!empty($params) && ($special = $this->calculateSpecialParameterClass(reset($params)))) {
+            $specialParams += $special;
+            array_shift($params);
+            array_shift($args);
+        }
+        $command->setSpecialParameterClasses($specialParams);
+    }
+
+    protected function calculateSpecialParameterClass($param)
+    {
+        $typeHintClass = $param->getClass();
+        if (!$typeHintClass) {
+            return false;
+        }
+        foreach ($this->specialParameterClasses as $specialClass => $methodName) {
+            if ($this->specialParameterClassMatches($typeHintClass, new \ReflectionClass($specialClass))) {
+                return [$specialClass => $methodName];
             }
         }
+        return false;
+    }
+
+    protected function specialParameterClassMatches(\ReflectionClass $typeHintClass, \ReflectionClass $specialClass)
+    {
+        if ($typeHintClass->getName() == $specialClass->getName()) {
+            return true;
+        }
+        if ($specialClass->isInterface()) {
+            return $typeHintClass->implementsInterface($specialClass);
+        }
+        return $typeHintClass->isSubclassOf($specialClass);
+    }
+
+    protected function getCommandArgumentMode($defaultValue)
+    {
+        if (!isset($defaultValue)) {
+            return InputArgument::REQUIRED;
+        }
+        if (is_array($defaultValue)) {
+            return InputArgument::IS_ARRAY;
+        }
+        return InputArgument::OPTIONAL;
     }
 
     protected function setCommandOptions($command, $commandInfo)
