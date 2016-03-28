@@ -48,7 +48,7 @@ class CommandInfo
     /**
      * @var array
      */
-    protected $arguments = null;
+    protected $arguments = [];
 
     /**
      * @var array
@@ -84,6 +84,7 @@ class CommandInfo
     {
         $this->reflection = new \ReflectionMethod($classNameOrInstance, $methodName);
         $this->methodName = $methodName;
+        $this->arguments = $this->calculateAgumentCache();
     }
 
     public function getMethodName()
@@ -147,7 +148,7 @@ class CommandInfo
         return $name;
     }
 
-    public function calculateAgumentCache()
+    protected function calculateAgumentCache()
     {
         $args = [];
         $params = $this->reflection->getParameters();
@@ -165,9 +166,6 @@ class CommandInfo
 
     public function getArguments()
     {
-        if (!$this->arguments) {
-            $this->arguments = $this->calculateAgumentCache();
-        }
         return $this->arguments;
     }
 
