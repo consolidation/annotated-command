@@ -124,7 +124,7 @@ class AnnotationCommandFactory
 
     protected function specialParameterClassMatches(\ReflectionClass $typeHintClass, \ReflectionClass $specialClass)
     {
-        if ($typeHintClass->getName() == $specialClass->getName()) {
+        if ($typeHintClass->name == $specialClass->name) {
             return true;
         }
         if ($specialClass->isInterface()) {
