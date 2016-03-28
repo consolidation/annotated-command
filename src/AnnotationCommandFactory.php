@@ -115,11 +115,22 @@ class AnnotationCommandFactory
             return false;
         }
         foreach ($this->specialParameterClasses as $specialClass => $methodName) {
-            if ($typeHintClass->getName() == $specialClass || ($typeHintClass->isSubclassOf($specialClass))) {
+            if ($this->specialParameterClassMatches($typeHintClass, new \ReflectionClass($specialClass))) {
                 return [$specialClass => $methodName];
             }
         }
         return false;
+    }
+
+    protected function specialParameterClassMatches(\ReflectionClass $typeHintClass, \ReflectionClass $specialClass)
+    {
+        if ($typeHintClass->getName() == $specialClass->getName()) {
+            return true;
+        }
+        if ($specialClass->isInterface()) {
+            return $typeHintClass->implementsInterface($specialClass);
+        }
+        return $typeHintClass->isSubclassOf($specialClass);
     }
 
     protected function getCommandArgumentMode($defaultValue)
