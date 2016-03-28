@@ -36,7 +36,7 @@ class AnnotationCommandFactory
         });
 
         foreach ($commandMethodNames as $commandMethodName) {
-            $commandInfoList[] = new CommandInfo($classNameOrInstance, $commandMethodName, $this->specialParameterClasses);
+            $commandInfoList[] = new CommandInfo($classNameOrInstance, $commandMethodName);
         }
 
         return $commandInfoList;
@@ -44,7 +44,7 @@ class AnnotationCommandFactory
 
     public function createCommandInfo($classNameOrInstance, $commandMethodName)
     {
-        return new CommandInfo($classNameOrInstance, $commandMethodName, $this->specialParameterClasses);
+        return new CommandInfo($classNameOrInstance, $commandMethodName);
     }
 
     public function createCommandsFromClassInfo($commandInfoList, $commandFileInstance)
@@ -62,7 +62,7 @@ class AnnotationCommandFactory
     public function createCommand(CommandInfo $commandInfo, $commandFileInstance)
     {
         $commandCallback = [$commandFileInstance, $commandInfo->getMethodName()];
-        $command = new AnnotationCommand($commandInfo->getName(), $commandCallback, $commandInfo->getSpecialParameterClasses());
+        $command = new AnnotationCommand($commandInfo->getName(), $commandCallback);
         $this->setCommandInfo($command, $commandInfo);
         $this->setCommandArguments($command, $commandInfo);
         $this->setCommandOptions($command, $commandInfo);
@@ -87,11 +87,39 @@ class AnnotationCommandFactory
     protected function setCommandArguments($command, $commandInfo)
     {
         $args = $commandInfo->getArguments();
+        $params = $commandInfo->getParameters();
+        $this->setCommandSpecialParameterClasses($command, $args, $params);
+
         foreach ($args as $name => $defaultValue) {
             $description = $commandInfo->getArgumentDescription($name);
             $parameterMode = $this->getCommandArgumentMode($defaultValue);
             $command->addArgument($name, $parameterMode, $description, $defaultValue);
         }
+    }
+
+    protected function setCommandSpecialParameterClasses($command, &$args, $params)
+    {
+        $specialParams = [];
+        while (!empty($params) && ($special = $this->calculateSpecialParameterClass(reset($params)))) {
+            $specialParams += $special;
+            array_shift($params);
+            array_shift($args);
+        }
+        $command->setSpecialParameterClasses($specialParams);
+    }
+
+    protected function calculateSpecialParameterClass($param)
+    {
+        $typeHintClass = $param->getClass();
+        if (!$typeHintClass) {
+            return false;
+        }
+        foreach ($this->specialParameterClasses as $specialClass => $methodName) {
+            if ($typeHintClass->getName() == $specialClass || ($typeHintClass->isSubclassOf($specialClass))) {
+                return [$specialClass => $methodName];
+            }
+        }
+        return false;
     }
 
     protected function getCommandArgumentMode($defaultValue)

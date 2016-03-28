@@ -46,11 +46,6 @@ class CommandInfo
     /**
      * @var array
      */
-    protected $specialParameters = [];
-
-    /**
-     * @var array
-     */
     protected $arguments = [];
 
     /**
@@ -83,22 +78,21 @@ class CommandInfo
      */
     protected $methodName;
 
-    /**
-     * @var array
-     */
-    protected $specialParameterClasses;
-
-    public function __construct($classNameOrInstance, $methodName, $specialParameterClasses = [])
+    public function __construct($classNameOrInstance, $methodName)
     {
         $this->reflection = new \ReflectionMethod($classNameOrInstance, $methodName);
         $this->methodName = $methodName;
-        $this->specialParameterClasses = $specialParameterClasses;
         $this->calculateAgumentCache();
     }
 
     public function getMethodName()
     {
         return $this->methodName;
+    }
+
+    public function getParameters()
+    {
+        return $this->reflection->getParameters();
     }
 
     /**
@@ -160,14 +154,9 @@ class CommandInfo
     protected function calculateAgumentCache()
     {
         $args = [];
-        $specialParams = [];
         $params = $this->reflection->getParameters();
         if (!empty($this->getOptions())) {
             array_pop($params);
-        }
-        while (!empty($params) && ($special = $this->calculateSpecialParameterClass(reset($params)))) {
-            $specialParams += $special;
-            array_shift($params);
         }
         foreach ($params as $param) {
             $defaultValue = $this->getArgumentDefaultValue($param);
@@ -175,32 +164,12 @@ class CommandInfo
                 $args[$param->name] = $defaultValue;
             }
         }
-        $this->specialParameters = $specialParams;
         $this->arguments = $args;
-    }
-
-    protected function calculateSpecialParameterClass($param)
-    {
-        $typeHintClass = $param->getClass();
-        if (!$typeHintClass) {
-            return false;
-        }
-        foreach ($this->specialParameterClasses as $specialClass => $methodName) {
-            if ($typeHintClass->getName() == $specialClass || ($typeHintClass->isSubclassOf($specialClass))) {
-                return [$specialClass => $methodName];
-            }
-        }
-        return false;
     }
 
     public function getArguments()
     {
         return $this->arguments;
-    }
-
-    public function getSpecialParameterClasses()
-    {
-        return $this->specialParameters;
     }
 
     protected function getArgumentDefaultValue($param)

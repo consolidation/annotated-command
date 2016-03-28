@@ -10,11 +10,15 @@ class AnnotationCommand extends Command
     protected $commandCallback;
     protected $specialParameterClasses;
 
-    public function __construct($name, $commandCallback, $specialParameterClasses)
+    public function __construct($name, $commandCallback)
     {
         parent::__construct($name);
 
         $this->commandCallback = $commandCallback;
+    }
+
+    public function setSpecialParameterClasses($specialParameterClasses)
+    {
         $this->specialParameterClasses = $specialParameterClasses;
     }
 
