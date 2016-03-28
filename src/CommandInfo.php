@@ -171,20 +171,17 @@ class CommandInfo
 
     protected function getArgumentDefaultValue($param)
     {
-        // arrays are array arguments
-        if (!$param->isArray()) {
-            if ($param->isDefaultValueAvailable()) {
-                return $param->getDefaultValue();
+        if ($param->isDefaultValueAvailable()) {
+            $defaultValue = $param->getDefaultValue();
+            if ($this->isAssoc($defaultValue)) {
+                return false;
             }
-            return null;
+            return $defaultValue;
         }
-        if (!$param->isDefaultValueAvailable()) {
+        if ($param->isArray()) {
             return [];
         }
-        if (!$this->isAssoc($param->getDefaultValue())) {
-            return $param->getDefaultValue();
-        }
-        return false;
+        return null;
     }
 
     public function getOptions()
