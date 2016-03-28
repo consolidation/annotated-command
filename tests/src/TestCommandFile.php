@@ -1,6 +1,8 @@
 <?php
 namespace Consolidation\TestUtils;
 
+use Symfony\Component\Console\Command\Command;
+
 class TestCommandFile
 {
     protected $state;
@@ -76,5 +78,11 @@ class TestCommandFile
     public function testPassthrough(array $params)
     {
         return implode(',', $params);
+    }
+
+    public function testCommand(Command $command, $one)
+    {
+        $formatter = $command->getHelperSet()->get('formatter');
+        return $formatter->formatSection('test', $one);
     }
 }

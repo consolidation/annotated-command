@@ -8,12 +8,14 @@ use Symfony\Component\Console\Output\OutputInterface;
 class AnnotationCommand extends Command
 {
     protected $commandCallback;
+    protected $specialParameterClasses;
 
-    public function __construct($name, $commandCallback)
+    public function __construct($name, $commandCallback, $specialParameterClasses)
     {
         parent::__construct($name);
 
         $this->commandCallback = $commandCallback;
+        $this->specialParameterClasses = $specialParameterClasses;
     }
 
     protected function getArgsWithPassThrough($input)
@@ -48,12 +50,31 @@ class AnnotationCommand extends Command
     protected function runCommandCallback($args, &$status)
     {
         $result = false;
+        $specialParameters = $this->getSpecialParameters();
+        $args = array_merge($specialParameters, $args);
         try {
             $result = call_user_func_array($this->commandCallback, $args);
         } catch (\Exception $e) {
             $status = $e->getCode();
         }
         return $result;
+    }
+
+    protected function getSpecialParameters()
+    {
+        $specialParameters = [];
+        foreach ($this->specialParameterClasses as $className => $callback) {
+            if (is_array($callback) && (count($callback) == 1)) {
+                array_unshift($callback, $this);
+            }
+            $specialParameters[] = $callback($className, $this);
+        }
+        return $specialParameters;
+    }
+
+    protected function getCommandReference()
+    {
+        return $this;
     }
 
     protected function processCommandResults($result, &$status)

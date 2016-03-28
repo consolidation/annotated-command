@@ -14,8 +14,8 @@ class AnnotationCommandFactoryTests extends \PHPUnit_Framework_TestCase
     function testAnnotationCommandCreation()
     {
         $commandFileInstance = new \Consolidation\TestUtils\TestCommandFile;
-        $commandInfo = new CommandInfo($commandFileInstance, 'testArithmatic');
         $commandFactory = new AnnotationCommandFactory();
+        $commandInfo = $commandFactory->createCommandInfo($commandFileInstance, 'testArithmatic');
 
         $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
 
@@ -35,8 +35,8 @@ class AnnotationCommandFactoryTests extends \PHPUnit_Framework_TestCase
     function testMyCatCommand()
     {
         $commandFileInstance = new \Consolidation\TestUtils\TestCommandFile;
-        $commandInfo = new CommandInfo($commandFileInstance, 'myCat');
         $commandFactory = new AnnotationCommandFactory();
+        $commandInfo = $commandFactory->createCommandInfo($commandFileInstance, 'myCat');
 
         $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
 
@@ -56,8 +56,8 @@ class AnnotationCommandFactoryTests extends \PHPUnit_Framework_TestCase
     function testState()
     {
         $commandFileInstance = new \Consolidation\TestUtils\TestCommandFile('secret secret');
-        $commandInfo = new CommandInfo($commandFileInstance, 'testState');
         $commandFactory = new AnnotationCommandFactory();
+        $commandInfo = $commandFactory->createCommandInfo($commandFileInstance, 'testState');
 
         $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
 
@@ -68,11 +68,26 @@ class AnnotationCommandFactoryTests extends \PHPUnit_Framework_TestCase
         $this->assertRunCommandViaApplicationEquals($command, $input, 'secret secret');
     }
 
+    function testSpecialCommandParameter()
+    {
+        $commandFileInstance = new \Consolidation\TestUtils\TestCommandFile();
+        $commandFactory = new AnnotationCommandFactory();
+        $commandInfo = $commandFactory->createCommandInfo($commandFileInstance, 'testCommand');
+
+        $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
+
+        $this->assertInstanceOf(Command::class, $command);
+        $this->assertEquals('test:command', $command->getName());
+
+        $input = new StringInput('test:command Message');
+        $this->assertRunCommandViaApplicationEquals($command, $input, '[test] Message');
+    }
+
     function testPassthroughArray()
     {
         $commandFileInstance = new \Consolidation\TestUtils\TestCommandFile;
-        $commandInfo = new CommandInfo($commandFileInstance, 'testPassthrough');
         $commandFactory = new AnnotationCommandFactory();
+        $commandInfo = $commandFactory->createCommandInfo($commandFileInstance, 'testPassthrough');
 
         $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
 
@@ -87,8 +102,8 @@ class AnnotationCommandFactoryTests extends \PHPUnit_Framework_TestCase
     function testPassThroughNonArray()
     {
         $commandFileInstance = new \Consolidation\TestUtils\TestCommandFile;
-        $commandInfo = new CommandInfo($commandFileInstance, 'myCat');
         $commandFactory = new AnnotationCommandFactory();
+        $commandInfo = $commandFactory->createCommandInfo($commandFileInstance, 'myCat');
 
         $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
 

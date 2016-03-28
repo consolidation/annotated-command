@@ -9,6 +9,15 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class AnnotationCommandFactory
 {
+    protected $specialParameterClasses = [
+        Command::class => ['getCommandReference'],
+    ];
+
+    public function __construct($specialParameterClasses = [])
+    {
+        $this->specialParameterClasses += $specialParameterClasses;
+    }
+
     public function createCommandsFromClass($commandFileInstance)
     {
         $commandInfoList = $this->getCommandInfoListFromClass($commandFileInstance);
@@ -27,10 +36,15 @@ class AnnotationCommandFactory
         });
 
         foreach ($commandMethodNames as $commandMethodName) {
-            $commandInfoList[] = new CommandInfo($classNameOrInstance, $commandMethodName);
+            $commandInfoList[] = new CommandInfo($classNameOrInstance, $commandMethodName, $this->specialParameterClasses);
         }
 
         return $commandInfoList;
+    }
+
+    public function createCommandInfo($classNameOrInstance, $commandMethodName)
+    {
+        return new CommandInfo($classNameOrInstance, $commandMethodName, $this->specialParameterClasses);
     }
 
     public function createCommandsFromClassInfo($commandInfoList, $commandFileInstance)
@@ -48,7 +62,7 @@ class AnnotationCommandFactory
     public function createCommand(CommandInfo $commandInfo, $commandFileInstance)
     {
         $commandCallback = [$commandFileInstance, $commandInfo->getMethodName()];
-        $command = new AnnotationCommand($commandInfo->getName(), $commandCallback);
+        $command = new AnnotationCommand($commandInfo->getName(), $commandCallback, $commandInfo->getSpecialParameterClasses());
         $this->setCommandInfo($command, $commandInfo);
         $this->setCommandArguments($command, $commandInfo);
         $this->setCommandOptions($command, $commandInfo);
