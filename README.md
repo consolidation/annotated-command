@@ -21,6 +21,9 @@ Extant commandline tools that utilize this technique include:
 This library provides routines to produce the Symfony\Component\Console\Command\Command from all public methods defined in the provided class.
 
 ## Example Annotated Command Class
+The public methods of the command class define its commands, and the parameters of each method define its arguments and options. The command options, if any, are declared as the last parameter of the methods. The options will be passed in as an associative array; the default options of the last parameter should list the options recognized by the command.
+
+The rest of the parameters are arguments. Parameters with a default value are optional; those without a default value are required.
 ```
 class MyCommandClass
 {
@@ -46,7 +49,21 @@ class MyCommandClass
     }
 }
 ``` 
+If a command method returns an integer, it is used as the command exit status code. If the command method returns a string, it is printed.
+## Access to Symfony Command
+If you want access to the Symfony Command, e.g. to get a reference to the helpers in order to call some legacy code, simply typehint the first parameter of your command method as a \Symfony\Component\Console\Command\Command, and the command object will be passed in. The other parameters define your commands arguments and options, as usual.
+```
+class MyCommandClass
+{
+    public function testCommand(Command $command, $message)
+    {
+        $formatter = $command->getHelperSet()->get('formatter');
+        return $formatter->formatSection('test', $message);
+    }
+}
+```
 ## API Usage
+To use annotated commands in an application, pass an instance of your command class in to AnnotationCommandFactory::createCommandsFromClass(). The result will be a list of Commands that may be added to your application.
 ```
 $myCommandClassInstance = new MyCommandClass();
 $commandFactory = new AnnotationCommandFactory();
@@ -55,6 +72,7 @@ foreach ($commandList as $command) {
     $application->add($command);
 }
 ```
+You may have more than one command class, if you wish. If so, simply call AnnotationCommandFactory::createCommandsFromClass() multiple times.
 ## Comparison to Existing Solutions
 
 The existing solutions used their own hand-rolled regex-based parsers to process the contents of the DocBlock comments. consolidation/annotation-command uses the phpdocumentor/reflection-docblock project (which is itsle a regex-based parser) to interpret DocBlock contents. 
