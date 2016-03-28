@@ -83,6 +83,11 @@ class CommandInfo
      */
     protected $methodName;
 
+    /**
+     * @var array
+     */
+    protected $specialParameterClasses;
+
     public function __construct($classNameOrInstance, $methodName, $specialParameterClasses = [])
     {
         $this->reflection = new \ReflectionMethod($classNameOrInstance, $methodName);
