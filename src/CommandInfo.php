@@ -48,6 +48,11 @@ class CommandInfo
     /**
      * @var array
      */
+    protected $arguments = null;
+
+    /**
+     * @var array
+     */
     protected $argumentDescriptions = [];
 
     /**
@@ -142,7 +147,7 @@ class CommandInfo
         return $name;
     }
 
-    public function getArguments()
+    public function calculateAgumentCache()
     {
         $args = [];
         $params = $this->reflection->getParameters();
@@ -150,22 +155,30 @@ class CommandInfo
             array_pop($params);
         }
         foreach ($params as $param) {
-            $val = $this->getArgumentType($param);
-            if (isset($val)) {
+            $val = $this->getArgumentDefaultValue($param);
+            if ($val !== false) {
                 $args[$param->name] = $val;
             }
         }
         return $args;
     }
 
-    protected function getArgumentType($param)
+    public function getArguments()
+    {
+        if (!$this->arguments) {
+            $this->arguments = $this->calculateAgumentCache();
+        }
+        return $this->arguments;
+    }
+
+    protected function getArgumentDefaultValue($param)
     {
         // arrays are array arguments
         if (!$param->isArray()) {
             if ($param->isDefaultValueAvailable()) {
                 return $param->getDefaultValue();
             }
-            return self::PARAM_IS_REQUIRED;
+            return null;
         }
         if (!$param->isDefaultValueAvailable()) {
             return [];
@@ -173,7 +186,7 @@ class CommandInfo
         if (!$this->isAssoc($param->getDefaultValue())) {
             return $param->getDefaultValue();
         }
-        return null;
+        return false;
     }
 
     public function getOptions()

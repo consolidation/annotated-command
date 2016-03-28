@@ -73,16 +73,22 @@ class AnnotationCommandFactory
     protected function setCommandArguments($command, $commandInfo)
     {
         $args = $commandInfo->getArguments();
-        foreach ($args as $name => $val) {
+        foreach ($args as $name => $defaultValue) {
             $description = $commandInfo->getArgumentDescription($name);
-            if ($val === CommandInfo::PARAM_IS_REQUIRED) {
-                $command->addArgument($name, InputArgument::REQUIRED, $description);
-            } elseif (is_array($val)) {
-                $command->addArgument($name, InputArgument::IS_ARRAY, $description, $val);
-            } else {
-                $command->addArgument($name, InputArgument::OPTIONAL, $description, $val);
-            }
+            $parameterMode = $this->getCommandArgumentMode($defaultValue);
+            $command->addArgument($name, $parameterMode, $description, $defaultValue);
         }
+    }
+
+    protected function getCommandArgumentMode($defaultValue)
+    {
+        if (!isset($defaultValue)) {
+            return InputArgument::REQUIRED;
+        }
+        if (is_array($defaultValue)) {
+            return InputArgument::IS_ARRAY;
+        }
+        return InputArgument::OPTIONAL;
     }
 
     protected function setCommandOptions($command, $commandInfo)
