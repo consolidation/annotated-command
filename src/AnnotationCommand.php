@@ -54,8 +54,6 @@ class AnnotationCommand extends Command
     protected function runCommandCallback($args, &$status)
     {
         $result = false;
-        $specialParameters = $this->getSpecialParameters();
-        $args = array_merge($specialParameters, $args);
         try {
             $result = call_user_func_array($this->commandCallback, $args);
         } catch (\Exception $e) {
@@ -64,14 +62,14 @@ class AnnotationCommand extends Command
         return $result;
     }
 
-    protected function getSpecialParameters()
+    protected function getSpecialParameters(InputInterface $input, OutputInterface $output)
     {
         $specialParameters = [];
         foreach ($this->specialParameterClasses as $className => $callback) {
             if (is_array($callback) && (count($callback) == 1)) {
                 array_unshift($callback, $this);
             }
-            $specialParameters[] = $callback($className, $this);
+            $specialParameters[] = $callback($this, $input, $output, $className);
         }
         return $specialParameters;
     }
@@ -79,6 +77,16 @@ class AnnotationCommand extends Command
     protected function getCommandReference()
     {
         return $this;
+    }
+
+    protected function getInputReference(Command $command, InputInterface $input, OutputInterface $output)
+    {
+        return $input;
+    }
+
+    protected function getOutputReference(Command $command, InputInterface $input, OutputInterface $output)
+    {
+        return $output;
     }
 
     protected function processCommandResults($result, &$status)
@@ -110,6 +118,9 @@ class AnnotationCommand extends Command
         // Get passthrough args, and add the options on the end.
         $args = $this->getArgsWithPassThrough($input);
         $args[] = $input->getOptions();
+
+        $specialParameters = $this->getSpecialParameters($input, $output);
+        $args = array_merge($specialParameters, $args);
 
         // TODO: Call any validate / pre-hooks registered for this command
 

@@ -2,6 +2,8 @@
 namespace Consolidation\AnnotationCommand;
 
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Application;
@@ -81,6 +83,21 @@ class AnnotationCommandFactoryTests extends \PHPUnit_Framework_TestCase
 
         $input = new StringInput('test:command Message');
         $this->assertRunCommandViaApplicationEquals($command, $input, '[test] Message');
+    }
+
+    function testSpecialIOParameter()
+    {
+        $commandFileInstance = new \Consolidation\TestUtils\TestCommandFile();
+        $commandFactory = new AnnotationCommandFactory();
+        $commandInfo = $commandFactory->createCommandInfo($commandFileInstance, 'testIo');
+
+        $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
+
+        $this->assertInstanceOf(Command::class, $command);
+        $this->assertEquals('test:io', $command->getName());
+
+        $input = new StringInput('test:io Message');
+        $this->assertRunCommandViaApplicationEquals($command, $input, 'Message');
     }
 
     function testPassthroughArray()
