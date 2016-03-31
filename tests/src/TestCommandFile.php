@@ -2,6 +2,8 @@
 namespace Consolidation\TestUtils;
 
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class TestCommandFile
 {
@@ -84,5 +86,16 @@ class TestCommandFile
     {
         $formatter = $command->getHelperSet()->get('formatter');
         return $formatter->formatSection('test', $one);
+    }
+
+    public function testIo(InputInterface $input, OutputInterface $output, $one)
+    {
+        if (!$input instanceof InputInterface) {
+            throw new \RuntimeException('$input is not an InputInterface');
+        }
+        if (!$output instanceof OutputInterface) {
+            throw new \RuntimeException('$output is not an OutputInterface');
+        }
+        return $one;
     }
 }

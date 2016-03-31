@@ -11,6 +11,8 @@ class AnnotationCommandFactory
 {
     protected $specialParameterClasses = [
         Command::class => ['getCommandReference'],
+        InputInterface::class => ['getInputReference'],
+        OutputInterface::class => ['getOutputReference'],
     ];
 
     public function __construct($specialParameterClasses = [])
