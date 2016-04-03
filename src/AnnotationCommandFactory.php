@@ -15,9 +15,22 @@ class AnnotationCommandFactory
         OutputInterface::class => ['getOutputReference'],
     ];
 
+    protected $commandProcessor;
+
     public function __construct($specialParameterClasses = [])
     {
         $this->specialParameterClasses += $specialParameterClasses;
+        $this->commandProcessor = new CommandProcessor(new HookManager());
+    }
+
+    public function setCommandProcessor($commandProcessor)
+    {
+        $this->commandProcessor = $commandProcessor;
+    }
+
+    public function commandProcessor()
+    {
+        return $this->commandProcessor;
     }
 
     public function createCommandsFromClass($commandFileInstance)
@@ -64,7 +77,7 @@ class AnnotationCommandFactory
     public function createCommand(CommandInfo $commandInfo, $commandFileInstance)
     {
         $commandCallback = [$commandFileInstance, $commandInfo->getMethodName()];
-        $command = new AnnotationCommand($commandInfo->getName(), $commandCallback);
+        $command = new AnnotationCommand($commandInfo->getName(), $commandCallback, $this->commandProcessor);
         $this->setCommandInfo($command, $commandInfo);
         $this->setCommandArguments($command, $commandInfo);
         $this->setCommandOptions($command, $commandInfo);
