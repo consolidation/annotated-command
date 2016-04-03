@@ -234,7 +234,7 @@ class CommandInfo
 
     public function getAnnotation($annotation)
     {
-        // hasAnnotation runs $this->parseDocBlock()
+        // hasAnnotation parses the docblock
         if (!$this->hasAnnotation($annotation)) {
             return null;
         }

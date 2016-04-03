@@ -47,7 +47,8 @@ class AnnotationCommandFactory
         // accessor methods such as getFoo and setFoo, while allowing
         // set or setup.
         $commandMethodNames = array_filter(
-            get_class_methods($classNameOrInstance), function ($m) {
+            get_class_methods($classNameOrInstance),
+            function ($m) {
                 return !preg_match('#^(_|get[A-Z]|set[A-Z])#', $m);
             }
         );
@@ -82,7 +83,7 @@ class AnnotationCommandFactory
     {
         foreach ($commandInfoList as $commandInfo) {
             if ($commandInfo->hasAnnotation('hook')) {
-                $command = $this->registerCommandHook($commandInfo, $commandFileInstance);
+                $this->registerCommandHook($commandInfo, $commandFileInstance);
             }
         }
     }

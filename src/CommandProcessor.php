@@ -74,7 +74,7 @@ class CommandProcessor
         foreach (['pre-', '', 'post-'] as $stage) {
             $hooks = array_merge($hooks, $this->hookManager->get($name, "$stage$hook"));
         }
-        if (isset($this->$globalHooks[$hook])) {
+        if (isset($this->globalHooks[$hook])) {
             $hooks = array_merge($hooks, $this->globalHooks[$hook]);
         }
         return $hooks;
@@ -108,6 +108,7 @@ class CommandProcessor
     {
         $validators = $this->getValidators($name);
         foreach ($validators as $validator) {
+            $validated = null;
             if ($validator instanceof ValidatorInterface) {
                 $validated = $validator->validate($args);
             }
@@ -121,7 +122,7 @@ class CommandProcessor
                 $args = $validated;
             }
         }
-        return $validated;
+        return $args;
     }
 
     protected function handleResult($name, $result, $output)
@@ -180,7 +181,7 @@ class CommandProcessor
         $processors = $this->getAlterResultHooks($name);
         foreach ($processors as $processor) {
             if ($processor instanceof AlterResultInterface) {
-                $result = $processor->process($result, $args);
+                $result = $processor->alter($result, $args);
             }
             if (is_callable($processor)) {
                 $result = $processor($result, $args);
