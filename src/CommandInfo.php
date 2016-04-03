@@ -232,13 +232,19 @@ class CommandInfo
         return array_keys($arr) !== range(0, count($arr) - 1);
     }
 
-    protected function getAnnotation($annotation)
+    public function getAnnotation($annotation)
     {
-        $this->parseDocBlock();
-        if (!array_key_exists($annotation, $this->otherAnnotations)) {
+        // hasAnnotation runs $this->parseDocBlock()
+        if (!$this->hasAnnotation($annotation)) {
             return null;
         }
         return $this->otherAnnotations[$annotation];
+    }
+
+    public function hasAnnotation($annotation)
+    {
+        $this->parseDocBlock();
+        return array_key_exists($annotation, $this->otherAnnotations);
     }
 
     protected function convertName($camel)

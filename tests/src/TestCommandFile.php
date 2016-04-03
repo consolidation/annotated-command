@@ -4,6 +4,7 @@ namespace Consolidation\TestUtils;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Consolidation\AnnotationCommand\CommandError;
 
 class TestCommandFile
 {
@@ -97,5 +98,39 @@ class TestCommandFile
             throw new \RuntimeException('$output is not an OutputInterface');
         }
         return $one;
+    }
+
+    /**
+     * This command wraps its parameter in []; its alter hook
+     * then wraps the result in <>.
+     */
+    public function testHook($parameter)
+    {
+        return "[$parameter]";
+    }
+
+    /**
+     * Wrap the results of test:hook in <>.
+     *
+     * @hook test:hook alter
+     */
+    public function hookTestHook($result)
+    {
+        return "<$result>";
+    }
+
+    public function testHello($who)
+    {
+        return "Hello, $who.";
+    }
+
+    /**
+     * @hook test:hello validate
+     */
+    public function validateTestHello($args)
+    {
+        if ($args['who'] == 'Donald Duck') {
+            return new CommandError("I won't say hello to Donald Duck.");
+        }
     }
 }

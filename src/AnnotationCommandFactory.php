@@ -67,11 +67,45 @@ class AnnotationCommandFactory
         $commandList = [];
 
         foreach ($commandInfoList as $commandInfo) {
-            $command = $this->createCommand($commandInfo, $commandFileInstance);
-            $commandList[] = $command;
+            if (!$commandInfo->hasAnnotation('hook')) {
+                $command = $this->createCommand($commandInfo, $commandFileInstance);
+                $commandList[] = $command;
+            }
         }
 
         return $commandList;
+    }
+
+    public function registerCommandHooksFromClassInfo($commandInfoList, $commandFileInstance)
+    {
+        foreach ($commandInfoList as $commandInfo) {
+            if ($commandInfo->hasAnnotation('hook')) {
+                $command = $this->registerCommandHook($commandInfo, $commandFileInstance);
+            }
+        }
+    }
+
+    public function registerCommandHook(CommandInfo $commandInfo, $commandFileInstance)
+    {
+        // Ignore command info
+        if (!$commandInfo->hasAnnotation('hook')) {
+            return;
+        }
+        // The hook format is:
+        //   @hook name type
+        // For example, the pre-validate hook for the core-init command is:
+        //   @hook core-init pre-validate
+        $hookData = $commandInfo->getAnnotation('hook');
+        list($commandName, $hook) = explode(' ', $hookData, 2) + ['', ''];
+
+        // The hook must be in the correct format; otherwise, throw.
+        if (empty($commandName) || empty($hook)) {
+            throw new \RuntimeException("Malformed @hook: $hookData");
+        }
+
+        // Register the hook
+        $callback = [$commandFileInstance, $commandInfo->getMethodName()];
+        $this->commandProcessor()->hookManager()->add($commandName, $hook, $callback);
     }
 
     public function createCommand(CommandInfo $commandInfo, $commandFileInstance)

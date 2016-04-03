@@ -30,42 +30,42 @@ class CommandProcessor
 
     public function setValidator($validator)
     {
-        $this->globalHooks[ARGUMENT_VALIDATOR][] = $validator;
+        $this->globalHooks[self::ARGUMENT_VALIDATOR][] = $validator;
     }
 
     public function setStatusDeterminer($statusDeterminer)
     {
-        $this->globalHooks[STATUS_DETERMINER][] = $statusDeterminer;
+        $this->globalHooks[self::STATUS_DETERMINER][] = $statusDeterminer;
     }
 
     public function setAlterResultHook($resultProcessor)
     {
-        $this->globalHooks[ALTER_RESULT][] = $resultProcessor;
+        $this->globalHooks[self::ALTER_RESULT][] = $resultProcessor;
     }
 
     public function getOutputExtractor($extractor)
     {
-        $this->globalHooks[EXTRACT_OUTPUT][] = $extractor;
+        $this->globalHooks[self::EXTRACT_OUTPUT][] = $extractor;
     }
 
     public function getValidators($name)
     {
-        return $this->getHooks($name, ARGUMENT_VALIDATOR);
+        return $this->getHooks($name, self::ARGUMENT_VALIDATOR);
     }
 
     public function getStatusDeterminers($name)
     {
-        return $this->getHooks($name, STATUS_DETERMINER);
+        return $this->getHooks($name, self::STATUS_DETERMINER);
     }
 
     public function getAlterResultHooks($name)
     {
-        return $this->getHooks($name, ALTER_RESULT);
+        return $this->getHooks($name, self::ALTER_RESULT);
     }
 
     public function getOutputExtractors($name)
     {
-        return $this->getHooks($name, EXTRACT_OUTPUT);
+        return $this->getHooks($name, self::EXTRACT_OUTPUT);
     }
 
     protected function getHooks($name, $hook)

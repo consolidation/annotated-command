@@ -131,6 +131,98 @@ class AnnotationCommandFactoryTests extends \PHPUnit_Framework_TestCase
         $this->assertRunCommandViaApplicationEquals($command, $input, 'x y zbet');
     }
 
+    function testHookedCommand()
+    {
+        $commandFileInstance = new \Consolidation\TestUtils\TestCommandFile();
+        $commandFactory = new AnnotationCommandFactory();
+
+        $hookInfo = $commandFactory->createCommandInfo($commandFileInstance, 'hookTestHook');
+
+        $this->assertTrue($hookInfo->hasAnnotation('hook'));
+        $this->assertEquals($hookInfo->getAnnotation('hook'), 'test:hook alter');
+
+        $commandFactory->registerCommandHook($hookInfo, $commandFileInstance);
+        $hookCallback = $commandFactory->commandProcessor()->hookManager()->get('test:hook', 'alter');
+        $this->assertTrue($hookCallback != null);
+        $this->assertEquals(1, count($hookCallback));
+        $this->assertEquals(2, count($hookCallback[0]));
+        $this->assertTrue(is_callable($hookCallback[0]));
+        $this->assertEquals('hookTestHook', $hookCallback[0][1]);
+
+        $commandInfo = $commandFactory->createCommandInfo($commandFileInstance, 'testHook');
+        $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
+
+        $this->assertInstanceOf(Command::class, $command);
+        $this->assertEquals('test:hook', $command->getName());
+
+        $input = new StringInput('test:hook bar');
+        $this->assertRunCommandViaApplicationEquals($command, $input, '<[bar]>');
+    }
+
+    function testHookedCommandWithHookAddedLater()
+    {
+        $commandFileInstance = new \Consolidation\TestUtils\TestCommandFile();
+        $commandFactory = new AnnotationCommandFactory();
+        $commandInfo = $commandFactory->createCommandInfo($commandFileInstance, 'testHook');
+
+        $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
+
+        $this->assertInstanceOf(Command::class, $command);
+        $this->assertEquals('test:hook', $command->getName());
+
+        // Run the command once without the hook
+        $input = new StringInput('test:hook foo');
+        $this->assertRunCommandViaApplicationEquals($command, $input, '[foo]');
+
+        // Register the hook and run the command again
+        $hookInfo = $commandFactory->createCommandInfo($commandFileInstance, 'hookTestHook');
+
+        $this->assertTrue($hookInfo->hasAnnotation('hook'));
+        $this->assertEquals($hookInfo->getAnnotation('hook'), 'test:hook alter');
+
+        $commandFactory->registerCommandHook($hookInfo, $commandFileInstance);
+        $hookCallback = $commandFactory->commandProcessor()->hookManager()->get('test:hook', 'alter');
+        $this->assertTrue($hookCallback != null);
+        $this->assertEquals(1, count($hookCallback));
+        $this->assertEquals(2, count($hookCallback[0]));
+        $this->assertTrue(is_callable($hookCallback[0]));
+        $this->assertEquals('hookTestHook', $hookCallback[0][1]);
+
+        $input = new StringInput('test:hook bar');
+        $this->assertRunCommandViaApplicationEquals($command, $input, '<[bar]>');
+    }
+
+    function testValidate()
+    {
+        $commandFileInstance = new \Consolidation\TestUtils\TestCommandFile();
+        $commandFactory = new AnnotationCommandFactory();
+
+        $hookInfo = $commandFactory->createCommandInfo($commandFileInstance, 'validateTestHello');
+
+        $this->assertTrue($hookInfo->hasAnnotation('hook'));
+        $this->assertEquals($hookInfo->getAnnotation('hook'), 'test:hello validate');
+
+        $commandFactory->registerCommandHook($hookInfo, $commandFileInstance);
+        $hookCallback = $commandFactory->commandProcessor()->hookManager()->get('test:hello', 'validate');
+        $this->assertTrue($hookCallback != null);
+        $this->assertEquals(1, count($hookCallback));
+        $this->assertEquals(2, count($hookCallback[0]));
+        $this->assertTrue(is_callable($hookCallback[0]));
+        $this->assertEquals('validateTestHello', $hookCallback[0][1]);
+
+        $commandInfo = $commandFactory->createCommandInfo($commandFileInstance, 'testHello');
+        $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
+
+        $this->assertInstanceOf(Command::class, $command);
+        $this->assertEquals('test:hello', $command->getName());
+
+        $input = new StringInput('test:hello "Mickey Mouse"');
+        $this->assertRunCommandViaApplicationEquals($command, $input, 'Hello, Mickey Mouse.');
+
+        $input = new StringInput('test:hello "Donald Duck"');
+        $this->assertRunCommandViaApplicationEquals($command, $input, "I won't say hello to Donald Duck.", 1);
+    }
+
     function assertRunCommandViaApplicationEquals($command, $input, $expectedOutput, $expectedStatusCode = 0)
     {
         $output = new BufferedOutput();
