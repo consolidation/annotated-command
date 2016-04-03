@@ -49,7 +49,12 @@ class MyCommandClass
     }
 }
 ``` 
+## Output
 If a command method returns an integer, it is used as the command exit status code. If the command method returns a string, it is printed.
+
+If the [Consolidation/Formatters](https://github.com/consolidation-org/formatters) project is used, then users may specify a --format option to select the formatter to use to transform the output from whatever form the command provides to a string.
+## Logging
+The Annotation-Command project is completely agnostic to logging. If a command wishes to log progress, then the CommandFile class should implement LoggerAwareInterface, and the Commandline tool should inject a logger for its use via the LoggerAwareTrait `setLogger()` method.  Using [Robo](https://github.com/codegyre/robo) is recommended.
 ## Access to Symfony Command
 If you want access to the Symfony Command, e.g. to get a reference to the helpers in order to call some legacy code, simply typehint the first parameter of your command method as a \Symfony\Component\Console\Command\Command, and the command object will be passed in. The other parameters define your commands arguments and options, as usual.
 ```
