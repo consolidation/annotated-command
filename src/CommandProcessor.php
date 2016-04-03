@@ -68,11 +68,17 @@ class CommandProcessor
         return $this->getHooks($name, self::EXTRACT_OUTPUT);
     }
 
-    protected function getHooks($name, $hook)
+    protected function getHooks($names, $hook)
     {
         $hooks = [];
-        foreach (['pre-', '', 'post-'] as $stage) {
-            $hooks = array_merge($hooks, $this->hookManager->get($name, "$stage$hook"));
+        if (!is_array($names)) {
+            $names = [$names];
+        }
+        $names[] = '*';
+        foreach ($names as $name) {
+            foreach (['pre-', '', 'post-'] as $stage) {
+                $hooks = array_merge($hooks, $this->hookManager->get($name, "$stage$hook"));
+            }
         }
         if (isset($this->globalHooks[$hook])) {
             $hooks = array_merge($hooks, $this->globalHooks[$hook]);
