@@ -19,8 +19,8 @@ class HookManager
     /**
      * Add a hook
      *
-     * @param string $name The name of the command to hook
-     * @param string $hook The name of the hook to add
+     * @param string   $name     The name of the command to hook
+     * @param string   $hook     The name of the hook to add
      * @param callable $callback The callback function to call
      */
     public function add($name, $hook, callable $callback)
