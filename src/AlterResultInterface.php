@@ -10,8 +10,9 @@ interface AlterResultInterface
      * After a command has executed, inspect and
      * alter the result as necessary.
      *
-     * @param  mixed $result
-     * @param  array $args
+     * @param  mixed $result Altered result
+     * @param  array $args Reference to commandline arguments and options
+     *
      * @return mixed $result
      */
     public function alter($result, array $args);
