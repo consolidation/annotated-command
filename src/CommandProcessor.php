@@ -121,26 +121,19 @@ class CommandProcessor
         // Recover options from the end of the args
         $options = end($args);
 
-        // Validate and change the command arguments as needed
+        // Validators return any object to signal a validation error;
+        // if the return an array, it replaces the arguments.
         $validated = $this->validateArguments($names, $args);
-
-        // Any non-array object returned signals a validation error.
         if (is_object($validated)) {
-            // TODO: Perhaps this should not be formatted
             return $this->handleResult($names, $validated, $options, $output);
         }
-        // If an array is returned, then the validation results replace
-        // the arguments.
         if (is_array($validated)) {
             $args = $validated;
         }
 
-        // Run command
+        // Run the command, alter the results, and then handle output and status
         $result = $this->runCommandCallback($commandCallback, $specialParameters, $args);
-
-        // Alter results
         $result = $this->alterResult($names, $result, $args);
-
         return $this->handleResult($names, $result, $options, $output);
     }
 
@@ -169,39 +162,32 @@ class CommandProcessor
         }
     }
 
+    /**
+     * Handle the result output and status code calculation.
+     *
+     * Note that if there is an error (status code is nonzero),
+     * then the result object is going to be an error object. This
+     * object may have a string that may be extracted and printed,
+     * but it should never be formatted per the --format option.
+     */
     protected function handleResult($names, $result, $options, $output)
     {
-        // Determine status value
-        // If the result (post-processing) is an object that
-        // implements ExitCodeInterface, then we will ask it
-        // to give us the status code. Otherwise, we assume success.
         $status = $this->determineStatusCode($names, $result);
         if (is_integer($result) && !isset($status)) {
             $status = $result;
             $result = null;
         }
+        $status = $this->interpretStatusCode($status);
 
-        // TODO:  If status is non-zero, call rollback hooks
-        // (unless we can just rely on Collection rollbacks)
-
-        // Extract structured output from result
+        // Get the structured output and format it.
         $outputText = $this->extractOutput($names, $result);
-
-        // Format structured output into printable text. Note that if
-        // the status code is nonzero, then the result object is probably
-        // an error object, and therefore should not be formatted per
-        // the user's selected formatting options.
         if ($status == 0) {
             $outputText = $this->formatCommandResults($outputText, $options);
         }
 
-        // Output the result text.
-        if (isset($outputText)) {
-            $this->writeCommandOutput($outputText, $output);
-        }
-
-        // Return appropriate status code
-        return $this->interpretStatusCode($status);
+        // Output the result text and return status code.
+        $this->writeCommandOutput($outputText, $output, $status);
+        return $status;
     }
 
     /**
@@ -362,8 +348,13 @@ class CommandProcessor
     /**
      * If the result object is a string, then print it.
      */
-    protected function writeCommandOutput($outputText, OutputInterface $output)
+    protected function writeCommandOutput($outputText, OutputInterface $output, $status)
     {
+        // If the status code indicates an error, then print the
+        // result to stderr rather than stdout
+        if ($status && ($output instanceof ConsoleOutputInterface)) {
+            $output = $output->getErrorOutput();
+        }
         // If $res is a string, then print it.
         if (is_string($outputText)) {
             $output->writeln($outputText);
