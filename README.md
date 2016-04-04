@@ -52,7 +52,8 @@ class MyCommandClass
 ## Output
 If a command method returns an integer, it is used as the command exit status code. If the command method returns a string, it is printed.
 
-If the [Consolidation/Formatters](https://github.com/consolidation-org/formatters) project is used, then users may specify a --format option to select the formatter to use to transform the output from whatever form the command provides to a string.
+If the [Consolidation/OutputFormatters](https://github.com/consolidation-org/output-formatters) project is used, then users may specify a --format option to select the formatter to use to transform the output from whatever form the command provides to a string.  To make this work, the application must provide a formatter to the AnnotationCommandFactory.  See [API Usage](#api-usage) below.
+
 ## Logging
 The Annotation-Command project is completely agnostic to logging. If a command wishes to log progress, then the CommandFile class should implement LoggerAwareInterface, and the Commandline tool should inject a logger for its use via the LoggerAwareTrait `setLogger()` method.  Using [Robo](https://github.com/codegyre/robo) is recommended.
 ## Access to Symfony Command
@@ -72,12 +73,16 @@ To use annotated commands in an application, pass an instance of your command cl
 ```
 $myCommandClassInstance = new MyCommandClass();
 $commandFactory = new AnnotationCommandFactory();
+$commandFactory->commandProcessor()->setFormatterManager(new FormatterManager());
 $commandList = $commandFactory->createCommandsFromClass($myCommandClassInstance);
 foreach ($commandList as $command) {
     $application->add($command);
 }
 ```
 You may have more than one command class, if you wish. If so, simply call AnnotationCommandFactory::createCommandsFromClass() multiple times.
+
+Note that the `setFormatterManager()` operation is optional; omit this if not using [Consolidation/OutputFormatters](https://github.com/consolidation-org/output-formatters).
+
 ## Comparison to Existing Solutions
 
 The existing solutions used their own hand-rolled regex-based parsers to process the contents of the DocBlock comments. consolidation/annotation-command uses the phpdocumentor/reflection-docblock project (which is itsle a regex-based parser) to interpret DocBlock contents. 
