@@ -6,7 +6,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 
-use Consolidation\Formatters\FormatterManager;
+use Consolidation\OutputFormatters\FormatterManager;
 
 /**
  * Process a command, including hooks and other callbacks
