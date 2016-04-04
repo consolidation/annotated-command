@@ -69,24 +69,24 @@ class CommandProcessor
         $this->globalHooks[self::EXTRACT_OUTPUT][] = $extractor;
     }
 
-    public function getValidators($name)
+    public function getValidators($names)
     {
-        return $this->getHooks($name, self::ARGUMENT_VALIDATOR);
+        return $this->getHooks($names, self::ARGUMENT_VALIDATOR);
     }
 
-    public function getStatusDeterminers($name)
+    public function getStatusDeterminers($names)
     {
-        return $this->getHooks($name, self::STATUS_DETERMINER);
+        return $this->getHooks($names, self::STATUS_DETERMINER);
     }
 
-    public function getAlterResultHooks($name)
+    public function getAlterResultHooks($names)
     {
-        return $this->getHooks($name, self::ALTER_RESULT);
+        return $this->getHooks($names, self::ALTER_RESULT);
     }
 
-    public function getOutputExtractors($name)
+    public function getOutputExtractors($names)
     {
-        return $this->getHooks($name, self::EXTRACT_OUTPUT);
+        return $this->getHooks($names, self::EXTRACT_OUTPUT);
     }
 
     protected function getHooks($names, $hook)
@@ -116,18 +116,18 @@ class CommandProcessor
         return [];
     }
 
-    public function process($name, $commandCallback, $specialParameters, $args, $output)
+    public function process($names, $commandCallback, $specialParameters, $args, $output)
     {
         // Recover options from the end of the args
         $options = end($args);
 
         // Validate and change the command arguments as needed
-        $validated = $this->validateArguments($name, $args);
+        $validated = $this->validateArguments($names, $args);
 
         // Any non-array object returned signals a validation error.
         if (is_object($validated)) {
             // TODO: Perhaps this should not be formatted
-            return $this->handleResult($name, $validated, $options, $output);
+            return $this->handleResult($names, $validated, $options, $output);
         }
         // If an array is returned, then the validation results replace
         // the arguments.
@@ -139,14 +139,14 @@ class CommandProcessor
         $result = $this->runCommandCallback($commandCallback, $specialParameters, $args);
 
         // Alter results
-        $result = $this->alterResult($name, $result, $args);
+        $result = $this->alterResult($names, $result, $args);
 
-        return $this->handleResult($name, $result, $options, $output);
+        return $this->handleResult($names, $result, $options, $output);
     }
 
-    protected function validateArguments($name, $args)
+    protected function validateArguments($names, $args)
     {
-        $validators = $this->getValidators($name);
+        $validators = $this->getValidators($names);
         foreach ($validators as $validator) {
             $validated = $this->callValidator($validator, $args);
             if (is_object($validated)) {
@@ -169,13 +169,13 @@ class CommandProcessor
         }
     }
 
-    protected function handleResult($name, $result, $options, $output)
+    protected function handleResult($names, $result, $options, $output)
     {
         // Determine status value
         // If the result (post-processing) is an object that
         // implements ExitCodeInterface, then we will ask it
         // to give us the status code. Otherwise, we assume success.
-        $status = $this->determineStatusCode($name, $result);
+        $status = $this->determineStatusCode($names, $result);
         if (is_integer($result) && !isset($status)) {
             $status = $result;
             $result = null;
@@ -185,7 +185,7 @@ class CommandProcessor
         // (unless we can just rely on Collection rollbacks)
 
         // Extract structured output from result
-        $outputText = $this->extractOutput($name, $result);
+        $outputText = $this->extractOutput($names, $result);
 
         // Format structured output into printable text. Note that if
         // the status code is nonzero, then the result object is probably
@@ -222,12 +222,12 @@ class CommandProcessor
     /**
      * Allow all of the post-process hooks to run
      */
-    protected function alterResult($name, $result, $args)
+    protected function alterResult($names, $result, $args)
     {
         // Process result and decide what to do with it.
         // Allow client to add transformation / interpretation
         // callbacks.
-        $alterers = $this->getAlterResultHooks($name);
+        $alterers = $this->getAlterResultHooks($names);
         foreach ($alterers as $alterer) {
             $result = $this->callAlterer($alterer, $result, $args);
         }
@@ -250,7 +250,7 @@ class CommandProcessor
      * Call all status determiners, and see if any of them
      * know how to convert to a status code.
      */
-    protected function determineStatusCode($name, $result)
+    protected function determineStatusCode($names, $result)
     {
         // If the result (post-processing) is an object that
         // implements ExitCodeInterface, then we will ask it
@@ -262,7 +262,7 @@ class CommandProcessor
         // If the result does not implement ExitCodeInterface,
         // then we'll see if there is a determiner that can
         // extract a status code from the result.
-        $determiners = $this->getStatusDeterminers($name);
+        $determiners = $this->getStatusDeterminers($names);
         foreach ($determiners as $determiner) {
             $status = $this->callDeterminer($determiner, $result);
             if (isset($status)) {
@@ -285,13 +285,13 @@ class CommandProcessor
      * Convert the result object to printable output in
      * structured form.
      */
-    protected function extractOutput($name, $result)
+    protected function extractOutput($names, $result)
     {
         if ($result instanceof OutputDataInterface) {
             return $result->getOutputData();
         }
 
-        $extractors = $this->getOutputExtractors($name);
+        $extractors = $this->getOutputExtractors($names);
         foreach ($extractors as $extractor) {
             $structuredOutput = $this->callExtractor($extractor, $result);
             if (isset($structuredOutput)) {

@@ -80,6 +80,14 @@ class AnnotationCommand extends Command
         return $output;
     }
 
+    protected function getNames()
+    {
+        return array_merge(
+            [$this->getName()],
+            $this->getAliases()
+        );
+    }
+
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         // Get passthrough args, and add the options on the end.
@@ -88,6 +96,6 @@ class AnnotationCommand extends Command
 
         $specialParameters = $this->getSpecialParameters($input, $output);
 
-        return $this->commandProcessor->process($this->getName(), $this->commandCallback, $specialParameters, $args, $output);
+        return $this->commandProcessor->process($this->getNames(), $this->commandCallback, $specialParameters, $args, $output);
     }
 }
