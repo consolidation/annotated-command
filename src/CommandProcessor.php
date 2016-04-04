@@ -5,12 +5,15 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+use Consolidation\Formatters\FormatterManager;
+
 /**
  * Process a command, including hooks and other callbacks
  */
 class CommandProcessor
 {
     protected $hookManager;
+    protected $formatterManager;
     protected $globalHooks = [];
 
     const ARGUMENT_VALIDATOR = 'validate';
@@ -26,6 +29,24 @@ class CommandProcessor
     public function hookManager()
     {
         return $this->hookManager;
+    }
+
+    public function setFormatterManager(FormatterManager $formatterManager)
+    {
+        $this->formatterManager = $formatterManager;
+    }
+
+    public function formatterManager()
+    {
+        return $this->formatterManager;
+    }
+
+    public function getFormatter($format)
+    {
+        if (!isset($this->formatterManager)) {
+            return;
+        }
+        return $this->formatterManager->get($format);
     }
 
     public function setValidator($validator)
@@ -88,12 +109,16 @@ class CommandProcessor
 
     public function process($name, $commandCallback, $specialParameters, $args, $output)
     {
+        // Recover options from the end of the args
+        $options = end($args);
+
         // Validate and change the command arguments as needed
         $validated = $this->validateArguments($name, $args);
 
         // Any non-array object returned signals a validation error.
         if (is_object($validated)) {
-            return $this->handleResult($name, $validated, $output);
+            // TODO: Perhaps this should not be formatted
+            return $this->handleResult($name, $validated, $options, $output);
         }
         // If an array is returned, then the validation results replace
         // the arguments.
@@ -107,7 +132,7 @@ class CommandProcessor
         // Alter results
         $result = $this->alterResult($name, $result, $args);
 
-        return $this->handleResult($name, $result, $output);
+        return $this->handleResult($name, $result, $options, $output);
     }
 
     protected function validateArguments($name, $args)
@@ -131,7 +156,7 @@ class CommandProcessor
         return $args;
     }
 
-    protected function handleResult($name, $result, $output)
+    protected function handleResult($name, $result, $options, $output)
     {
         // Determine status value
         // If the result (post-processing) is an object that
@@ -147,12 +172,17 @@ class CommandProcessor
         // (unless we can just rely on Collection rollbacks)
 
         // Extract structured output from result
-        $structuredOutput = $this->extractOutput($name, $result);
+        $outputText = $this->extractOutput($name, $result);
 
-        // Format structured output into printable text
-        $outputText = $this->formatCommandResults($structuredOutput);
+        // Format structured output into printable text. Note that if
+        // the status code is nonzero, then the result object is probably
+        // an error object, and therefore should not be formatted per
+        // the user's selected formatting options.
+        if ($status == 0) {
+            $outputText = $this->formatCommandResults($outputText, $options);
+        }
 
-        // Output the result text
+        // Output the result text.
         if (isset($outputText)) {
             $this->writeCommandOutput($outputText, $output);
         }
@@ -259,11 +289,47 @@ class CommandProcessor
      * Convert the structured output into a formatted
      * string for printing.
      */
-    protected function formatCommandResults($structuredOutput)
+    protected function formatCommandResults($outputText, $options)
     {
-        $outputText = $structuredOutput;
+        $format = $this->getFormat($options);
+        $formatter = $this->getFormatter($format);
+        if (isset($formatter)) {
+            $outputText = $formatter->format($outputText);
+        }
 
         return $outputText;
+    }
+
+    /**
+     * Determine the formatter that should be used to render
+     * output.
+     *
+     * If the user specified a format via the --format option,
+     * then always return that.  Otherwise, return the default
+     * format, unless --pipe was specified, in which case
+     * return the default pipe format, format-pipe.
+     *
+     * n.b. --pipe is a handy option introduced in Drush 2
+     * (or perhaps even Drush 1) that indicates that the command
+     * should select the output format that is most appropriate
+     * for use in scripts (e.g. to pipe to another command).
+     */
+    protected function getFormat($options)
+    {
+        $options += [
+            'default-format' => false,
+            'pipe' => false,
+        ];
+        $options += [
+            'format' => $options['default-format'],
+            'format-pipe' => $options['default-format'],
+        ];
+
+        $format = $options['format'];
+        if ($options['pipe']) {
+            $format = $options['format-pipe'];
+        }
+        return $format;
     }
 
     /**
