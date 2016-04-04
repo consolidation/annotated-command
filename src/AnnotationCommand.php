@@ -10,13 +10,19 @@ class AnnotationCommand extends Command
     protected $commandCallback;
     protected $specialParameterClasses = [];
     protected $commandProcessor;
+    protected $annotationData;
 
-    public function __construct($name, $commandCallback, $commandProcessor)
-    {
+    public function __construct(
+        $name,
+        $commandCallback,
+        $commandProcessor,
+        $annotationData
+    ) {
         parent::__construct($name);
 
         $this->commandCallback = $commandCallback;
         $this->commandProcessor = $commandProcessor;
+        $this->annotationData = $annotationData;
     }
 
     public function setSpecialParameterClasses($specialParameterClasses)
@@ -96,6 +102,13 @@ class AnnotationCommand extends Command
 
         $specialParameters = $this->getSpecialParameters($input, $output);
 
-        return $this->commandProcessor->process($this->getNames(), $this->commandCallback, $specialParameters, $args, $output);
+        return $this->commandProcessor->process(
+            $this->getNames(),
+            $this->commandCallback,
+            $this->annotationData,
+            $specialParameters,
+            $args,
+            $output
+        );
     }
 }

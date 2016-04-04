@@ -136,7 +136,7 @@ class AnnotationCommandFactory
     public function createCommand(CommandInfo $commandInfo, $commandFileInstance)
     {
         $commandCallback = [$commandFileInstance, $commandInfo->getMethodName()];
-        $command = new AnnotationCommand($commandInfo->getName(), $commandCallback, $this->commandProcessor);
+        $command = new AnnotationCommand($commandInfo->getName(), $commandCallback, $this->commandProcessor, $commandInfo->getAnnotations());
         $this->setCommandInfo($command, $commandInfo);
         $this->setCommandArguments($command, $commandInfo);
         $this->setCommandOptions($command, $commandInfo);

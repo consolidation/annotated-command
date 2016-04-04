@@ -232,6 +232,11 @@ class CommandInfo
         return array_keys($arr) !== range(0, count($arr) - 1);
     }
 
+    public function getAnnotations()
+    {
+        return $this->otherAnnotations;
+    }
+
     public function getAnnotation($annotation)
     {
         // hasAnnotation parses the docblock

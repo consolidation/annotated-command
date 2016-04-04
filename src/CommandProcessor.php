@@ -42,12 +42,12 @@ class CommandProcessor
         return $this->formatterManager;
     }
 
-    public function getFormatter($format)
+    public function getFormatter($format, $annotationData)
     {
         if (!isset($this->formatterManager)) {
             return;
         }
-        return $this->formatterManager->get($format);
+        return $this->formatterManager->get($format, $annotationData);
     }
 
     public function setValidator($validator)
@@ -117,8 +117,14 @@ class CommandProcessor
         return [];
     }
 
-    public function process($names, $commandCallback, $specialParameters, $args, $output)
-    {
+    public function process(
+        $names,
+        $commandCallback,
+        $annotationData,
+        $specialParameters,
+        $args,
+        OutputInterface $output
+    ) {
         // Recover options from the end of the args
         $options = end($args);
 
@@ -126,7 +132,7 @@ class CommandProcessor
         // if the return an array, it replaces the arguments.
         $validated = $this->validateArguments($names, $args);
         if (is_object($validated)) {
-            return $this->handleResult($names, $validated, $options, $output);
+            return $this->handleResult($names, $validated, $annotationData, $options, $output);
         }
         if (is_array($validated)) {
             $args = $validated;
@@ -135,7 +141,7 @@ class CommandProcessor
         // Run the command, alter the results, and then handle output and status
         $result = $this->runCommandCallback($commandCallback, $specialParameters, $args);
         $result = $this->alterResult($names, $result, $args);
-        return $this->handleResult($names, $result, $options, $output);
+        return $this->handleResult($names, $result, $annotationData, $options, $output);
     }
 
     protected function validateArguments($names, $args)
@@ -171,7 +177,7 @@ class CommandProcessor
      * object may have a string that may be extracted and printed,
      * but it should never be formatted per the --format option.
      */
-    protected function handleResult($names, $result, $options, $output)
+    protected function handleResult($names, $result, $annotationData, $options, OutputInterface $output)
     {
         $status = $this->determineStatusCode($names, $result);
         if (is_integer($result) && !isset($status)) {
@@ -183,7 +189,7 @@ class CommandProcessor
         // Get the structured output and format it.
         $outputText = $this->extractOutput($names, $result);
         if ($status == 0) {
-            $outputText = $this->formatCommandResults($outputText, $options);
+            $outputText = $this->formatCommandResults($outputText, $annotationData, $options);
         }
 
         // Output the result text and return status code.
@@ -303,12 +309,12 @@ class CommandProcessor
      * Convert the structured output into a formatted
      * string for printing.
      */
-    protected function formatCommandResults($outputText, $options)
+    protected function formatCommandResults($outputText, $annotationData, $options)
     {
         $format = $this->getFormat($options);
-        $formatter = $this->getFormatter($format);
+        $formatter = $this->getFormatter($format, $annotationData);
         if (isset($formatter)) {
-            $outputText = $formatter->format($outputText);
+            $outputText = $formatter->format($outputText, $options);
         }
 
         return $outputText;
