@@ -41,7 +41,7 @@ class CommandProcessor
         if (!isset($this->formatterManager)) {
             return;
         }
-        return $this->formatterManager->get($format, $annotationData);
+        return $this->formatterManager->getFormatter($format, $annotationData);
     }
 
     public function process(
