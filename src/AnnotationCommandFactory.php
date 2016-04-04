@@ -116,7 +116,7 @@ class AnnotationCommandFactory
             return;
         }
         $hookData = $commandInfo->getAnnotation('hook');
-        $hook = $this->getNthWord($hookData, 0, CommandProcessor::ALTER_RESULT);
+        $hook = $this->getNthWord($hookData, 0, HookManager::ALTER_RESULT);
         $commandName = $this->getNthWord($hookData, 1, $commandInfo->getName());
 
         // Register the hook

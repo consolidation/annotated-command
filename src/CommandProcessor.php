@@ -16,11 +16,6 @@ class CommandProcessor
     protected $hookManager;
     protected $formatterManager;
 
-    const ARGUMENT_VALIDATOR = 'validate';
-    const ALTER_RESULT = 'alter';
-    const STATUS_DETERMINER = 'status';
-    const EXTRACT_OUTPUT = 'extract';
-
     public function __construct($hookManager)
     {
         $this->hookManager = $hookManager;
@@ -49,37 +44,6 @@ class CommandProcessor
         return $this->formatterManager->get($format, $annotationData);
     }
 
-    public function getValidators($names)
-    {
-        return $this->getHooks($names, self::ARGUMENT_VALIDATOR);
-    }
-
-    public function getStatusDeterminers($names)
-    {
-        return $this->getHooks($names, self::STATUS_DETERMINER);
-    }
-
-    public function getAlterResultHooks($names)
-    {
-        return $this->getHooks($names, self::ALTER_RESULT);
-    }
-
-    public function getOutputExtractors($names)
-    {
-        return $this->getHooks($names, self::EXTRACT_OUTPUT);
-    }
-
-    protected function getHooks($names, $hook)
-    {
-        $names = (array)$names;
-        $names[] = '*';
-        return array_merge(
-            $this->hookManager->get($names, "pre-$hook"),
-            $this->hookManager->get($names, $hook),
-            $this->hookManager->get($names, "post-$hook")
-        );
-    }
-
     public function process(
         $names,
         $commandCallback,
@@ -93,7 +57,7 @@ class CommandProcessor
 
         // Validators return any object to signal a validation error;
         // if the return an array, it replaces the arguments.
-        $validated = $this->validateArguments($names, $args);
+        $validated = $this->hookManager()->validateArguments($names, $args);
         if (is_object($validated)) {
             return $this->handleResult($names, $validated, $annotationData, $options, $output);
         }
@@ -103,33 +67,8 @@ class CommandProcessor
 
         // Run the command, alter the results, and then handle output and status
         $result = $this->runCommandCallback($commandCallback, $specialParameters, $args);
-        $result = $this->alterResult($names, $result, $args);
+        $result = $this->hookManager()->alterResult($names, $result, $args);
         return $this->handleResult($names, $result, $annotationData, $options, $output);
-    }
-
-    protected function validateArguments($names, $args)
-    {
-        $validators = $this->getValidators($names);
-        foreach ($validators as $validator) {
-            $validated = $this->callValidator($validator, $args);
-            if (is_object($validated)) {
-                return $validated;
-            }
-            if (is_array($validated)) {
-                $args = $validated;
-            }
-        }
-        return $args;
-    }
-
-    protected function callValidator($validator, $args)
-    {
-        if ($validator instanceof ValidatorInterface) {
-            return $validator->validate($args);
-        }
-        if (is_callable($validator)) {
-            return $validator($args);
-        }
     }
 
     /**
@@ -137,7 +76,7 @@ class CommandProcessor
      */
     protected function handleResult($names, $result, $annotationData, $options, OutputInterface $output)
     {
-        $status = $this->determineStatusCode($names, $result);
+        $status = $this->hookManager()->determineStatusCode($names, $result);
         if (is_integer($result) && !isset($status)) {
             $status = $result;
             $result = null;
@@ -145,7 +84,7 @@ class CommandProcessor
         $status = $this->interpretStatusCode($status);
 
         // Get the structured output, the output stream and the formatter
-        $outputText = $this->extractOutput($names, $result);
+        $outputText = $this->hookManager()->extractOutput($names, $result);
         $output = $this->chooseOutputStream($output, $status);
         $formatter = $this->chooseFormatter($annotationData, $options, $status);
 
@@ -167,99 +106,6 @@ class CommandProcessor
             $result = new CommandError($e->getMessage(), $e->getCode());
         }
         return $result;
-    }
-
-    /**
-     * Allow all of the post-process hooks to run
-     */
-    protected function alterResult($names, $result, $args)
-    {
-        // Process result and decide what to do with it.
-        // Allow client to add transformation / interpretation
-        // callbacks.
-        $alterers = $this->getAlterResultHooks($names);
-        foreach ($alterers as $alterer) {
-            $result = $this->callAlterer($alterer, $result, $args);
-        }
-
-        return $result;
-    }
-
-    protected function callAlterer($alterer, $result, $args)
-    {
-        if ($alterer instanceof AlterResultInterface) {
-            return $alterer->alter($result, $args);
-        }
-        if (is_callable($alterer)) {
-            return $alterer($result, $args);
-        }
-        return $result;
-    }
-
-    /**
-     * Call all status determiners, and see if any of them
-     * know how to convert to a status code.
-     */
-    protected function determineStatusCode($names, $result)
-    {
-        // If the result (post-processing) is an object that
-        // implements ExitCodeInterface, then we will ask it
-        // to give us the status code.
-        if ($result instanceof ExitCodeInterface) {
-            return $result->getExitCode();
-        }
-
-        // If the result does not implement ExitCodeInterface,
-        // then we'll see if there is a determiner that can
-        // extract a status code from the result.
-        $determiners = $this->getStatusDeterminers($names);
-        foreach ($determiners as $determiner) {
-            $status = $this->callDeterminer($determiner, $result);
-            if (isset($status)) {
-                return $status;
-            }
-        }
-    }
-
-    protected function callDeterminer($determiner, $result)
-    {
-        if ($determiner instanceof StatusDeterminerInterface) {
-            return $determiner->determineStatusCode($result);
-        }
-        if (is_callable($determiner)) {
-            return $determiner($result);
-        }
-    }
-
-    /**
-     * Convert the result object to printable output in
-     * structured form.
-     */
-    protected function extractOutput($names, $result)
-    {
-        if ($result instanceof OutputDataInterface) {
-            return $result->getOutputData();
-        }
-
-        $extractors = $this->getOutputExtractors($names);
-        foreach ($extractors as $extractor) {
-            $structuredOutput = $this->callExtractor($extractor, $result);
-            if (isset($structuredOutput)) {
-                return $structuredOutput;
-            }
-        }
-
-        return $result;
-    }
-
-    protected function callExtractor($extractor, $result)
-    {
-        if ($extractor instanceof ExtractOutputInterface) {
-            return $extractor->extractOutput($result);
-        }
-        if (is_callable($extractor)) {
-            return $extractor($result);
-        }
     }
 
     /**
