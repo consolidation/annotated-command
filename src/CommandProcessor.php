@@ -171,11 +171,6 @@ class CommandProcessor
 
     /**
      * Handle the result output and status code calculation.
-     *
-     * Note that if there is an error (status code is nonzero),
-     * then the result object is going to be an error object. This
-     * object may have a string that may be extracted and printed,
-     * but it should never be formatted per the --format option.
      */
     protected function handleResult($names, $result, $annotationData, $options, OutputInterface $output)
     {
@@ -186,14 +181,13 @@ class CommandProcessor
         }
         $status = $this->interpretStatusCode($status);
 
-        // Get the structured output and format it.
+        // Get the structured output, the output stream and the formatter
         $outputText = $this->extractOutput($names, $result);
-        if ($status == 0) {
-            $outputText = $this->formatCommandResults($outputText, $annotationData, $options);
-        }
+        $output = $this->chooseOutputStream($output, $status);
+        $formatter = $this->chooseFormatter($annotationData, $options, $status);
 
         // Output the result text and return status code.
-        $this->writeCommandOutput($outputText, $output, $status);
+        $this->writeCommandOutput($outputText, $formatter, $options, $output);
         return $status;
     }
 
@@ -306,18 +300,20 @@ class CommandProcessor
     }
 
     /**
-     * Convert the structured output into a formatted
-     * string for printing.
+     * Select the formatter to use.
+     *
+     * Note that if there is an error (status code is nonzero),
+     * then the result object is going to be an error object. This
+     * object may have a string that may be extracted and printed,
+     * but it should never be formatted per the --format option.
      */
-    protected function formatCommandResults($outputText, $annotationData, $options)
+    protected function chooseFormatter($annotationData, $options, $status)
     {
-        $format = $this->getFormat($options);
-        $formatter = $this->getFormatter($format, $annotationData);
-        if (isset($formatter)) {
-            $outputText = $formatter->format($outputText, $options);
+        if ($status) {
+            return;
         }
-
-        return $outputText;
+        $format = $this->getFormat($options);
+        return $this->getFormatter($format, $annotationData);
     }
 
     /**
@@ -353,16 +349,34 @@ class CommandProcessor
     }
 
     /**
-     * If the result object is a string, then print it.
+     * Determine whether we should use stdout or stderr.
      */
-    protected function writeCommandOutput($outputText, OutputInterface $output, $status)
+    protected function chooseOutputStream(OutputInterface $output, $status)
     {
         // If the status code indicates an error, then print the
         // result to stderr rather than stdout
         if ($status && ($output instanceof ConsoleOutputInterface)) {
-            $output = $output->getErrorOutput();
+            return $output->getErrorOutput();
         }
-        // If $res is a string, then print it.
+        return $output;
+    }
+
+    /**
+     * If the result object is a string, then print it.
+     */
+    protected function writeCommandOutput(
+        $outputText,
+        $formatter,
+        $options,
+        OutputInterface $output
+    ) {
+        // If there is a formatter, use it.
+        if ($formatter) {
+            $formatter->write($outputText, $options, $output);
+            return;
+        }
+        // If there is no formatter, we will print strings,
+        // but can do no more than that.
         if (is_string($outputText)) {
             $output->writeln($outputText);
         }
