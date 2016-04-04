@@ -91,20 +91,29 @@ class CommandProcessor
 
     protected function getHooks($names, $hook)
     {
-        $hooks = [];
-        if (!is_array($names)) {
-            $names = [$names];
-        }
+        $names = (array)$names;
         $names[] = '*';
-        foreach ($names as $name) {
-            foreach (['pre-', '', 'post-'] as $stage) {
-                $hooks = array_merge($hooks, $this->hookManager->get($name, "$stage$hook"));
-            }
-        }
+        return array_merge(
+            $this->getNamedAndGlobalHooks($names, "pre-$hook"),
+            $this->getNamedAndGlobalHooks($names, $hook),
+            $this->getNamedAndGlobalHooks($names, "post-$hook")
+        );
+    }
+
+    protected function getNamedAndGlobalHooks($names, $hook)
+    {
+        return array_merge(
+            $this->hookManager->get($names, $hook),
+            $this->getGlobalHooks($hook)
+        );
+    }
+
+    protected function getGlobalHooks($hook)
+    {
         if (isset($this->globalHooks[$hook])) {
-            $hooks = array_merge($hooks, $this->globalHooks[$hook]);
+            return $this->globalHooks[$hook];
         }
-        return $hooks;
+        return [];
     }
 
     public function process($name, $commandCallback, $specialParameters, $args, $output)

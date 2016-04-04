@@ -31,9 +31,21 @@ class HookManager
     /**
      * Get a set of hooks
      *
+     * @param string|array $names The name of the function being hooked.
+     * @param string $hook The name of the hook (e.g. alter)
+     *
      * @return callable[]
      */
-    public function get($name, $hook)
+    public function get($names, $hook)
+    {
+        $hooks = [];
+        foreach ((array)$names as $name) {
+            $hooks = array_merge($hooks, $this->getHook($name, $hook));
+        }
+        return $hooks;
+    }
+
+    protected function getHook($name, $hook)
     {
         if (isset($this->hooks[$name][$hook])) {
             return $this->hooks[$name][$hook];
