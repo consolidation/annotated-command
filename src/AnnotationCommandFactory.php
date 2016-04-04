@@ -88,26 +88,33 @@ class AnnotationCommandFactory
         }
     }
 
+    /**
+     * Register a command hook given the CommandInfo for a method.
+     *
+     * The hook format is:
+     *
+     *   @hook type name type
+     *
+     * For example, the pre-validate hook for the core-init command is:
+     *
+     *   @hook pre-validate core-init
+     *
+     * If no command name is provided, then we will presume
+     * that the name of this method is the same as the name
+     * of the command being hooked (in a different commandfile).
+     *
+     * If no hook is provided, then we will presume that ALTER_RESULT
+     * is intended.
+     *
+     * @param CommandInfo $commandInfo Information about the command hook method.
+     * @param object $commandFileInstance An instance of the Commandfile class.
+     */
     public function registerCommandHook(CommandInfo $commandInfo, $commandFileInstance)
     {
-        // Ignore command info
+        // Ignore if the command info has no @hook
         if (!$commandInfo->hasAnnotation('hook')) {
             return;
         }
-        // The hook format is:
-        //
-        //   @hook type name type
-        //
-        // For example, the pre-validate hook for the core-init command is:
-        //
-        //   @hook pre-validate core-init
-        //
-        // If no command name is provided, then we will presume
-        // that the name of this method is the same as the name
-        // of the command being hooked (in a different commandfile).
-        //
-        // If no hook is provided, then we will presume that ALTER_RESULT
-        // is intended.
         $hookData = $commandInfo->getAnnotation('hook');
         $hook = $this->getNthWord($hookData, 0, CommandProcessor::ALTER_RESULT);
         $commandName = $this->getNthWord($hookData, 1, $commandInfo->getName());
