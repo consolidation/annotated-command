@@ -224,5 +224,4 @@ class HookManager
             return $extractor($result);
         }
     }
-
 }
