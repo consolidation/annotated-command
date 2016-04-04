@@ -15,7 +15,6 @@ class CommandProcessor
 {
     protected $hookManager;
     protected $formatterManager;
-    protected $globalHooks = [];
 
     const ARGUMENT_VALIDATOR = 'validate';
     const ALTER_RESULT = 'alter';
@@ -50,26 +49,6 @@ class CommandProcessor
         return $this->formatterManager->get($format, $annotationData);
     }
 
-    public function setValidator($validator)
-    {
-        $this->globalHooks[self::ARGUMENT_VALIDATOR][] = $validator;
-    }
-
-    public function setStatusDeterminer($statusDeterminer)
-    {
-        $this->globalHooks[self::STATUS_DETERMINER][] = $statusDeterminer;
-    }
-
-    public function setAlterResultHook($resultProcessor)
-    {
-        $this->globalHooks[self::ALTER_RESULT][] = $resultProcessor;
-    }
-
-    public function getOutputExtractor($extractor)
-    {
-        $this->globalHooks[self::EXTRACT_OUTPUT][] = $extractor;
-    }
-
     public function getValidators($names)
     {
         return $this->getHooks($names, self::ARGUMENT_VALIDATOR);
@@ -95,26 +74,10 @@ class CommandProcessor
         $names = (array)$names;
         $names[] = '*';
         return array_merge(
-            $this->getNamedAndGlobalHooks($names, "pre-$hook"),
-            $this->getNamedAndGlobalHooks($names, $hook),
-            $this->getNamedAndGlobalHooks($names, "post-$hook")
-        );
-    }
-
-    protected function getNamedAndGlobalHooks($names, $hook)
-    {
-        return array_merge(
+            $this->hookManager->get($names, "pre-$hook"),
             $this->hookManager->get($names, $hook),
-            $this->getGlobalHooks($hook)
+            $this->hookManager->get($names, "post-$hook")
         );
-    }
-
-    protected function getGlobalHooks($hook)
-    {
-        if (isset($this->globalHooks[$hook])) {
-            return $this->globalHooks[$hook];
-        }
-        return [];
     }
 
     public function process(
