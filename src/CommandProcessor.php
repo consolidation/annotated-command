@@ -52,14 +52,35 @@ class CommandProcessor
         $args,
         OutputInterface $output
     ) {
+        $result = [];
+        try
+        {
+            $result = $this->validateRunAndAlter(
+                $names,
+                $commandCallback,
+                $specialParameters,
+                $args
+            );
+        }
+        catch (\Exception $e) {
+            $result = new CommandError($e->getCode(), $e->getMessage());
+        }
         // Recover options from the end of the args
         $options = end($args);
+        return $this->handleResult($names, $result, $annotationData, $options, $output);
+    }
 
+    public function validateRunAndAlter(
+        $names,
+        $commandCallback,
+        $specialParameters,
+        $args
+    ) {
         // Validators return any object to signal a validation error;
         // if the return an array, it replaces the arguments.
         $validated = $this->hookManager()->validateArguments($names, $args);
         if (is_object($validated)) {
-            return $this->handleResult($names, $validated, $annotationData, $options, $output);
+            return $validated;
         }
         if (is_array($validated)) {
             $args = $validated;
@@ -68,7 +89,7 @@ class CommandProcessor
         // Run the command, alter the results, and then handle output and status
         $result = $this->runCommandCallback($commandCallback, $specialParameters, $args);
         $result = $this->hookManager()->alterResult($names, $result, $args);
-        return $this->handleResult($names, $result, $annotationData, $options, $output);
+        return $result;
     }
 
     /**
