@@ -139,13 +139,7 @@ class CommandProcessor
     {
         $validators = $this->getValidators($name);
         foreach ($validators as $validator) {
-            $validated = null;
-            if ($validator instanceof ValidatorInterface) {
-                $validated = $validator->validate($args);
-            }
-            if (is_callable($validator)) {
-                $validated = $validator($args);
-            }
+            $validated = $this->callValidator($validator, $args);
             if (is_object($validated)) {
                 return $validated;
             }
@@ -154,6 +148,16 @@ class CommandProcessor
             }
         }
         return $args;
+    }
+
+    protected function callValidator($validator, $args)
+    {
+        if ($validator instanceof ValidatorInterface) {
+            return $validator->validate($args);
+        }
+        if (is_callable($validator)) {
+            return $validator($args);
+        }
     }
 
     protected function handleResult($name, $result, $options, $output)
@@ -214,16 +218,22 @@ class CommandProcessor
         // Process result and decide what to do with it.
         // Allow client to add transformation / interpretation
         // callbacks.
-        $processors = $this->getAlterResultHooks($name);
-        foreach ($processors as $processor) {
-            if ($processor instanceof AlterResultInterface) {
-                $result = $processor->alter($result, $args);
-            }
-            if (is_callable($processor)) {
-                $result = $processor($result, $args);
-            }
+        $alterers = $this->getAlterResultHooks($name);
+        foreach ($alterers as $alterer) {
+            $result = $this->callAlterer($alterer, $result, $args);
         }
 
+        return $result;
+    }
+
+    protected function callAlterer($alterer, $result, $args)
+    {
+        if ($alterer instanceof AlterResultInterface) {
+            return $alterer->alter($result, $args);
+        }
+        if (is_callable($alterer)) {
+            return $alterer($result, $args);
+        }
         return $result;
     }
 
@@ -245,16 +255,20 @@ class CommandProcessor
         // extract a status code from the result.
         $determiners = $this->getStatusDeterminers($name);
         foreach ($determiners as $determiner) {
-            $status = null;
-            if ($determiner instanceof StatusDeterminerInterface) {
-                $status = $determiner->determineStatusCode($result);
-            }
-            if (is_callable($determiner)) {
-                $status = $determiner($result);
-            }
+            $status = $this->callDeterminer($determiner, $result);
             if (isset($status)) {
                 return $status;
             }
+        }
+    }
+
+    protected function callDeterminer($determiner, $result)
+    {
+        if ($determiner instanceof StatusDeterminerInterface) {
+            return $determiner->determineStatusCode($result);
+        }
+        if (is_callable($determiner)) {
+            return $determiner($result);
         }
     }
 
@@ -270,19 +284,23 @@ class CommandProcessor
 
         $extractors = $this->getOutputExtractors($name);
         foreach ($extractors as $extractor) {
-            $structuredOutput = null;
-            if ($extractor instanceof ExtractOutputInterface) {
-                $structuredOutput = $extractor->extractOutput($result);
-            }
-            if (is_callable($extractor)) {
-                $structuredOutput = $extractor($result);
-            }
+            $structuredOutput = $this->callExtractor($extractor, $result);
             if (isset($structuredOutput)) {
                 return $structuredOutput;
             }
         }
 
         return $result;
+    }
+
+    protected function callExtractor($extractor, $result)
+    {
+        if ($extractor instanceof ExtractOutputInterface) {
+            return $extractor->extractOutput($result);
+        }
+        if (is_callable($extractor)) {
+            return $extractor($result);
+        }
     }
 
     /**
