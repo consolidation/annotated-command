@@ -53,16 +53,14 @@ class CommandProcessor
         OutputInterface $output
     ) {
         $result = [];
-        try
-        {
+        try {
             $result = $this->validateRunAndAlter(
                 $names,
                 $commandCallback,
                 $specialParameters,
                 $args
             );
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             $result = new CommandError($e->getCode(), $e->getMessage());
         }
         // Recover options from the end of the args
