@@ -65,7 +65,6 @@ class TestCommandFile
      * This is the test:state command
      *
      * This command tests to see if the state of the Commandfile instance
-     * is available to the command method.
      */
     public function testState()
     {
@@ -112,7 +111,7 @@ class TestCommandFile
     /**
      * Wrap the results of test:hook in <>.
      *
-     * @hook test:hook alter
+     * @hook alter test:hook
      */
     public function hookTestHook($result)
     {
@@ -125,7 +124,7 @@ class TestCommandFile
     }
 
     /**
-     * @hook test:hello validate
+     * @hook validate test:hello
      */
     public function validateTestHello($args)
     {

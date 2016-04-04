@@ -95,20 +95,35 @@ class AnnotationCommandFactory
             return;
         }
         // The hook format is:
-        //   @hook name type
+        //
+        //   @hook type name type
+        //
         // For example, the pre-validate hook for the core-init command is:
-        //   @hook core-init pre-validate
+        //
+        //   @hook pre-validate core-init
+        //
+        // If no command name is provided, then we will presume
+        // that the name of this method is the same as the name
+        // of the command being hooked (in a different commandfile).
+        //
+        // If no hook is provided, then we will presume that ALTER_RESULT
+        // is intended.
         $hookData = $commandInfo->getAnnotation('hook');
-        list($commandName, $hook) = explode(' ', $hookData, 2) + ['', ''];
-
-        // The hook must be in the correct format; otherwise, throw.
-        if (empty($commandName) || empty($hook)) {
-            throw new \RuntimeException("Malformed @hook: $hookData");
-        }
+        $hook = $this->getNthWord($hookData, 0, CommandProcessor::ALTER_RESULT);
+        $commandName = $this->getNthWord($hookData, 1, $commandInfo->getName());
 
         // Register the hook
         $callback = [$commandFileInstance, $commandInfo->getMethodName()];
         $this->commandProcessor()->hookManager()->add($commandName, $hook, $callback);
+    }
+
+    protected function getNthWord($string, $n, $default, $delimiter = ' ')
+    {
+        $words = explode($delimiter, $string);
+        if (!empty($words[$n])) {
+            return $words[$n];
+        }
+        return $default;
     }
 
     public function createCommand(CommandInfo $commandInfo, $commandFileInstance)
