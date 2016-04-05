@@ -199,7 +199,7 @@ class CommandProcessor
         OutputInterface $output
     ) {
         // If there is a formatter, use it.
-        if ($formatter) {
+        if (isset($outputText) && $formatter) {
             $formatter->write($outputText, $options, $output);
             return;
         }
