@@ -33,8 +33,26 @@ class AnnotationCommandFactory
         return $this->commandProcessor;
     }
 
+    public function addListener($listener)
+    {
+        $this->listeners[] = $listener;
+    }
+
+    protected function notify($commandFileInstance)
+    {
+        foreach ($this->listeners as $listener) {
+            if ($listener instanceof CommandCreationListenerInterface) {
+                $listener->notifyCommandFileAdded($commandFileInstance);
+            }
+            if (is_callable($listener)) {
+                $listener($commandFileInstance);
+            }
+        }
+    }
+
     public function createCommandsFromClass($commandFileInstance)
     {
+        $this->notify($commandFileInstance);
         $commandInfoList = $this->getCommandInfoListFromClass($commandFileInstance);
         return $this->createCommandsFromClassInfo($commandInfoList, $commandFileInstance);
     }
