@@ -221,7 +221,7 @@ class HookManager
     protected function callProcessor($processor, $result, $args)
     {
         $processed = null;
-        if ($alterer instanceof ProcessResultInterface) {
+        if ($processor instanceof ProcessResultInterface) {
             $processed = $processor->process($result, $args);
         }
         if (is_callable($processor)) {
