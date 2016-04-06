@@ -16,6 +16,7 @@ class AnnotationCommandFactory
     ];
 
     protected $commandProcessor;
+    protected $listeners = [];
 
     public function __construct($specialParameterClasses = [])
     {
@@ -33,8 +34,26 @@ class AnnotationCommandFactory
         return $this->commandProcessor;
     }
 
+    public function addListener($listener)
+    {
+        $this->listeners[] = $listener;
+    }
+
+    protected function notify($commandFileInstance)
+    {
+        foreach ($this->listeners as $listener) {
+            if ($listener instanceof CommandCreationListenerInterface) {
+                $listener->notifyCommandFileAdded($commandFileInstance);
+            }
+            if (is_callable($listener)) {
+                $listener($commandFileInstance);
+            }
+        }
+    }
+
     public function createCommandsFromClass($commandFileInstance)
     {
+        $this->notify($commandFileInstance);
         $commandInfoList = $this->getCommandInfoListFromClass($commandFileInstance);
         return $this->createCommandsFromClassInfo($commandInfoList, $commandFileInstance);
     }
@@ -140,6 +159,10 @@ class AnnotationCommandFactory
         $this->setCommandInfo($command, $commandInfo);
         $this->setCommandArguments($command, $commandInfo);
         $this->setCommandOptions($command, $commandInfo);
+        // Annotation commands are never bootstrap-aware, but for completeness
+        // we will notify on every created command, as some clients may wish to
+        // use this notification for some other purpose.
+        $this->notify($command);
         return $command;
     }
 
