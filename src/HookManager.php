@@ -13,6 +13,7 @@ class HookManager
     protected $hooks = [];
 
     const ARGUMENT_VALIDATOR = 'validate';
+    const PROCESS_RESULT = 'process';
     const ALTER_RESULT = 'alter';
     const STATUS_DETERMINER = 'status';
     const EXTRACT_OUTPUT = 'extract';
@@ -73,7 +74,7 @@ class HookManager
         // Process result and decide what to do with it.
         // Allow client to add transformation / interpretation
         // callbacks.
-        $alterers = $this->getAlterResultHooks($names);
+        $alterers = $this->getProcessAndAlterResultHooks($names);
         foreach ($alterers as $alterer) {
             $result = $this->callAlterer($alterer, $result, $args);
         }
@@ -137,9 +138,12 @@ class HookManager
         return $this->getHooks($names, self::STATUS_DETERMINER);
     }
 
-    protected function getAlterResultHooks($names)
+    protected function getProcessAndAlterResultHooks($names)
     {
-        return $this->getHooks($names, self::ALTER_RESULT);
+        return array_merge(
+            $this->getHooks($names, self::PROCESS_RESULT),
+            $this->getHooks($names, self::ALTER_RESULT)
+        );
     }
 
     protected function getOutputExtractors($names)
