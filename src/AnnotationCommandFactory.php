@@ -16,6 +16,7 @@ class AnnotationCommandFactory
     ];
 
     protected $commandProcessor;
+    protected $listeners = [];
 
     public function __construct($specialParameterClasses = [])
     {
@@ -158,6 +159,10 @@ class AnnotationCommandFactory
         $this->setCommandInfo($command, $commandInfo);
         $this->setCommandArguments($command, $commandInfo);
         $this->setCommandOptions($command, $commandInfo);
+        // Annotation commands are never bootstrap-aware, but for completeness
+        // we will notify on every created command, as some clients may wish to
+        // use this notification for some other purpose.
+        $this->notify($command);
         return $command;
     }
 
