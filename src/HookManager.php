@@ -67,14 +67,17 @@ class HookManager
     }
 
     /**
-     * Allow all of the post-process hooks to run
+     * Process result and decide what to do with it.
+     * Allow client to add transformation / interpretation
+     * callbacks.
      */
     public function alterResult($names, $result, $args)
     {
-        // Process result and decide what to do with it.
-        // Allow client to add transformation / interpretation
-        // callbacks.
-        $alterers = $this->getProcessAndAlterResultHooks($names);
+        $processors = $this->getProcessResultHooks($names);
+        foreach ($processors as $processor) {
+            $result = $this->callProcessor($processor, $result, $args);
+        }
+        $alterers = $this->getAlterResultHooks($names);
         foreach ($alterers as $alterer) {
             $result = $this->callAlterer($alterer, $result, $args);
         }
@@ -138,12 +141,14 @@ class HookManager
         return $this->getHooks($names, self::STATUS_DETERMINER);
     }
 
-    protected function getProcessAndAlterResultHooks($names)
+    protected function getProcessResultHooks($names)
     {
-        return array_merge(
-            $this->getHooks($names, self::PROCESS_RESULT),
-            $this->getHooks($names, self::ALTER_RESULT)
-        );
+        return $this->getHooks($names, self::PROCESS_RESULT);
+    }
+
+    protected function getAlterResultHooks($names)
+    {
+        return $this->getHooks($names, self::ALTER_RESULT);
     }
 
     protected function getOutputExtractors($names)
@@ -200,11 +205,30 @@ class HookManager
 
     protected function callAlterer($alterer, $result, $args)
     {
+        $altered = null;
         if ($alterer instanceof AlterResultInterface) {
-            return $alterer->alter($result, $args);
+            $altered = $alterer->alter($result, $args);
         }
         if (is_callable($alterer)) {
-            return $alterer($result, $args);
+            $altered = $alterer($result, $args);
+        }
+        if (isset($altered)) {
+            return $altered;
+        }
+        return $result;
+    }
+
+    protected function callProcessor($processor, $result, $args)
+    {
+        $processed = null;
+        if ($alterer instanceof ProcessResultInterface) {
+            $processed = $processor->process($result, $args);
+        }
+        if (is_callable($processor)) {
+            $processed = $processor($result, $args);
+        }
+        if (isset($processed)) {
+            return $processed;
         }
         return $result;
     }
