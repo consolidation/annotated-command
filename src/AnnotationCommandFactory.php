@@ -16,6 +16,7 @@ class AnnotationCommandFactory
     ];
 
     protected $commandProcessor;
+    protected $listeners = [];
 
     public function __construct($specialParameterClasses = [])
     {
