@@ -79,7 +79,7 @@ class HookManager
         }
         $alterers = $this->getAlterResultHooks($names);
         foreach ($alterers as $alterer) {
-            $result = $this->callAlterer($alterer, $result, $args);
+            $result = $this->callProcessor($alterer, $result, $args);
         }
 
         return $result;
@@ -201,21 +201,6 @@ class HookManager
         if (is_callable($validator)) {
             return $validator($args);
         }
-    }
-
-    protected function callAlterer($alterer, $result, $args)
-    {
-        $altered = null;
-        if ($alterer instanceof AlterResultInterface) {
-            $altered = $alterer->alter($result, $args);
-        }
-        if (is_callable($alterer)) {
-            $altered = $alterer($result, $args);
-        }
-        if (isset($altered)) {
-            return $altered;
-        }
-        return $result;
     }
 
     protected function callProcessor($processor, $result, $args)
