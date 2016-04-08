@@ -222,7 +222,8 @@ class CommandFileDiscovery
                 $file->getRelativePathname()
             );
             $classname = $this->joinNamespace([$baseNamespace, $relativeNamespaceAndClassname]);
-            $commands[$classname] = $this->joinPaths([$directory, $file->getRelativePathname()]);
+            $commandFilePath = $this->joinPaths([$directory, $file->getRelativePathname()]);
+            $commands[$commandFilePath] = $classname;
         }
 
         return $commands;

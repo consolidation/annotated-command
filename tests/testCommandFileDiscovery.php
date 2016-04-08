@@ -11,15 +11,28 @@ class CommandFileDiscoveryTests extends \PHPUnit_Framework_TestCase
           ->setSearchLocations(['alpha']);
 
         chdir(__DIR__);
-        $commandFiles = $discovery->discover('src');
+        $commandFiles = $discovery->discoverNamespaced('src', 'Consolidation\TestUtils');
+
+        $commandFilePaths = array_keys($commandFiles);
+        $commandFileNamespaces = array_values($commandFiles);
 
         // Ensure that the command files that we expected to
         // find were all found.
-        $this->assertContains('src/TestCommandFile.php', $commandFiles);
-        $this->assertContains('src/alpha/AlphaCommandFile.php', $commandFiles);
-        $this->assertContains('src/alpha/Include/IncludedCommandFile.php', $commandFiles);
+        $this->assertContains('src/TestCommandFile.php', $commandFilePaths);
+        $this->assertContains('src/alpha/AlphaCommandFile.php', $commandFilePaths);
+        $this->assertContains('src/alpha/Include/IncludedCommandFile.php', $commandFilePaths);
 
         // Make sure that there are no additional items found.
-        $this->assertEquals(3, count($commandFiles));
+        $this->assertEquals(3, count($commandFilePaths));
+
+        // Ensure that the command file namespaces that we expected
+        // to be generated all match.
+        $this->assertContains('Consolidation\TestUtils\src\TestCommandFile', $commandFileNamespaces);
+        $this->assertContains('Consolidation\TestUtils\src\AlphaCommandFile', $commandFileNamespaces);
+        $this->assertContains('Consolidation\TestUtils\src\Include\IncludedCommandFile', $commandFileNamespaces);
+
+        // We do not need to test for additional namespace items, because we
+        // know that the length of the array_keys must be the same as the
+        // length of the array_values.
     }
 }
