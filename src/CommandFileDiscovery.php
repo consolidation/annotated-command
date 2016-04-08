@@ -117,7 +117,7 @@ class CommandFileDiscovery
      */
     public function discoverNamespaced($directoryList, $baseNamespace = '')
     {
-        return $this->discover($this->convertToNamespacedList($directoryList), $baseNamespace);
+        return $this->discover($this->convertToNamespacedList((array)$directoryList), $baseNamespace);
     }
 
     /**
@@ -185,7 +185,7 @@ class CommandFileDiscovery
         $commandFiles = $this->discoverCommandFilesInLocation($directory, '== 0', $baseNamespace);
 
         // In the other search locations,
-        foreach ($this->searchLocations as $location) {
+        foreach ($this->searchLocations as $key => $location) {
             $itemsNamespace = $this->joinNamespace([$baseNamespace, $key]);
             $commandFiles = array_merge(
                 $commandFiles,
@@ -294,7 +294,7 @@ class CommandFileDiscovery
      * Simple wrapper around implode and array_filter.
      *
      * @param string $delimiter
-     * @param string $parts
+     * @param array $parts
      * @param callable $filterFunction
      */
     protected function joinParts($delimiter, $parts, $filterFunction)
