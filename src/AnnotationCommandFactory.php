@@ -120,13 +120,13 @@ class AnnotationCommandFactory
      *
      * If no command name is provided, then we will presume
      * that the name of this method is the same as the name
-     * of the command being hooked (in a different commandfile).
+     * of the command being hooked (in a different commandFile).
      *
      * If no hook is provided, then we will presume that ALTER_RESULT
      * is intended.
      *
      * @param CommandInfo $commandInfo Information about the command hook method.
-     * @param object $commandFileInstance An instance of the Commandfile class.
+     * @param object $commandFileInstance An instance of the CommandFile class.
      */
     public function registerCommandHook(CommandInfo $commandInfo, $commandFileInstance)
     {
