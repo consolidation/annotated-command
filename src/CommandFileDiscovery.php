@@ -39,7 +39,6 @@ class CommandFileDiscovery
         $this->excludeList = ['Exclude'];
         $this->searchLocations = [
             'CliTools',
-            'src/CliTools',
         ];
     }
 
@@ -156,7 +155,8 @@ class CommandFileDiscovery
             $itemsNamespace = $this->joinNamespace([$baseNamespace, $key]);
             $commandFiles = array_merge(
                 $commandFiles,
-                $this->discoverCommandFiles($directory, $itemsNamespace)
+                $this->discoverCommandFiles($directory, $itemsNamespace),
+                $this->discoverCommandFiles("$directory/src", $itemsNamespace)
             );
         }
         return $commandFiles;
@@ -185,8 +185,8 @@ class CommandFileDiscovery
         $commandFiles = $this->discoverCommandFilesInLocation($directory, '== 0', $baseNamespace);
 
         // In the other search locations,
-        foreach ($this->searchLocations as $key => $location) {
-            $itemsNamespace = $this->joinNamespace([$baseNamespace, $key]);
+        foreach ($this->searchLocations as $location) {
+            $itemsNamespace = $this->joinNamespace([$baseNamespace, $location]);
             $commandFiles = array_merge(
                 $commandFiles,
                 $this->discoverCommandFilesInLocation("$directory/$location", '< 2', $itemsNamespace)
