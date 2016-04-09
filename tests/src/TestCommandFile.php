@@ -6,6 +6,14 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Consolidation\AnnotationCommand\CommandError;
 
+/**
+ * Test file used in the Annotation Factory tests.  It is also
+ * discovered in the testCommandDiscovery() test.
+ *
+ * The testCommandDiscovery test search base is the 'src' directory;
+ * any command files located immediately inside the search base are
+ * eligible for discovery, and will be included in the search results.
+ */
 class TestCommandFile
 {
     protected $state;
