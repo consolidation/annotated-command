@@ -57,14 +57,15 @@ Commandfiles may provide hooks in addition to commands. A commandfile method tha
 ```
 The commandname may be the command's primary name (e.g. `my:command`), it's method name (e.g. myCommand) or any of its aliases.
 
-There are four types of hooks supported:
+There are five types of hooks supported:
 
 - Validate
+- Process
 - Alter
 - Status
 - Extract
 
-Each of these also have "pre" and "post" varieties, to give more flexibility vis-a-vis hook ordering (and for consistency). Note that many validate and alter hooks may run, but the first status or extract hook that successfully returns a result will halt processing of further hooks of the same type.
+Each of these also have "pre" and "post" varieties, to give more flexibility vis-a-vis hook ordering (and for consistency). Note that many validate, process and alter hooks may run, but the first status or extract hook that successfully returns a result will halt processing of further hooks of the same type.
 
 ### Validate Hook
 
@@ -76,6 +77,12 @@ Validation hooks examine the arguments and options passed to a command. A valida
 - Throw an exception. The exception is converted into a CommandError.
 
 Any number of validation hooks may run, but if any fails, then execution of the command stops.
+
+### Process Hook
+
+Some commands will return an object that generates a result, rather than returning a result object directly. When this is supported, the operation should be executed during the process hook.
+
+An example of this is implemented in Robo; if a Robo command returns a TaskInterface, then a Robo process hook will execute the task and return the result. This allows a pre-process hook to alter the task, e.g. by adding more operations to a task collection.
 
 ### Alter Hook
 
