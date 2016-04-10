@@ -136,6 +136,23 @@ You may have more than one command class, if you wish. If so, simply call Annota
 
 Note that the `setFormatterManager()` operation is optional; omit this if not using [Consolidation/OutputFormatters](https://github.com/consolidation-org/output-formatters).
 
+A discovery class, CommandFileDiscovery, is also provided to help find command files on the filesystem. Usage is as follows:
+```
+$discovery = new CommandFileDiscovery();
+$myCommandFiles = $discovery->discover($path, '\Drupal');
+foreach ($myCommandFiles as $myCommandClass) {
+    $myCommandClassInstance = new $myCommandClass();
+    // ... as above
+}
+```
+For a discussion on command file naming conventions and search locations, see https://github.com/consolidation-org/annotation-command/issues/12.
+
+If different namespaces are used at different command file paths, change the call to discover as follows:
+```
+$myCommandFiles = $discovery->discover(['\Ns1' => $path1, '\Ns2' => $path2]);
+```
+As a shortcut for the above, the method `discoverNamespaced()` will take the last directory name of each path, and append it to the base namespace provided. This matches the conventions used by Drupal modules, for example.
+
 ## Comparison to Existing Solutions
 
 The existing solutions used their own hand-rolled regex-based parsers to process the contents of the DocBlock comments. consolidation/annotation-command uses the phpdocumentor/reflection-docblock project (which is itsle a regex-based parser) to interpret DocBlock contents. 
