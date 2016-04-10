@@ -32,14 +32,13 @@ class CommandFileDiscovery
 {
     protected $excludeList;
     protected $searchLocations;
-    /** TODO: Perhaps just '*CommandFile.php' */
-    protected $searchPattern = '#.*(Commands|CommandFile).php$#';
+    protected $searchPattern = '*Commands.php';
 
     public function __construct()
     {
         $this->excludeList = ['Exclude'];
         $this->searchLocations = [
-            'CommandFiles',
+            'Command',
             'CliTools', // TODO: Maybe remove
         ];
     }
