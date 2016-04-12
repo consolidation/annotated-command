@@ -1,5 +1,5 @@
 <?php
-namespace Consolidation\AnnotationCommand;
+namespace Consolidation\AnnotatedCommand;
 
 use phpDocumentor\Reflection\DocBlock\Tag\ParamTag;
 use phpDocumentor\Reflection\DocBlock;

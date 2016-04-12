@@ -1,5 +1,5 @@
 <?php
-namespace Consolidation\AnnotationCommand;
+namespace Consolidation\AnnotatedCommand;
 
 /**
  * If an annotated command method returns an object that

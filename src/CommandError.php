@@ -1,5 +1,5 @@
 <?php
-namespace Consolidation\AnnotationCommand;
+namespace Consolidation\AnnotatedCommand;
 
 class CommandError implements ExitCodeInterface, OutputDataInterface
 {

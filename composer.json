@@ -10,7 +10,7 @@
     ],
     "autoload":{
         "psr-4":{
-            "Consolidation\\AnnotationCommand\\": "src"
+            "Consolidation\\AnnotatedCommand\\": "src"
         }
     },
     "autoload-dev": {

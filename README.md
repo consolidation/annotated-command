@@ -1,8 +1,8 @@
-# Consolidation\AnnotationCommand
+# Consolidation\AnnotatedCommand
 
 Initialize Symfony Console commands from annotated command class methods.
 
-[![Travis CI](https://travis-ci.org/consolidation-org/annotation-command.svg?branch=master)](https://travis-ci.org/consolidation-org/annotation-command) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/consolidation-org/annotation-command/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/consolidation-org/annotation-command/?branch=master) [![License](https://poser.pugx.org/consolidation/annotation-command/license)](https://packagist.org/packages/consolidation/annotation-command)
+[![Travis CI](https://travis-ci.org/consolidation-org/annotated-command.svg?branch=master)](https://travis-ci.org/consolidation-org/annotated-command) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/consolidation-org/annotated-command/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/consolidation-org/annotated-command/?branch=master) [![License](https://poser.pugx.org/consolidation/annotated-command/license)](https://packagist.org/packages/consolidation/annotated-command)
 
 ## Component Status
 
@@ -106,11 +106,11 @@ If no extract hook returns any data, then the result object itself is printed if
 
 If a command method returns an integer, it is used as the command exit status code. If the command method returns a string, it is printed.
 
-If the [Consolidation/OutputFormatters](https://github.com/consolidation-org/output-formatters) project is used, then users may specify a --format option to select the formatter to use to transform the output from whatever form the command provides to a string.  To make this work, the application must provide a formatter to the AnnotationCommandFactory.  See [API Usage](#api-usage) below.
+If the [Consolidation/OutputFormatters](https://github.com/consolidation-org/output-formatters) project is used, then users may specify a --format option to select the formatter to use to transform the output from whatever form the command provides to a string.  To make this work, the application must provide a formatter to the AnnotatedCommandFactory.  See [API Usage](#api-usage) below.
 
 ## Logging
 
-The Annotation-Command project is completely agnostic to logging. If a command wishes to log progress, then the CommandFile class should implement LoggerAwareInterface, and the Commandline tool should inject a logger for its use via the LoggerAwareTrait `setLogger()` method.  Using [Robo](https://github.com/codegyre/robo) is recommended.
+The Annotated-Command project is completely agnostic to logging. If a command wishes to log progress, then the CommandFile class should implement LoggerAwareInterface, and the Commandline tool should inject a logger for its use via the LoggerAwareTrait `setLogger()` method.  Using [Robo](https://github.com/codegyre/robo) is recommended.
 
 ## Access to Symfony Objects
 
@@ -129,17 +129,17 @@ Similarly, references to the $input and $output objects are passed in if any of 
 
 ## API Usage
 
-To use annotated commands in an application, pass an instance of your command class in to AnnotationCommandFactory::createCommandsFromClass(). The result will be a list of Commands that may be added to your application.
+To use annotated commands in an application, pass an instance of your command class in to AnnotatedCommandFactory::createCommandsFromClass(). The result will be a list of Commands that may be added to your application.
 ```
 $myCommandClassInstance = new MyCommandClass();
-$commandFactory = new AnnotationCommandFactory();
+$commandFactory = new AnnotatedCommandFactory();
 $commandFactory->commandProcessor()->setFormatterManager(new FormatterManager());
 $commandList = $commandFactory->createCommandsFromClass($myCommandClassInstance);
 foreach ($commandList as $command) {
     $application->add($command);
 }
 ```
-You may have more than one command class, if you wish. If so, simply call AnnotationCommandFactory::createCommandsFromClass() multiple times.
+You may have more than one command class, if you wish. If so, simply call AnnotatedCommandFactory::createCommandsFromClass() multiple times.
 
 Note that the `setFormatterManager()` operation is optional; omit this if not using [Consolidation/OutputFormatters](https://github.com/consolidation-org/output-formatters).
 
@@ -152,7 +152,7 @@ foreach ($myCommandFiles as $myCommandClass) {
     // ... as above
 }
 ```
-For a discussion on command file naming conventions and search locations, see https://github.com/consolidation-org/annotation-command/issues/12.
+For a discussion on command file naming conventions and search locations, see https://github.com/consolidation-org/annotated-command/issues/12.
 
 If different namespaces are used at different command file paths, change the call to discover as follows:
 ```
@@ -162,8 +162,8 @@ As a shortcut for the above, the method `discoverNamespaced()` will take the las
 
 ## Comparison to Existing Solutions
 
-The existing solutions used their own hand-rolled regex-based parsers to process the contents of the DocBlock comments. consolidation/annotation-command uses the phpdocumentor/reflection-docblock project (which is itsle a regex-based parser) to interpret DocBlock contents. 
+The existing solutions used their own hand-rolled regex-based parsers to process the contents of the DocBlock comments. consolidation/annotated-command uses the phpdocumentor/reflection-docblock project (which is itsle a regex-based parser) to interpret DocBlock contents. 
 
 ## Caution Regarding Dependency Versions
 
-Note that phpunit requires phpspec/prophecy, which in turn requires phpdocumentor/reflection-docblock version 2.x.  This blocks consolidation/annotation-command from using the 3.x version of reflection-docblock. When prophecy updates to a newer version of reflection-docblock, then annotation-command will be forced to follow (or pin to an older version of phpunit). The internal classes of reflection-docblock are not exposed to users of consolidation/annotation-command, though, so this upgrade should not affect clients of this project.
+Note that phpunit requires phpspec/prophecy, which in turn requires phpdocumentor/reflection-docblock version 2.x.  This blocks consolidation/annotated-command from using the 3.x version of reflection-docblock. When prophecy updates to a newer version of reflection-docblock, then annotated-command will be forced to follow (or pin to an older version of phpunit). The internal classes of reflection-docblock are not exposed to users of consolidation/annotated-command, though, so this upgrade should not affect clients of this project.

@@ -1,5 +1,5 @@
 <?php
-namespace Consolidation\AnnotationCommand;
+namespace Consolidation\AnnotatedCommand;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -7,7 +7,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class AnnotationCommandFactory
+class AnnotatedCommandFactory
 {
     protected $specialParameterClasses = [
         Command::class => ['getCommandReference'],
@@ -155,7 +155,7 @@ class AnnotationCommandFactory
     public function createCommand(CommandInfo $commandInfo, $commandFileInstance)
     {
         $commandCallback = [$commandFileInstance, $commandInfo->getMethodName()];
-        $command = new AnnotationCommand($commandInfo->getName(), $commandCallback, $this->commandProcessor, $commandInfo->getAnnotations());
+        $command = new AnnotatedCommand($commandInfo->getName(), $commandCallback, $this->commandProcessor, $commandInfo->getAnnotations());
         $this->setCommandInfo($command, $commandInfo);
         $this->setCommandArguments($command, $commandInfo);
         $this->setCommandOptions($command, $commandInfo);

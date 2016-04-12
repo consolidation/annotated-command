@@ -4,7 +4,7 @@ namespace Consolidation\TestUtils;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Consolidation\AnnotationCommand\CommandError;
+use Consolidation\AnnotatedCommand\CommandError;
 
 /**
  * Test file used in the Annotation Factory tests.  It is also

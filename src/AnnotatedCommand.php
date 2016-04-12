@@ -1,11 +1,11 @@
 <?php
-namespace Consolidation\AnnotationCommand;
+namespace Consolidation\AnnotatedCommand;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class AnnotationCommand extends Command
+class AnnotatedCommand extends Command
 {
     protected $commandCallback;
     protected $specialParameterClasses = [];

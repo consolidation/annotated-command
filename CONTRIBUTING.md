@@ -14,7 +14,7 @@ Every pull request is run through:
 
   - phpcs -n --standard=PSR2 src
   - phpunit
-  - [Scrutinizer](https://scrutinizer-ci.com/g/consolidation-org/annotation-command/)
+  - [Scrutinizer](https://scrutinizer-ci.com/g/consolidation-org/annotated-command/)
   
 It is easy to run the unit tests and code sniffer locally; simply ensure that `./vendor/bin` is in your `$PATH`, cd to the root of the project directory, and run `phpcs` and `phpunit` as shown above.  To automatically fix coding standard errors, run:
 

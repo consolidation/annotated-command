@@ -1,5 +1,5 @@
 <?php
-namespace Consolidation\AnnotationCommand;
+namespace Consolidation\AnnotatedCommand;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -8,15 +8,15 @@ use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Application;
 
-class AnnotationCommandFactoryTests extends \PHPUnit_Framework_TestCase
+class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
 {
     /**
      * Test CommandInfo command annotation parsing.
      */
-    function testAnnotationCommandCreation()
+    function testAnnotatedCommandCreation()
     {
         $commandFileInstance = new \Consolidation\TestUtils\TestCommandFile;
-        $commandFactory = new AnnotationCommandFactory();
+        $commandFactory = new AnnotatedCommandFactory();
         $commandInfo = $commandFactory->createCommandInfo($commandFileInstance, 'testArithmatic');
 
         $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
@@ -37,7 +37,7 @@ class AnnotationCommandFactoryTests extends \PHPUnit_Framework_TestCase
     function testMyCatCommand()
     {
         $commandFileInstance = new \Consolidation\TestUtils\TestCommandFile;
-        $commandFactory = new AnnotationCommandFactory();
+        $commandFactory = new AnnotatedCommandFactory();
         $commandInfo = $commandFactory->createCommandInfo($commandFileInstance, 'myCat');
 
         $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
@@ -58,7 +58,7 @@ class AnnotationCommandFactoryTests extends \PHPUnit_Framework_TestCase
     function testState()
     {
         $commandFileInstance = new \Consolidation\TestUtils\TestCommandFile('secret secret');
-        $commandFactory = new AnnotationCommandFactory();
+        $commandFactory = new AnnotatedCommandFactory();
         $commandInfo = $commandFactory->createCommandInfo($commandFileInstance, 'testState');
 
         $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
@@ -73,7 +73,7 @@ class AnnotationCommandFactoryTests extends \PHPUnit_Framework_TestCase
     function testSpecialCommandParameter()
     {
         $commandFileInstance = new \Consolidation\TestUtils\TestCommandFile();
-        $commandFactory = new AnnotationCommandFactory();
+        $commandFactory = new AnnotatedCommandFactory();
         $commandInfo = $commandFactory->createCommandInfo($commandFileInstance, 'testCommand');
 
         $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
@@ -88,7 +88,7 @@ class AnnotationCommandFactoryTests extends \PHPUnit_Framework_TestCase
     function testSpecialIOParameter()
     {
         $commandFileInstance = new \Consolidation\TestUtils\TestCommandFile();
-        $commandFactory = new AnnotationCommandFactory();
+        $commandFactory = new AnnotatedCommandFactory();
         $commandInfo = $commandFactory->createCommandInfo($commandFileInstance, 'testIo');
 
         $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
@@ -103,7 +103,7 @@ class AnnotationCommandFactoryTests extends \PHPUnit_Framework_TestCase
     function testPassthroughArray()
     {
         $commandFileInstance = new \Consolidation\TestUtils\TestCommandFile;
-        $commandFactory = new AnnotationCommandFactory();
+        $commandFactory = new AnnotatedCommandFactory();
         $commandInfo = $commandFactory->createCommandInfo($commandFileInstance, 'testPassthrough');
 
         $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
@@ -119,7 +119,7 @@ class AnnotationCommandFactoryTests extends \PHPUnit_Framework_TestCase
     function testPassThroughNonArray()
     {
         $commandFileInstance = new \Consolidation\TestUtils\TestCommandFile;
-        $commandFactory = new AnnotationCommandFactory();
+        $commandFactory = new AnnotatedCommandFactory();
         $commandInfo = $commandFactory->createCommandInfo($commandFileInstance, 'myCat');
 
         $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
@@ -134,7 +134,7 @@ class AnnotationCommandFactoryTests extends \PHPUnit_Framework_TestCase
     function testHookedCommand()
     {
         $commandFileInstance = new \Consolidation\TestUtils\TestCommandFile();
-        $commandFactory = new AnnotationCommandFactory();
+        $commandFactory = new AnnotatedCommandFactory();
 
         $hookInfo = $commandFactory->createCommandInfo($commandFileInstance, 'hookTestHook');
 
@@ -162,7 +162,7 @@ class AnnotationCommandFactoryTests extends \PHPUnit_Framework_TestCase
     function testHookedCommandWithHookAddedLater()
     {
         $commandFileInstance = new \Consolidation\TestUtils\TestCommandFile();
-        $commandFactory = new AnnotationCommandFactory();
+        $commandFactory = new AnnotatedCommandFactory();
         $commandInfo = $commandFactory->createCommandInfo($commandFileInstance, 'testHook');
 
         $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
@@ -195,7 +195,7 @@ class AnnotationCommandFactoryTests extends \PHPUnit_Framework_TestCase
     function testValidate()
     {
         $commandFileInstance = new \Consolidation\TestUtils\TestCommandFile();
-        $commandFactory = new AnnotationCommandFactory();
+        $commandFactory = new AnnotatedCommandFactory();
 
         $hookInfo = $commandFactory->createCommandInfo($commandFileInstance, 'validateTestHello');
 

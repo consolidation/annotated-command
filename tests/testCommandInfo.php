@@ -1,5 +1,5 @@
 <?php
-namespace Consolidation\AnnotationCommand;
+namespace Consolidation\AnnotatedCommand;
 
 class CommandInfoTests extends \PHPUnit_Framework_TestCase
 {
