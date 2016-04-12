@@ -1,5 +1,5 @@
 {
-    "name": "consolidation/annotation-command",
+    "name": "consolidation/annotated-command",
     "description": "Initialize Symfony Console commands from annotated command class methods.",
     "license": "MIT",
     "authors": [
