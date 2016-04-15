@@ -148,7 +148,7 @@ class AnnotatedCommandFactory
         $command = new AnnotatedCommand($commandInfo->getName());
         $commandCallback = [$commandFileInstance, $commandInfo->getMethodName()];
         $command->setCommandCallback($commandCallback);
-        $command->setCommandProcessor($this->commandProcessor, $commandInfo->getAnnotations());
+        $command->setCommandProcessor($this->commandProcessor);
         $command->setCommandInfo($commandInfo);
         // Annotation commands are never bootstrap-aware, but for completeness
         // we will notify on every created command, as some clients may wish to
