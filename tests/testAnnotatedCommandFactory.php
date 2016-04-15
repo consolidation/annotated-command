@@ -26,7 +26,6 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
         $this->assertEquals('This is the test:arithmatic command', $command->getDescription());
         $this->assertEquals("This command will add one and two. If the --negate flag\nis provided, then the result is negated.", $command->getHelp());
         $this->assertEquals('arithmatic', implode(',', $command->getAliases()));
-        // Symfony Console composes the synopsis; perhaps we should not test it. Remove if this gives false failures.
         $this->assertEquals('test:arithmatic [--negate] [--] <one> <two>', $command->getSynopsis());
         $this->assertEquals('test:arithmatic 2 2 --negate', implode(',', $command->getUsages()));
 
@@ -47,7 +46,6 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
         $this->assertEquals('This is the my:cat command', $command->getDescription());
         $this->assertEquals("This command will concatinate two parameters. If the --flip flag\nis provided, then the result is the concatination of two and one.", $command->getHelp());
         $this->assertEquals('c', implode(',', $command->getAliases()));
-        // Symfony Console composes the synopsis; perhaps we should not test it. Remove if this gives false failures.
         $this->assertEquals('my:cat [--flip] [--] <one> [<two>]', $command->getSynopsis());
         $this->assertEquals('my:cat bet alpha --flip', implode(',', $command->getUsages()));
 
@@ -68,12 +66,33 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
         $this->assertEquals('This is a command with no options', $command->getDescription());
         $this->assertEquals("This command will concatinate two parameters.", $command->getHelp());
         $this->assertEquals('nope', implode(',', $command->getAliases()));
-        // Symfony Console composes the synopsis; perhaps we should not test it. Remove if this gives false failures.
         $this->assertEquals('command:with-no-options <one> [<two>]', $command->getSynopsis());
         $this->assertEquals('command:with-no-options alpha bet', implode(',', $command->getUsages()));
 
         $input = new StringInput('command:with-no-options something');
         $this->assertRunCommandViaApplicationEquals($command, $input, 'somethingdefault');
+    }
+
+    function testCommandWithNoArguments()
+    {
+        $commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile;
+        $commandFactory = new AnnotatedCommandFactory();
+        $commandInfo = $commandFactory->createCommandInfo($commandFileInstance, 'commandWithNoArguments');
+
+        $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
+
+        $this->assertInstanceOf(Command::class, $command);
+        $this->assertEquals('command:with-no-arguments', $command->getName());
+        $this->assertEquals('This command has no arguments--only options', $command->getDescription());
+        $this->assertEquals("Return a result only if not silent.", $command->getHelp());
+        $this->assertEquals('command:with-no-arguments [-s|--silent]', $command->getSynopsis());
+
+        $input = new StringInput('command:with-no-arguments');
+        $this->assertRunCommandViaApplicationEquals($command, $input, 'Hello, world');
+        $input = new StringInput('command:with-no-arguments -s');
+        $this->assertRunCommandViaApplicationEquals($command, $input, '');
+        $input = new StringInput('command:with-no-arguments --silent');
+        $this->assertRunCommandViaApplicationEquals($command, $input, '');
     }
 
     function testState()
@@ -115,8 +134,6 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
 
         $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
 
-        // If we run the command using the Application, though, then it alters the
-        // command definition.
         $input = new StringInput('my:cat bet --flip');
         $input = new PassThroughArgsInput(['x', 'y', 'z'], $input);
         $this->assertRunCommandViaApplicationEquals($command, $input, 'x y zbet');

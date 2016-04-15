@@ -61,6 +61,20 @@ class ExampleCommandFile
     }
 
     /**
+     * This command has no arguments--only options
+     *
+     * Return a result only if not silent.
+     *
+     * @option boolean $silent|s Supress output.
+     */
+    public function commandWithNoArguments($opts = ['silent|s' => false])
+    {
+        if (!$opts['silent']) {
+            return "Hello, world";
+        }
+    }
+
+    /**
      * This is the test:arithmatic command
      *
      * This command will add one and two. If the --negate flag
