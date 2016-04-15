@@ -20,7 +20,7 @@ class CommandInfoTests extends \PHPUnit_Framework_TestCase
      */
     function testParsing()
     {
-        $commandInfo = new CommandInfo('\Consolidation\TestUtils\TestCommandFile', 'testArithmatic');
+        $commandInfo = new CommandInfo('\Consolidation\TestUtils\ExampleCommandFile', 'testArithmatic');
 
         $this->assertEquals('test:arithmatic', $commandInfo->getName());
         $this->assertEquals(

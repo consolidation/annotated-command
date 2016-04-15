@@ -18,7 +18,7 @@ class CommandFileDiscoveryTests extends \PHPUnit_Framework_TestCase
 
         // Ensure that the command files that we expected to
         // find were all found.
-        $this->assertContains('./src/TestCommandFile.php', $commandFilePaths);
+        $this->assertContains('./src/ExampleCommandFile.php', $commandFilePaths);
         $this->assertContains('./src/alpha/AlphaCommandFile.php', $commandFilePaths);
         $this->assertContains('./src/alpha/Include/IncludedCommandFile.php', $commandFilePaths);
 
@@ -27,7 +27,7 @@ class CommandFileDiscoveryTests extends \PHPUnit_Framework_TestCase
 
         // Ensure that the command file namespaces that we expected
         // to be generated all match.
-        $this->assertContains('\Consolidation\TestUtils\TestCommandFile', $commandFileNamespaces);
+        $this->assertContains('\Consolidation\TestUtils\ExampleCommandFile', $commandFileNamespaces);
         $this->assertContains('\Consolidation\TestUtils\alpha\AlphaCommandFile', $commandFileNamespaces);
         $this->assertContains('\Consolidation\TestUtils\alpha\Include\IncludedCommandFile', $commandFileNamespaces);
 

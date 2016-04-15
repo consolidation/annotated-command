@@ -45,19 +45,17 @@ class CommandProcessor
     }
 
     public function process(
+        OutputInterface $output,
         $names,
         $commandCallback,
         $annotationData,
-        $specialParameters,
-        $args,
-        OutputInterface $output
+        $args
     ) {
         $result = [];
         try {
             $result = $this->validateRunAndAlter(
                 $names,
                 $commandCallback,
-                $specialParameters,
                 $args
             );
         } catch (\Exception $e) {
@@ -65,13 +63,12 @@ class CommandProcessor
         }
         // Recover options from the end of the args
         $options = end($args);
-        return $this->handleResult($names, $result, $annotationData, $options, $output);
+        return $this->handleResults($output, $names, $result, $annotationData, $options);
     }
 
     public function validateRunAndAlter(
         $names,
         $commandCallback,
-        $specialParameters,
         $args
     ) {
         // Validators return any object to signal a validation error;
@@ -85,15 +82,19 @@ class CommandProcessor
         }
 
         // Run the command, alter the results, and then handle output and status
-        $result = $this->runCommandCallback($commandCallback, $specialParameters, $args);
-        $result = $this->hookManager()->alterResult($names, $result, $args);
-        return $result;
+        $result = $this->runCommandCallback($commandCallback, $args);
+        return $this->processResults($names, $result, $args);
+    }
+
+    public function processResults($names, $result, $args = [])
+    {
+        return $this->hookManager()->alterResult($names, $result, $args);
     }
 
     /**
      * Handle the result output and status code calculation.
      */
-    protected function handleResult($names, $result, $annotationData, $options, OutputInterface $output)
+    public function handleResults(OutputInterface $output, $names, $result, $annotationData, $options = [])
     {
         $status = $this->hookManager()->determineStatusCode($names, $result);
         if (is_integer($result) && !isset($status)) {
@@ -115,11 +116,10 @@ class CommandProcessor
     /**
      * Run the main command callback
      */
-    protected function runCommandCallback($commandCallback, $specialParameters, $args)
+    protected function runCommandCallback($commandCallback, $args)
     {
         $result = false;
         try {
-            $args = array_merge($specialParameters, $args);
             $result = call_user_func_array($commandCallback, $args);
         } catch (\Exception $e) {
             $result = new CommandError($e->getMessage(), $e->getCode());

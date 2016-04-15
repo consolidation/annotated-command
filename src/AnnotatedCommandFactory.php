@@ -2,25 +2,16 @@
 namespace Consolidation\AnnotatedCommand;
 
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class AnnotatedCommandFactory
 {
-    protected $specialParameterClasses = [
-        Command::class => ['getCommandReference'],
-        InputInterface::class => ['getInputReference'],
-        OutputInterface::class => ['getOutputReference'],
-    ];
-
     protected $commandProcessor;
     protected $listeners = [];
 
-    public function __construct($specialParameterClasses = [])
+    public function __construct()
     {
-        $this->specialParameterClasses += $specialParameterClasses;
         $this->commandProcessor = new CommandProcessor(new HookManager());
     }
 
@@ -154,110 +145,15 @@ class AnnotatedCommandFactory
 
     public function createCommand(CommandInfo $commandInfo, $commandFileInstance)
     {
+        $command = new AnnotatedCommand($commandInfo->getName());
         $commandCallback = [$commandFileInstance, $commandInfo->getMethodName()];
-        $command = new AnnotatedCommand($commandInfo->getName(), $commandCallback, $this->commandProcessor, $commandInfo->getAnnotations());
-        $this->setCommandInfo($command, $commandInfo);
-        $this->setCommandArguments($command, $commandInfo);
-        $this->setCommandOptions($command, $commandInfo);
+        $command->setCommandCallback($commandCallback);
+        $command->setCommandProcessor($this->commandProcessor, $commandInfo->getAnnotations());
+        $command->setCommandInfo($commandInfo);
         // Annotation commands are never bootstrap-aware, but for completeness
         // we will notify on every created command, as some clients may wish to
         // use this notification for some other purpose.
         $this->notify($command);
         return $command;
-    }
-
-    protected function setCommandInfo($command, $commandInfo)
-    {
-        $command->setDescription($commandInfo->getDescription());
-        $command->setHelp($commandInfo->getHelp());
-        // TODO: Symfony Console commands by default put aliases and example
-        // usages together in a list, one per line, in the "Usage" section.
-        // There is no way to attach a description to a sample usage.  We
-        // need to figure out how to replace the built-in help command with
-        // our own version that has additional help sections (e.g. topics).
-        $command->setAliases($commandInfo->getAliases());
-        foreach ($commandInfo->getExampleUsages() as $usage => $description) {
-            $command->addUsage($usage);
-        }
-    }
-
-    protected function setCommandArguments($command, $commandInfo)
-    {
-        $args = $commandInfo->getArguments();
-        $params = $commandInfo->getParameters();
-        $this->setCommandSpecialParameterClasses($command, $args, $params);
-
-        foreach ($args as $name => $defaultValue) {
-            $description = $commandInfo->getArgumentDescription($name);
-            $parameterMode = $this->getCommandArgumentMode($defaultValue);
-            $command->addArgument($name, $parameterMode, $description, $defaultValue);
-        }
-    }
-
-    protected function setCommandSpecialParameterClasses($command, &$args, $params)
-    {
-        $specialParams = [];
-        while (!empty($params) && ($special = $this->calculateSpecialParameterClass(reset($params)))) {
-            $specialParams += $special;
-            array_shift($params);
-            array_shift($args);
-        }
-        $command->setSpecialParameterClasses($specialParams);
-    }
-
-    protected function calculateSpecialParameterClass($param)
-    {
-        $typeHintClass = $param->getClass();
-        if (!$typeHintClass) {
-            return false;
-        }
-        foreach ($this->specialParameterClasses as $specialClass => $methodName) {
-            if ($this->specialParameterClassMatches($typeHintClass, new \ReflectionClass($specialClass))) {
-                return [$specialClass => $methodName];
-            }
-        }
-        return false;
-    }
-
-    protected function specialParameterClassMatches(\ReflectionClass $typeHintClass, \ReflectionClass $specialClass)
-    {
-        if ($typeHintClass->name == $specialClass->name) {
-            return true;
-        }
-        if ($specialClass->isInterface()) {
-            return $typeHintClass->implementsInterface($specialClass);
-        }
-        return $typeHintClass->isSubclassOf($specialClass);
-    }
-
-    protected function getCommandArgumentMode($defaultValue)
-    {
-        if (!isset($defaultValue)) {
-            return InputArgument::REQUIRED;
-        }
-        if (is_array($defaultValue)) {
-            return InputArgument::IS_ARRAY;
-        }
-        return InputArgument::OPTIONAL;
-    }
-
-    protected function setCommandOptions($command, $commandInfo)
-    {
-        $opts = $commandInfo->getOptions();
-        foreach ($opts as $name => $val) {
-            $description = $commandInfo->getOptionDescription($name);
-
-            $fullName = $name;
-            $shortcut = '';
-            if (strpos($name, '|')) {
-                list($fullName, $shortcut) = explode('|', $name, 2);
-            }
-
-            if (is_bool($val)) {
-                $command->addOption($fullName, $shortcut, InputOption::VALUE_NONE, $description);
-            } else {
-                $command->addOption($fullName, $shortcut, InputOption::VALUE_OPTIONAL, $description, $val);
-            }
-        }
     }
 }

@@ -18,8 +18,14 @@ class CommandInfo
 
     /**
      * @var boolean
-     */
+     * @var string
+    */
     protected $docBlockIsParsed;
+
+    /**
+     * @var string
+     */
+    protected $name;
 
     /**
      * @var string
@@ -35,13 +41,21 @@ class CommandInfo
      * @var array
      */
     protected $tagProcessors = [
+        'command' => 'processCommandTag',
+        'name' => 'processCommandTag',
         'param' => 'processArgumentTag',
         'option' => 'processOptionTag',
+        'default' => 'processDefaultTag',
         'aliases' => 'processAliases',
         'usage' => 'processUsageTag',
         'description' => 'processAlternateDescriptionTag',
         'desc' => 'processAlternateDescriptionTag',
     ];
+
+    /**
+     * @var array
+     */
+    protected $options = [];
 
     /**
      * @var array
@@ -82,7 +96,11 @@ class CommandInfo
     {
         $this->reflection = new \ReflectionMethod($classNameOrInstance, $methodName);
         $this->methodName = $methodName;
-        $this->calculateAgumentCache();
+        // Set up a default name for the command from the method name.
+        // This can be overridden via @command or @name annotations.
+        $this->setDefaultName();
+        $this->options = $this->determineOptionsFromParameters();
+        $this->arguments = $this->determineAgumentClassifications();
     }
 
     public function getMethodName()
@@ -125,6 +143,7 @@ class CommandInfo
 
     public function getAliases()
     {
+        $this->parseDocBlock();
         return $this->aliases;
     }
 
@@ -138,33 +157,35 @@ class CommandInfo
 
     public function getExampleUsages()
     {
+        $this->parseDocBlock();
         return $this->exampleUsage;
     }
 
     public function getName()
     {
-        $name = $this->getAnnotation('name');
-        if (!$name) {
-            $name = $this->reflection->name;
-        }
-        $name = $this->convertName($name);
-        return $name;
+        $this->parseDocBlock();
+        return $this->name;
     }
 
-    protected function calculateAgumentCache()
+    public function setDefaultName()
+    {
+        $this->name = $this->convertName($this->reflection->name);
+    }
+
+    protected function determineAgumentClassifications()
     {
         $args = [];
         $params = $this->reflection->getParameters();
-        if (!empty($this->getOptions())) {
+        if (!empty($this->determineOptionsFromParameters())) {
             array_pop($params);
         }
         foreach ($params as $param) {
-            $defaultValue = $this->getArgumentDefaultValue($param);
+            $defaultValue = $this->getArgumentClassification($param);
             if ($defaultValue !== false) {
                 $args[$param->name] = $defaultValue;
             }
         }
-        $this->arguments = $args;
+        return $args;
     }
 
     public function getArguments()
@@ -172,22 +193,39 @@ class CommandInfo
         return $this->arguments;
     }
 
-    protected function getArgumentDefaultValue($param)
+    /**
+     * Examine the provided parameter, and determine whether it
+     * is a parameter that will be filled in with a positional
+     * commandline argument.
+     *
+     * @return false|null|string|array
+     */
+    protected function getArgumentClassification($param)
     {
+        $defaultValue = null;
         if ($param->isDefaultValueAvailable()) {
             $defaultValue = $param->getDefaultValue();
             if ($this->isAssoc($defaultValue)) {
                 return false;
             }
-            return $defaultValue;
         }
         if ($param->isArray()) {
             return [];
         }
-        return null;
+        // Commandline arguments must be strings, so ignore
+        // any parameter that is typehinted to anything else.
+        if (($param->getClass() != null) && ($param->getClass() != 'string')) {
+            return false;
+        }
+        return $defaultValue;
     }
 
     public function getOptions()
+    {
+        return $this->options;
+    }
+
+    public function determineOptionsFromParameters()
     {
         $params = $this->reflection->getParameters();
         if (empty($params)) {
@@ -216,7 +254,6 @@ class CommandInfo
     public function getOptionDescription($name)
     {
         $this->parseDocBlock();
-
         if (array_key_exists($name, $this->optionDescriptions)) {
             return $this->optionDescriptions[$name];
         }
@@ -234,6 +271,7 @@ class CommandInfo
 
     public function getAnnotations()
     {
+        $this->parseDocBlock();
         return $this->otherAnnotations;
     }
 
@@ -296,6 +334,17 @@ class CommandInfo
     }
 
     /**
+     * Set the name of the command from a @command or @name annotation.
+     */
+    protected function processCommandTag($tag)
+    {
+        $this->name = $tag->getContent();
+        // We also store the name in the 'other annotations' so that is is
+        // possible to determine if the method had a @command annotation.
+        $this->processGenericTag($tag);
+    }
+
+    /**
      * The @description and @desc annotations may be used in
      * place of the synopsis (which we call 'description').
      * This is discouraged.
@@ -316,21 +365,73 @@ class CommandInfo
             $variableName = $tag->getVariableName();
             $variableName = str_replace('$', '', $variableName);
             $this->argumentDescriptions[$variableName] = static::removeLineBreaks($tag->getDescription());
+            if (!isset($this->arguments[$variableName])) {
+                $this->arguments[$variableName] = null;
+            }
         }
     }
 
     /**
-     * Store the data from an @option annotation in our argument descriptions.
+     * Given a docblock description in the form "$variable description",
+     * return the variable name and description via the 'match' parameter.
+     */
+    protected function pregMatchNameAndDescription($source, &$match)
+    {
+        $nameRegEx = '\\$(?P<name>[^ \t]+)[ \t]+';
+        $descriptionRegEx = '(?P<description>.*)';
+        $optionRegEx = "/{$nameRegEx}{$descriptionRegEx}/s";
+
+        return preg_match($optionRegEx, $source, $match);
+    }
+
+    /**
+     * Store the data from an @option annotation in our option descriptions.
      */
     protected function processOptionTag($tag)
     {
-        $name = '\\$(?P<name>[^ \t]+)[ \t]+';
-        $description = '(?P<description>.*)';
-        $optionRegEx = "/{$name}{$description}/s";
-
-        if (preg_match($optionRegEx, $tag->getDescription(), $match)) {
-            $this->optionDescriptions[$match['name']] = static::removeLineBreaks($match['description']);
+        if ($this->pregMatchNameAndDescription($tag->getDescription(), $match)) {
+            $variableName = $match['name'];
+            $desc = $match['description'];
+            $this->optionDescriptions[$variableName] = static::removeLineBreaks($desc);
+            if (!isset($this->options[$variableName])) {
+                $this->options[$variableName] = false;
+            }
         }
+    }
+
+    /**
+     * Store the data from a @default annotation in our argument or option store,
+     * as appropriate.
+     */
+    protected function processDefaultTag($tag)
+    {
+        if ($this->pregMatchNameAndDescription($tag->getDescription(), $match)) {
+            $variableName = $match['name'];
+            $defaultValue = $this->interpretDefaultValue($match['description']);
+            if (array_key_exists($variableName, $this->arguments)) {
+                $this->arguments[$variableName] = $defaultValue;
+            }
+            if (array_key_exists($variableName, $this->options)) {
+                $this->options[$variableName] = $defaultValue;
+            }
+        }
+    }
+
+    protected function interpretDefaultValue($defaultValue)
+    {
+        $defaults = [
+            'null' => null,
+            'true' => true,
+            'false' => false,
+            "''" => '',
+            '[]' => [],
+        ];
+        foreach ($defaults as $defaultName => $defaultTypedValue) {
+            if ($defaultValue == $defaultName) {
+                return $defaultTypedValue;
+            }
+        }
+        return $defaultValue;
     }
 
     /**

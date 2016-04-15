@@ -14,7 +14,7 @@ use Consolidation\AnnotatedCommand\CommandError;
  * any command files located immediately inside the search base are
  * eligible for discovery, and will be included in the search results.
  */
-class TestCommandFile
+class ExampleCommandFile
 {
     protected $state;
 
@@ -29,9 +29,9 @@ class TestCommandFile
      * This command will concatinate two parameters. If the --flip flag
      * is provided, then the result is the concatination of two and one.
      *
-     * @param integer $one The first parameter.
-     * @param integer $two The other parameter.
-     * @option $flip Whether or not the second parameter should come first in the result.
+     * @param string $one The first parameter.
+     * @param string $two The other parameter.
+     * @option boolean $flip Whether or not the second parameter should come first in the result.
      * @aliases c
      * @usage bet alpha --flip
      *   Concatinate "alpha" and "bet".
@@ -88,23 +88,6 @@ class TestCommandFile
     public function testPassthrough(array $params)
     {
         return implode(',', $params);
-    }
-
-    public function testCommand(Command $command, $one)
-    {
-        $formatter = $command->getHelperSet()->get('formatter');
-        return $formatter->formatSection('test', $one);
-    }
-
-    public function testIo(InputInterface $input, OutputInterface $output, $one)
-    {
-        if (!$input instanceof InputInterface) {
-            throw new \RuntimeException('$input is not an InputInterface');
-        }
-        if (!$output instanceof OutputInterface) {
-            throw new \RuntimeException('$output is not an OutputInterface');
-        }
-        return $one;
     }
 
     /**
