@@ -45,6 +45,22 @@ class ExampleCommandFile
     }
 
     /**
+     * This is a command with no options
+     *
+     * This command will concatinate two parameters.
+     *
+     * @param string $one The first parameter.
+     * @param string $two The other parameter.
+     * @aliases nope
+     * @usage alpha bet
+     *   Concatinate "alpha" and "bet".
+     */
+    public function commandWithNoOptions($one, $two = 'default')
+    {
+        return "{$one}{$two}";
+    }
+
+    /**
      * This is the test:arithmatic command
      *
      * This command will add one and two. If the --negate flag

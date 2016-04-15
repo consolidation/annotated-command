@@ -55,6 +55,27 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
         $this->assertRunCommandViaApplicationEquals($command, $input, 'alphabet');
     }
 
+    function testCommandWithNoOptions()
+    {
+        $commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile;
+        $commandFactory = new AnnotatedCommandFactory();
+        $commandInfo = $commandFactory->createCommandInfo($commandFileInstance, 'commandWithNoOptions');
+
+        $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
+
+        $this->assertInstanceOf(Command::class, $command);
+        $this->assertEquals('command:with-no-options', $command->getName());
+        $this->assertEquals('This is a command with no options', $command->getDescription());
+        $this->assertEquals("This command will concatinate two parameters.", $command->getHelp());
+        $this->assertEquals('nope', implode(',', $command->getAliases()));
+        // Symfony Console composes the synopsis; perhaps we should not test it. Remove if this gives false failures.
+        $this->assertEquals('command:with-no-options <one> [<two>]', $command->getSynopsis());
+        $this->assertEquals('command:with-no-options alpha bet', implode(',', $command->getUsages()));
+
+        $input = new StringInput('command:with-no-options something');
+        $this->assertRunCommandViaApplicationEquals($command, $input, 'somethingdefault');
+    }
+
     function testState()
     {
         $commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile('secret secret');
