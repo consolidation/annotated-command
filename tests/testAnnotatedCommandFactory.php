@@ -95,6 +95,28 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
         $this->assertRunCommandViaApplicationEquals($command, $input, '');
     }
 
+    function testCommandWithShortcutOnAnnotation()
+    {
+        $commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile;
+        $commandFactory = new AnnotatedCommandFactory();
+        $commandInfo = $commandFactory->createCommandInfo($commandFileInstance, 'shortcutOnAnnotation');
+
+        $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
+
+        $this->assertInstanceOf(Command::class, $command);
+        $this->assertEquals('shortcut:on-annotation', $command->getName());
+        $this->assertEquals('Shortcut on annotation', $command->getDescription());
+        $this->assertEquals("This command defines the option shortcut on the annotation instead of in the options array.", $command->getHelp());
+        $this->assertEquals('shortcut:on-annotation [-s|--silent]', $command->getSynopsis());
+
+        $input = new StringInput('shortcut:on-annotation');
+        $this->assertRunCommandViaApplicationEquals($command, $input, 'Hello, world');
+        $input = new StringInput('shortcut:on-annotation -s');
+        $this->assertRunCommandViaApplicationEquals($command, $input, '');
+        $input = new StringInput('shortcut:on-annotation --silent');
+        $this->assertRunCommandViaApplicationEquals($command, $input, '');
+    }
+
     function testState()
     {
         $commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile('secret secret');

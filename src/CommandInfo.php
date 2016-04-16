@@ -361,13 +361,14 @@ class CommandInfo
      */
     protected function processArgumentTag($tag)
     {
-        if ($tag instanceof ParamTag) {
-            $variableName = $tag->getVariableName();
-            $variableName = str_replace('$', '', $variableName);
-            $this->argumentDescriptions[$variableName] = static::removeLineBreaks($tag->getDescription());
-            if (!isset($this->arguments[$variableName])) {
-                $this->arguments[$variableName] = null;
-            }
+        if (!$tag instanceof ParamTag) {
+            return;
+        }
+        $variableName = $tag->getVariableName();
+        $variableName = str_replace('$', '', $variableName);
+        $this->argumentDescriptions[$variableName] = static::removeLineBreaks($tag->getDescription());
+        if (!isset($this->arguments[$variableName])) {
+            $this->arguments[$variableName] = null;
         }
     }
 
@@ -389,14 +390,50 @@ class CommandInfo
      */
     protected function processOptionTag($tag)
     {
-        if ($this->pregMatchNameAndDescription($tag->getDescription(), $match)) {
-            $variableName = $match['name'];
-            $desc = $match['description'];
-            $this->optionDescriptions[$variableName] = static::removeLineBreaks($desc);
-            if (!isset($this->options[$variableName])) {
-                $this->options[$variableName] = false;
+        if (!$this->pregMatchNameAndDescription($tag->getDescription(), $match)) {
+            return;
+        }
+        $variableName = $this->findMatchingOption($match['name']);
+        $desc = $match['description'];
+        $this->optionDescriptions[$variableName] = static::removeLineBreaks($desc);
+        if (!isset($this->options[$variableName])) {
+            $this->options[$variableName] = false;
+        }
+    }
+
+    /**
+     * An option might have a name such as 'silent|s'. In this
+     * instance, we will allow the @option or @default tag to
+     * reference the option only by name (e.g. 'silent' or 's'
+     * instead of 'silent|s').
+     */
+    protected function findMatchingOption($optionName)
+    {
+        // Exit fast if there's an exact match
+        if (isset($this->options[$optionName])) {
+            return $optionName;
+        }
+        // Check to see if we can find the option name in an existing option,
+        // e.g. if the options array has 'silent|s' => false, and the annotation
+        // is @silent.
+        foreach ($this->options as $name => $default) {
+            if (in_array($optionName, explode('|', $name))) {
+                return $name;
             }
         }
+        // Check the other direction: if the annotation contains @silent|s
+        // and the options array has 'silent|s'.
+        $checkMatching = explode('|', $optionName);
+        if (count($checkMatching) > 1) {
+            foreach ($checkMatching as $checkName) {
+                if (isset($this->options[$checkName])) {
+                    $this->options[$optionName] = $this->options[$checkName];
+                    unset($this->options[$checkName]);
+                    return $optionName;
+                }
+            }
+        }
+        return $optionName;
     }
 
     /**
@@ -405,15 +442,18 @@ class CommandInfo
      */
     protected function processDefaultTag($tag)
     {
-        if ($this->pregMatchNameAndDescription($tag->getDescription(), $match)) {
-            $variableName = $match['name'];
-            $defaultValue = $this->interpretDefaultValue($match['description']);
-            if (array_key_exists($variableName, $this->arguments)) {
-                $this->arguments[$variableName] = $defaultValue;
-            }
-            if (array_key_exists($variableName, $this->options)) {
-                $this->options[$variableName] = $defaultValue;
-            }
+        if (!$this->pregMatchNameAndDescription($tag->getDescription(), $match)) {
+            return;
+        }
+        $variableName = $match['name'];
+        $defaultValue = $this->interpretDefaultValue($match['description']);
+        if (array_key_exists($variableName, $this->arguments)) {
+            $this->arguments[$variableName] = $defaultValue;
+            return;
+        }
+        $variableName = $this->findMatchingOption($variableName);
+        if (array_key_exists($variableName, $this->options)) {
+            $this->options[$variableName] = $defaultValue;
         }
     }
 

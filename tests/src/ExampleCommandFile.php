@@ -49,8 +49,8 @@ class ExampleCommandFile
      *
      * This command will concatinate two parameters.
      *
-     * @param string $one The first parameter.
-     * @param string $two The other parameter.
+     * @param $one The first parameter.
+     * @param $two The other parameter.
      * @aliases nope
      * @usage alpha bet
      *   Concatinate "alpha" and "bet".
@@ -65,9 +65,23 @@ class ExampleCommandFile
      *
      * Return a result only if not silent.
      *
-     * @option boolean $silent|s Supress output.
+     * @option $silent Supress output.
      */
     public function commandWithNoArguments($opts = ['silent|s' => false])
+    {
+        if (!$opts['silent']) {
+            return "Hello, world";
+        }
+    }
+
+    /**
+     * Shortcut on annotation
+     *
+     * This command defines the option shortcut on the annotation instead of in the options array.
+     *
+     * @option $silent|s Supress output.
+     */
+    public function shortcutOnAnnotation($opts = ['silent' => false])
     {
         if (!$opts['silent']) {
             return "Hello, world";
