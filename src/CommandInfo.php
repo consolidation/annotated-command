@@ -1,9 +1,6 @@
 <?php
 namespace Consolidation\AnnotatedCommand;
 
-use phpDocumentor\Reflection\DocBlock\Tag\ParamTag;
-use phpDocumentor\Reflection\DocBlock;
-
 /**
  * Given a class and method name, parse the annotations in the
  * DocBlock comment, and provide accessor methods for all of
@@ -36,21 +33,6 @@ class CommandInfo
      * @var string
      */
     protected $help = '';
-
-    /**
-     * @var array
-     */
-    protected $tagProcessors = [
-        'command' => 'processCommandTag',
-        'name' => 'processCommandTag',
-        'param' => 'processArgumentTag',
-        'option' => 'processOptionTag',
-        'default' => 'processDefaultTag',
-        'aliases' => 'processAliases',
-        'usage' => 'processUsageTag',
-        'description' => 'processAlternateDescriptionTag',
-        'desc' => 'processAlternateDescriptionTag',
-    ];
 
     /**
      * @var array
@@ -172,6 +154,11 @@ class CommandInfo
         $this->name = $this->convertName($this->reflection->name);
     }
 
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+
     protected function determineAgumentClassifications()
     {
         $args = [];
@@ -191,6 +178,27 @@ class CommandInfo
     public function getArguments()
     {
         return $this->arguments;
+    }
+
+    public function hasArgument($name)
+    {
+        return array_key_exists($name, $this->arguments);
+    }
+
+    public function setArgumentDefaultValue($name, $defaultValue)
+    {
+        $this->arguments[$name] = $defaultValue;
+    }
+
+    public function addArgument($name, $description, $defaultValue = null)
+    {
+        if (!$this->hasArgument($name) || isset($defaultValue)) {
+            $this->arguments[$name] = $defaultValue;
+        }
+        unset($this->argumentDescriptions[$name]);
+        if (isset($description)) {
+            $this->argumentDescriptions[$name] = $description;
+        }
     }
 
     /**
@@ -223,6 +231,27 @@ class CommandInfo
     public function getOptions()
     {
         return $this->options;
+    }
+
+    public function hasOption($name)
+    {
+        return array_key_exists($name, $this->options);
+    }
+
+    public function setOptionDefaultValue($name, $defaultValue)
+    {
+        $this->options[$name] = $defaultValue;
+    }
+
+    public function addOption($name, $description, $defaultValue = false)
+    {
+        if (!$this->hasOption($name) || $defaultValue) {
+            $this->options[$name] = $defaultValue;
+        }
+        unset($this->optionDescriptions[$name]);
+        if (isset($description)) {
+            $this->optionDescriptions[$name] = $description;
+        }
     }
 
     public function determineOptionsFromParameters()
@@ -298,6 +327,11 @@ class CommandInfo
         return strtolower($camel);
     }
 
+    public function setExampleUsage($usage, $description)
+    {
+        $this->exampleUsage[$usage] = $description;
+    }
+
     /**
      * Parse the docBlock comment for this command, and set the
      * fields of this class with the data thereby obtained.
@@ -306,20 +340,8 @@ class CommandInfo
     {
         if (!$this->docBlockIsParsed) {
             $docblock = $this->reflection->getDocComment();
-            $phpdoc = new DocBlock($docblock);
-
-            // First set the description (synopsis) and help.
-            $this->setDescription((string)$phpdoc->getShortDescription());
-            $this->setHelp((string)$phpdoc->getLongDescription());
-
-            // Iterate over all of the tags, and process them as necessary.
-            foreach ($phpdoc->getTags() as $tag) {
-                $processFn = [$this, 'processGenericTag'];
-                if (array_key_exists($tag->getName(), $this->tagProcessors)) {
-                    $processFn = [$this, $this->tagProcessors[$tag->getName()]];
-                }
-                $processFn($tag);
-            }
+            $parser = new CommandDocBlockParser($this);
+            $parser->parse($docblock);
             $this->docBlockIsParsed = true;
         }
     }
@@ -328,77 +350,9 @@ class CommandInfo
      * Save any tag that we do not explicitly recognize in the
      * 'otherAnnotations' map.
      */
-    protected function processGenericTag($tag)
+    public function addOtherAnnotation($name, $content)
     {
-        $this->otherAnnotations[$tag->getName()] = $tag->getContent();
-    }
-
-    /**
-     * Set the name of the command from a @command or @name annotation.
-     */
-    protected function processCommandTag($tag)
-    {
-        $this->name = $tag->getContent();
-        // We also store the name in the 'other annotations' so that is is
-        // possible to determine if the method had a @command annotation.
-        $this->processGenericTag($tag);
-    }
-
-    /**
-     * The @description and @desc annotations may be used in
-     * place of the synopsis (which we call 'description').
-     * This is discouraged.
-     *
-     * @deprecated
-     */
-    protected function processAlternateDescriptionTag($tag)
-    {
-        $this->setDescription($tag->getContent());
-    }
-
-    /**
-     * Store the data from a @param annotation in our argument descriptions.
-     */
-    protected function processArgumentTag($tag)
-    {
-        if (!$tag instanceof ParamTag) {
-            return;
-        }
-        $variableName = $tag->getVariableName();
-        $variableName = str_replace('$', '', $variableName);
-        $this->argumentDescriptions[$variableName] = static::removeLineBreaks($tag->getDescription());
-        if (!isset($this->arguments[$variableName])) {
-            $this->arguments[$variableName] = null;
-        }
-    }
-
-    /**
-     * Given a docblock description in the form "$variable description",
-     * return the variable name and description via the 'match' parameter.
-     */
-    protected function pregMatchNameAndDescription($source, &$match)
-    {
-        $nameRegEx = '\\$(?P<name>[^ \t]+)[ \t]+';
-        $descriptionRegEx = '(?P<description>.*)';
-        $optionRegEx = "/{$nameRegEx}{$descriptionRegEx}/s";
-
-        return preg_match($optionRegEx, $source, $match);
-    }
-
-    /**
-     * Store the data from an @option annotation in our option descriptions.
-     */
-    protected function processOptionTag($tag)
-    {
-        if (!$this->pregMatchNameAndDescription($tag->getDescription(), $match)) {
-            return;
-        }
-        $variableName = $this->findMatchingOption($match['name']);
-        $desc = $match['description'];
-        $this->optionDescriptions[$variableName] = static::removeLineBreaks($desc);
-        if (!isset($this->options[$variableName])) {
-            $this->options[$variableName] = false;
-        }
+        $this->otherAnnotations[$name] = $content;
     }
 
     /**
@@ -407,7 +361,7 @@ class CommandInfo
      * reference the option only by name (e.g. 'silent' or 's'
      * instead of 'silent|s').
      */
-    protected function findMatchingOption($optionName)
+    public function findMatchingOption($optionName)
     {
         // Exit fast if there's an exact match
         if (isset($this->options[$optionName])) {
@@ -435,65 +389,6 @@ class CommandInfo
         }
         return $optionName;
     }
-
-    /**
-     * Store the data from a @default annotation in our argument or option store,
-     * as appropriate.
-     */
-    protected function processDefaultTag($tag)
-    {
-        if (!$this->pregMatchNameAndDescription($tag->getDescription(), $match)) {
-            return;
-        }
-        $variableName = $match['name'];
-        $defaultValue = $this->interpretDefaultValue($match['description']);
-        if (array_key_exists($variableName, $this->arguments)) {
-            $this->arguments[$variableName] = $defaultValue;
-            return;
-        }
-        $variableName = $this->findMatchingOption($variableName);
-        if (array_key_exists($variableName, $this->options)) {
-            $this->options[$variableName] = $defaultValue;
-        }
-    }
-
-    protected function interpretDefaultValue($defaultValue)
-    {
-        $defaults = [
-            'null' => null,
-            'true' => true,
-            'false' => false,
-            "''" => '',
-            '[]' => [],
-        ];
-        foreach ($defaults as $defaultName => $defaultTypedValue) {
-            if ($defaultValue == $defaultName) {
-                return $defaultTypedValue;
-            }
-        }
-        return $defaultValue;
-    }
-
-    /**
-     * Process the comma-separated list of aliases
-     */
-    protected function processAliases($tag)
-    {
-        $this->setAliases($tag->getDescription());
-    }
-
-    /**
-     * Store the data from a @usage annotation in our example usage list.
-     */
-    protected function processUsageTag($tag)
-    {
-        $lines = explode("\n", $tag->getContent());
-        $usage = array_shift($lines);
-        $description = static::removeLineBreaks(implode("\n", $lines));
-
-        $this->exampleUsage[$usage] = $description;
-    }
-
     /**
      * Given a list that might be 'a b c' or 'a, b, c' or 'a,b,c',
      * convert the data into the last of these forms.
@@ -501,14 +396,5 @@ class CommandInfo
     protected static function convertListToCommaSeparated($text)
     {
         return preg_replace('#[ \t\n\r,]+#', ',', $text);
-    }
-
-    /**
-     * Take a multiline description and convert it into a single
-     * long unbroken line.
-     */
-    protected static function removeLineBreaks($text)
-    {
-        return trim(preg_replace('#[ \t\n\r]+#', ' ', $text));
     }
 }
