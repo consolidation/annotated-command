@@ -38,15 +38,15 @@ class CommandInfoTests extends \PHPUnit_Framework_TestCase
         );
         $this->assertEquals(
             'The first number to add.',
-            $commandInfo->getArgumentDescription('one')
+            $commandInfo->arguments()->getDescription('one')
         );
         $this->assertEquals(
             'The other number to add.',
-            $commandInfo->getArgumentDescription('two')
+            $commandInfo->arguments()->getDescription('two')
         );
         $this->assertEquals(
             'Whether or not the result should be negated.',
-            $commandInfo->getOptionDescription('negate')
+            $commandInfo->options()->getDescription('negate')
         );
     }
 }

@@ -260,119 +260,23 @@ class CommandInfo
     }
 
     /**
-     * Return the commandline arguments for this command. The key
-     * contains the name of the argument, and the value contains its
-     * default value. Required commands have a 'null' value.
+     * Descriptions of commandline arguements for this command.
      *
-     * @return array
+     * @return DefaultsWithDescriptions
      */
-    public function getArguments()
+    public function arguments()
     {
-        return $this->arguments->getValues();
+        return $this->arguments;
     }
 
     /**
-     * Check to see if an argument with the specified name exits.
+     * Descriptions of commandline options for this command.
      *
-     * @param string $name Argument to test for.
-     * @return boolean
+     * @return DefaultsWithDescriptions
      */
-    public function hasArgument($name)
+    public function options()
     {
-        return $this->arguments->exists($name);
-    }
-
-    /**
-     * Set the default value for an argument. A default value of 'null'
-     * indicates that the argument is required.
-     *
-     * @param string $name Name of argument to modify.
-     * @param string $defaultValue New default value for that argument.
-     */
-    public function setArgumentDefaultValue($name, $defaultValue)
-    {
-        $this->arguments->setDefaultValue($name, $defaultValue);
-    }
-
-    /**
-     * Add another argument to this command.
-     *
-     * @param string $name Name of the argument.
-     * @param string $description Help text for the argument.
-     * @param string $defaultValue The default value for the argument.
-     */
-    public function addArgument($name, $description, $defaultValue = null)
-    {
-        $this->arguments->add($name, $description, $defaultValue);
-    }
-
-    /**
-     * Return the options for is command. The key is the options name,
-     * and the value is its default value.
-     *
-     * @return array
-     */
-    public function getOptions()
-    {
-        return $this->options->getValues();
-    }
-
-    /**
-     * Check to see if the specified option exists.
-     *
-     * @param string $name Name of the option to check.
-     * @return boolean
-     */
-    public function hasOption($name)
-    {
-        return $this->options->exists($name);
-    }
-
-    /**
-     * Change the default value for an option.
-     *
-     * @param string $name Option name.
-     * @param string $defaultValue Option default value.
-     */
-    public function setOptionDefaultValue($name, $defaultValue)
-    {
-        $this->options->setDefaultValue($name, $defaultValue);
-    }
-
-    /**
-     * Add another option to this command.
-     *
-     * @param string $name Option name.
-     * @param string $description Option description.
-     * @param string $defaultValue Option default value.
-     */
-    public function addOption($name, $description, $defaultValue = null)
-    {
-        $this->options->add($name, $description, $defaultValue);
-    }
-
-    /**
-     * Get the description of one argument.
-     *
-     * @param string $name The name of the argument.
-     * @return string
-     */
-    public function getArgumentDescription($name)
-    {
-        $this->parseDocBlock();
-        return $this->arguments->getDescription($name);
-    }
-
-    /**
-     * Get the description of one argument.
-     *
-     * @param string $name The name of the option.
-     * @return string
-     */
-    public function getOptionDescription($name)
-    {
-        $this->parseDocBlock();
-        return $this->options->getDescription($name);
+        return $this->options;
     }
 
     /**
