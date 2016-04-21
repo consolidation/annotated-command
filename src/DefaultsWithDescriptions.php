@@ -53,46 +53,6 @@ class DefaultsWithDescriptions
     }
 
     /**
-     * Change the default value of an entry.
-     *
-     * @param string $key
-     * @param mixed $defaultValue
-     */
-    public function setDefaultValue($key, $defaultValue)
-    {
-        $this->values[$key] = $defaultValue;
-    }
-
-    /**
-     * Add another argument to this command.
-     *
-     * @param string $key Name of the argument.
-     * @param string $description Help text for the argument.
-     * @param mixed $defaultValue The default value for the argument.
-     */
-    public function add($key, $description, $defaultValue = null)
-    {
-        if (!$this->exists($key) || isset($defaultValue)) {
-            $this->values[$key] = isset($defaultValue) ? $defaultValue : $this->defaultDefault;
-        }
-        unset($this->descriptions[$key]);
-        if (!empty($description)) {
-            $this->descriptions[$key] = $description;
-        }
-    }
-
-    /**
-     * Remove an entry
-     *
-     * @param string $key The entry to remove
-     */
-    public function clear($key)
-    {
-        unset($this->values[$key]);
-        unset($this->descriptions[$key]);
-    }
-
-    /**
      * Get the value of one entry.
      *
      * @param string $key The key of the item.
@@ -118,6 +78,46 @@ class DefaultsWithDescriptions
             return $this->descriptions[$key];
         }
         return '';
+    }
+
+    /**
+     * Add another argument to this command.
+     *
+     * @param string $key Name of the argument.
+     * @param string $description Help text for the argument.
+     * @param mixed $defaultValue The default value for the argument.
+     */
+    public function add($key, $description, $defaultValue = null)
+    {
+        if (!$this->exists($key) || isset($defaultValue)) {
+            $this->values[$key] = isset($defaultValue) ? $defaultValue : $this->defaultDefault;
+        }
+        unset($this->descriptions[$key]);
+        if (!empty($description)) {
+            $this->descriptions[$key] = $description;
+        }
+    }
+
+    /**
+     * Change the default value of an entry.
+     *
+     * @param string $key
+     * @param mixed $defaultValue
+     */
+    public function setDefaultValue($key, $defaultValue)
+    {
+        $this->values[$key] = $defaultValue;
+    }
+
+    /**
+     * Remove an entry
+     *
+     * @param string $key The entry to remove
+     */
+    public function clear($key)
+    {
+        unset($this->values[$key]);
+        unset($this->descriptions[$key]);
     }
 
     /**
