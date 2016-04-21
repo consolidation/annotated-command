@@ -35,24 +35,14 @@ class CommandInfo
     protected $help = '';
 
     /**
-     * @var array
+     * @var DefaultsWithDescriptions
      */
     protected $options = [];
 
     /**
-     * @var array
+     * @var DefaultsWithDescriptions
      */
     protected $arguments = [];
-
-    /**
-     * @var array
-     */
-    protected $argumentDescriptions = [];
-
-    /**
-     * @var array
-     */
-    protected $optionDescriptions = [];
 
     /**
      * @var array
@@ -88,8 +78,8 @@ class CommandInfo
         // Set up a default name for the command from the method name.
         // This can be overridden via @command or @name annotations.
         $this->name = $this->convertName($this->reflection->name);
-        $this->options = $this->determineOptionsFromParameters();
-        $this->arguments = $this->determineAgumentClassifications();
+        $this->options = new DefaultsWithDescriptions($this->determineOptionsFromParameters(), false);
+        $this->arguments = new DefaultsWithDescriptions($this->determineAgumentClassifications());
     }
 
     /**
@@ -239,7 +229,7 @@ class CommandInfo
      */
     public function getArguments()
     {
-        return $this->arguments;
+        return $this->arguments->getValues();
     }
 
     /**
@@ -250,7 +240,7 @@ class CommandInfo
      */
     public function hasArgument($name)
     {
-        return array_key_exists($name, $this->arguments);
+        return $this->arguments->exists($name);
     }
 
     /**
@@ -262,7 +252,7 @@ class CommandInfo
      */
     public function setArgumentDefaultValue($name, $defaultValue)
     {
-        $this->arguments[$name] = $defaultValue;
+        $this->arguments->setDefaultValue($name, $defaultValue);
     }
 
     /**
@@ -274,13 +264,7 @@ class CommandInfo
      */
     public function addArgument($name, $description, $defaultValue = null)
     {
-        if (!$this->hasArgument($name) || isset($defaultValue)) {
-            $this->arguments[$name] = $defaultValue;
-        }
-        unset($this->argumentDescriptions[$name]);
-        if (isset($description)) {
-            $this->argumentDescriptions[$name] = $description;
-        }
+        $this->arguments->add($name, $description, $defaultValue);
     }
 
     /**
@@ -318,7 +302,7 @@ class CommandInfo
      */
     public function getOptions()
     {
-        return $this->options;
+        return $this->options->getValues();
     }
 
     /**
@@ -329,7 +313,7 @@ class CommandInfo
      */
     public function hasOption($name)
     {
-        return array_key_exists($name, $this->options);
+        return $this->options->exists($name);
     }
 
     /**
@@ -340,7 +324,7 @@ class CommandInfo
      */
     public function setOptionDefaultValue($name, $defaultValue)
     {
-        $this->options[$name] = $defaultValue;
+        $this->options->setDefaultValue($name, $defaultValue);
     }
 
     /**
@@ -350,15 +334,9 @@ class CommandInfo
      * @param string $description Option description.
      * @param string $defaultValue Option default value.
      */
-    public function addOption($name, $description, $defaultValue = false)
+    public function addOption($name, $description, $defaultValue = null)
     {
-        if (!$this->hasOption($name) || ($defaultValue !== false)) {
-            $this->options[$name] = $defaultValue;
-        }
-        unset($this->optionDescriptions[$name]);
-        if (isset($description)) {
-            $this->optionDescriptions[$name] = $description;
-        }
+        $this->options->add($name, $description, $defaultValue);
     }
 
     /**
@@ -392,11 +370,7 @@ class CommandInfo
     public function getArgumentDescription($name)
     {
         $this->parseDocBlock();
-        if (array_key_exists($name, $this->argumentDescriptions)) {
-            return $this->argumentDescriptions[$name];
-        }
-
-        return '';
+        return $this->arguments->getDescription($name);
     }
 
     /**
@@ -408,11 +382,7 @@ class CommandInfo
     public function getOptionDescription($name)
     {
         $this->parseDocBlock();
-        if (array_key_exists($name, $this->optionDescriptions)) {
-            return $this->optionDescriptions[$name];
-        }
-
-        return '';
+        return $this->options->getDescription($name);
     }
 
     /**
@@ -531,13 +501,13 @@ class CommandInfo
     public function findMatchingOption($optionName)
     {
         // Exit fast if there's an exact match
-        if (isset($this->options[$optionName])) {
+        if ($this->options->exists($optionName)) {
             return $optionName;
         }
         // Check to see if we can find the option name in an existing option,
         // e.g. if the options array has 'silent|s' => false, and the annotation
         // is @silent.
-        foreach ($this->options as $name => $default) {
+        foreach ($this->options->getValues() as $name => $default) {
             if (in_array($optionName, explode('|', $name))) {
                 return $name;
             }
@@ -547,9 +517,8 @@ class CommandInfo
         $checkMatching = explode('|', $optionName);
         if (count($checkMatching) > 1) {
             foreach ($checkMatching as $checkName) {
-                if (isset($this->options[$checkName])) {
-                    $this->options[$optionName] = $this->options[$checkName];
-                    unset($this->options[$checkName]);
+                if ($this->options->exists($checkName)) {
+                    $this->options->rename($checkName, $optionName);
                     return $optionName;
                 }
             }
