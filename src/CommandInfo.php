@@ -284,6 +284,9 @@ class CommandInfo
      * instance, we will allow the @option or @default tag to
      * reference the option only by name (e.g. 'silent' or 's'
      * instead of 'silent|s').
+     *
+     * @param string $optionName
+     * @return string
      */
     public function findMatchingOption($optionName)
     {
@@ -291,14 +294,19 @@ class CommandInfo
         if ($this->options->exists($optionName)) {
             return $optionName;
         }
-        // Check to see if we can find the option name in an existing option,
-        // e.g. if the options array has 'silent|s' => false, and the annotation
-        // is @silent.
-        foreach ($this->options->getValues() as $name => $default) {
-            if (in_array($optionName, explode('|', $name))) {
-                return $name;
-            }
+        $existingOptionName = $this->findExistingOption($optionName);
+        if (isset($existingOptionName)) {
+            return $existingOptionName;
         }
+        return $this->findOptionAmongAlternatives($optionName);
+    }
+
+    /**
+     * @param string $optionName
+     * @return string
+     */
+    protected function findOptionAmongAlternatives($optionName)
+    {
         // Check the other direction: if the annotation contains @silent|s
         // and the options array has 'silent|s'.
         $checkMatching = explode('|', $optionName);
@@ -311,6 +319,22 @@ class CommandInfo
             }
         }
         return $optionName;
+    }
+
+    /**
+     * @param string $optionName
+     * @return string|null
+     */
+    protected function findExistingOption($optionName)
+    {
+        // Check to see if we can find the option name in an existing option,
+        // e.g. if the options array has 'silent|s' => false, and the annotation
+        // is @silent.
+        foreach ($this->options()->getValues() as $name => $default) {
+            if (in_array($optionName, explode('|', $name))) {
+                return $name;
+            }
+        }
     }
 
     /**
