@@ -122,9 +122,9 @@ class AnnotatedCommand extends Command
 
     protected function setCommandArgumentsFromParameters($commandInfo)
     {
-        $args = $commandInfo->getArguments();
+        $args = $commandInfo->arguments()->getValues();
         foreach ($args as $name => $defaultValue) {
-            $description = $commandInfo->getArgumentDescription($name);
+            $description = $commandInfo->arguments()->getDescription($name);
             $parameterMode = $this->getCommandArgumentMode($defaultValue);
             $this->addArgument($name, $parameterMode, $description, $defaultValue);
         }
@@ -143,9 +143,9 @@ class AnnotatedCommand extends Command
 
     protected function setCommandOptions($commandInfo)
     {
-        $opts = $commandInfo->getOptions();
+        $opts = $commandInfo->options()->getValues();
         foreach ($opts as $name => $val) {
-            $description = $commandInfo->getOptionDescription($name);
+            $description = $commandInfo->options()->getDescription($name);
 
             $fullName = $name;
             $shortcut = '';

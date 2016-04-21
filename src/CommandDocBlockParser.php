@@ -101,7 +101,7 @@ class CommandDocBlockParser
         $variableName = $tag->getVariableName();
         $variableName = str_replace('$', '', $variableName);
         $description = static::removeLineBreaks($tag->getDescription());
-        $this->commandInfo->addArgument($variableName, $description);
+        $this->commandInfo->arguments()->add($variableName, $description);
     }
 
     /**
@@ -128,7 +128,7 @@ class CommandDocBlockParser
         $variableName = $this->commandInfo->findMatchingOption($match['name']);
         $desc = $match['description'];
         $description = static::removeLineBreaks($desc);
-        $this->commandInfo->addOption($variableName, $description);
+        $this->commandInfo->options()->add($variableName, $description);
     }
 
     /**
@@ -142,13 +142,13 @@ class CommandDocBlockParser
         }
         $variableName = $match['name'];
         $defaultValue = $this->interpretDefaultValue($match['description']);
-        if ($this->commandInfo->hasArgument($variableName)) {
-            $this->commandInfo->setArgumentDefaultValue($variableName, $defaultValue);
+        if ($this->commandInfo->arguments()->exists($variableName)) {
+            $this->commandInfo->arguments()->setDefaultValue($variableName, $defaultValue);
             return;
         }
         $variableName = $this->commandInfo->findMatchingOption($variableName);
-        if ($this->commandInfo->hasOption($variableName)) {
-            $this->commandInfo->setOptionDefaultValue($variableName, $defaultValue);
+        if ($this->commandInfo->options()->exists($variableName)) {
+            $this->commandInfo->options()->setDefaultValue($variableName, $defaultValue);
         }
     }
 
