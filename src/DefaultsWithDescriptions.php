@@ -44,14 +44,20 @@ class DefaultsWithDescriptions
     /**
      * Check to see whether the speicifed key exists in the collection.
      *
-     * @param type $key
-     * @return type
+     * @param string $key
+     * @return boolean
      */
     public function exists($key)
     {
         return array_key_exists($key, $this->values);
     }
 
+    /**
+     * Change the default value of an entry.
+     *
+     * @param string $key
+     * @param mixed $defaultValue
+     */
     public function setDefaultValue($key, $defaultValue)
     {
         $this->values[$key] = $defaultValue;
@@ -62,7 +68,7 @@ class DefaultsWithDescriptions
      *
      * @param string $key Name of the argument.
      * @param string $description Help text for the argument.
-     * @param string $defaultValue The default value for the argument.
+     * @param mixed $defaultValue The default value for the argument.
      */
     public function add($key, $description, $defaultValue = null)
     {
@@ -70,9 +76,34 @@ class DefaultsWithDescriptions
             $this->values[$key] = isset($defaultValue) ? $defaultValue : $this->defaultDefault;
         }
         unset($this->descriptions[$key]);
-        if (isset($description)) {
+        if (!empty($description)) {
             $this->descriptions[$key] = $description;
         }
+    }
+
+    /**
+     * Remove an entry
+     *
+     * @param string $key The entry to remove
+     */
+    public function clear($key)
+    {
+        unset($this->values[$key]);
+        unset($this->descriptions[$key]);
+    }
+
+    /**
+     * Get the value of one entry.
+     *
+     * @param string $key The key of the item.
+     * @return string
+     */
+    public function get($key)
+    {
+        if (array_key_exists($key, $this->values)) {
+            return $this->values[$key];
+        }
+        return $this->defaultDefault;
     }
 
     /**
@@ -94,9 +125,7 @@ class DefaultsWithDescriptions
      */
     public function rename($oldName, $newName)
     {
-        $this->values[$newName] = $this->values[$oldName];
-        $this->descriptions[$newName] = $this->descriptions[$oldName];
-        unset($this->values[$oldName]);
-        unset($this->descriptions[$oldName]);
+        $this->add($newName, $this->getDescription($oldName), $this->get($oldName));
+        $this->clear($oldName);
     }
 }
