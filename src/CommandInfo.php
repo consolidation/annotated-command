@@ -74,22 +74,39 @@ class CommandInfo
      */
     protected $methodName;
 
+    /**
+     * Create a new CommandInfo class for a particular method of a class.
+     *
+     * @param string|mixed $classNameOrInstance The name of a class, or an
+     *   instance of it.
+     * @param string $methodName The name of the method to get info about.
+     */
     public function __construct($classNameOrInstance, $methodName)
     {
         $this->reflection = new \ReflectionMethod($classNameOrInstance, $methodName);
         $this->methodName = $methodName;
         // Set up a default name for the command from the method name.
         // This can be overridden via @command or @name annotations.
-        $this->setDefaultName();
+        $this->name = $this->convertName($this->reflection->name);
         $this->options = $this->determineOptionsFromParameters();
         $this->arguments = $this->determineAgumentClassifications();
     }
 
+    /**
+     * Recover the method name provided to the constructor.
+     *
+     * @return string
+     */
     public function getMethodName()
     {
         return $this->methodName;
     }
 
+    /**
+     * Return the list of refleaction parameters.
+     *
+     * @return ReflectionParameter[]
+     */
     public function getParameters()
     {
         return $this->reflection->getParameters();
@@ -97,6 +114,8 @@ class CommandInfo
 
     /**
      * Get the synopsis of the command (~first line).
+     *
+     * @return string
      */
     public function getDescription()
     {
@@ -104,6 +123,11 @@ class CommandInfo
         return $this->description;
     }
 
+    /**
+     * Set the command description.
+     *
+     * @param string $description The description to set.
+     */
     public function setDescription($description)
     {
         $this->description = $description;
@@ -117,18 +141,31 @@ class CommandInfo
         $this->parseDocBlock();
         return $this->help;
     }
-
+    /**
+     * Set the help text for this command.
+     *
+     * @param string $help The help text.
+     */
     public function setHelp($help)
     {
         $this->help = $help;
     }
 
+    /**
+     * Return the list of aliases for this command.
+     * @return string[]
+     */
     public function getAliases()
     {
         $this->parseDocBlock();
         return $this->aliases;
     }
 
+    /**
+     * Set aliases that can be used in place of the command's primary name.
+     *
+     * @param string|string[] $aliases
+     */
     public function setAliases($aliases)
     {
         if (is_string($aliases)) {
@@ -137,28 +174,46 @@ class CommandInfo
         $this->aliases = array_filter($aliases);
     }
 
+    /**
+     * Return the examples for this command. This is @usage instead of
+     * @example because the later is defined by the phpdoc standard to
+     * be example method calls.
+     *
+     * @return string[]
+     */
     public function getExampleUsages()
     {
         $this->parseDocBlock();
         return $this->exampleUsage;
     }
 
+    /**
+     * Return the primary name for this command.
+     *
+     * @return string
+     */
     public function getName()
     {
         $this->parseDocBlock();
         return $this->name;
     }
 
-    public function setDefaultName()
-    {
-        $this->name = $this->convertName($this->reflection->name);
-    }
-
+    /**
+     * Set the primary name for this command.
+     *
+     * @param string $name
+     */
     public function setName($name)
     {
         $this->name = $name;
     }
 
+    /**
+     * Examine the parameters of the method for this command, and
+     * build a list of commandline arguements for them.
+     *
+     * @return array
+     */
     protected function determineAgumentClassifications()
     {
         $args = [];
@@ -175,21 +230,48 @@ class CommandInfo
         return $args;
     }
 
+    /**
+     * Return the commandline arguments for this command. The key
+     * contains the name of the argument, and the value contains its
+     * default value. Required commands have a 'null' value.
+     *
+     * @return array
+     */
     public function getArguments()
     {
         return $this->arguments;
     }
 
+    /**
+     * Check to see if an argument with the specified name exits.
+     *
+     * @param string $name Argument to test for.
+     * @return boolean
+     */
     public function hasArgument($name)
     {
         return array_key_exists($name, $this->arguments);
     }
 
+    /**
+     * Set the default value for an argument. A default value of 'null'
+     * indicates that the argument is required.
+     *
+     * @param string $name Name of argument to modify.
+     * @param string $defaultValue New default value for that argument.
+     */
     public function setArgumentDefaultValue($name, $defaultValue)
     {
         $this->arguments[$name] = $defaultValue;
     }
 
+    /**
+     * Add another argument to this command.
+     *
+     * @param string $name Name of the argument.
+     * @param string $description Help text for the argument.
+     * @param string $defaultValue The default value for the argument.
+     */
     public function addArgument($name, $description, $defaultValue = null)
     {
         if (!$this->hasArgument($name) || isset($defaultValue)) {
@@ -228,24 +310,49 @@ class CommandInfo
         return $defaultValue;
     }
 
+    /**
+     * Return the options for is command. The key is the options name,
+     * and the value is its default value.
+     *
+     * @return array
+     */
     public function getOptions()
     {
         return $this->options;
     }
 
+    /**
+     * Check to see if the specified option exists.
+     *
+     * @param string $name Name of the option to check.
+     * @return boolean
+     */
     public function hasOption($name)
     {
         return array_key_exists($name, $this->options);
     }
 
+    /**
+     * Change the default value for an option.
+     *
+     * @param string $name Option name.
+     * @param string $defaultValue Option default value.
+     */
     public function setOptionDefaultValue($name, $defaultValue)
     {
         $this->options[$name] = $defaultValue;
     }
 
+    /**
+     * Add another option to this command.
+     *
+     * @param string $name Option name.
+     * @param string $description Option description.
+     * @param string $defaultValue Option default value.
+     */
     public function addOption($name, $description, $defaultValue = false)
     {
-        if (!$this->hasOption($name) || $defaultValue) {
+        if (!$this->hasOption($name) || ($defaultValue !== false)) {
             $this->options[$name] = $defaultValue;
         }
         unset($this->optionDescriptions[$name]);
@@ -254,6 +361,12 @@ class CommandInfo
         }
     }
 
+    /**
+     * Examine the parameters of the method for this command, and determine
+     * the disposition of the options from them.
+     *
+     * @return array
+     */
     public function determineOptionsFromParameters()
     {
         $params = $this->reflection->getParameters();
@@ -270,6 +383,12 @@ class CommandInfo
         return $param->getDefaultValue();
     }
 
+    /**
+     * Get the description of one argument.
+     *
+     * @param string $name The name of the argument.
+     * @return string
+     */
     public function getArgumentDescription($name)
     {
         $this->parseDocBlock();
@@ -280,6 +399,12 @@ class CommandInfo
         return '';
     }
 
+    /**
+     * Get the description of one argument.
+     *
+     * @param string $name The name of the option.
+     * @return string
+     */
     public function getOptionDescription($name)
     {
         $this->parseDocBlock();
@@ -290,6 +415,14 @@ class CommandInfo
         return '';
     }
 
+    /**
+     * Helper; determine if an array is associative or not. An array
+     * is not associative if its keys are numeric, and numbered sequentially
+     * from zero. All other arrays are considered to be associative.
+     *
+     * @param arrau $arr The array
+     * @return boolean
+     */
     protected function isAssoc($arr)
     {
         if (!is_array($arr)) {
@@ -298,12 +431,25 @@ class CommandInfo
         return array_keys($arr) !== range(0, count($arr) - 1);
     }
 
+    /**
+     * Get any annotations included in the docblock comment for the
+     * implementation method of this command that are not already
+     * handled by the primary methods of this class.
+     *
+     * @return array
+     */
     public function getAnnotations()
     {
         $this->parseDocBlock();
         return $this->otherAnnotations;
     }
 
+    /**
+     * Return a specific named annotation for this command.
+     *
+     * @param string $annotation The name of the annotation.
+     * @return string
+     */
     public function getAnnotation($annotation)
     {
         // hasAnnotation parses the docblock
@@ -313,12 +459,26 @@ class CommandInfo
         return $this->otherAnnotations[$annotation];
     }
 
+    /**
+     * Check to see if the specified annotation exists for this command.
+     *
+     * @param string $annotation The name of the annotation.
+     * @return boolean
+     */
     public function hasAnnotation($annotation)
     {
         $this->parseDocBlock();
         return array_key_exists($annotation, $this->otherAnnotations);
     }
 
+    /**
+     * Convert from a method name to the corresponding command name. A
+     * method 'fooBar' will become 'foo:bar', and 'fooBarBazBoz' will
+     * become 'foo:bar-baz-boz'.
+     *
+     * @param type $camel method name.
+     * @return string
+     */
     protected function convertName($camel)
     {
         $splitter="-";
@@ -327,6 +487,13 @@ class CommandInfo
         return strtolower($camel);
     }
 
+    /**
+     * Add an example usage for this command.
+     *
+     * @param string $usage An example of the command, including the command
+     *   name and all of its example arguments and options.
+     * @param string $description An explanation of what the example does.
+     */
     public function setExampleUsage($usage, $description)
     {
         $this->exampleUsage[$usage] = $description;
@@ -389,6 +556,7 @@ class CommandInfo
         }
         return $optionName;
     }
+
     /**
      * Given a list that might be 'a b c' or 'a, b, c' or 'a,b,c',
      * convert the data into the last of these forms.
