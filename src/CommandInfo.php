@@ -93,13 +93,73 @@ class CommandInfo
     }
 
     /**
-     * Return the list of refleaction parameters.
+     * Return the primary name for this command.
      *
-     * @return ReflectionParameter[]
+     * @return string
      */
-    public function getParameters()
+    public function getName()
     {
-        return $this->reflection->getParameters();
+        $this->parseDocBlock();
+        return $this->name;
+    }
+
+    /**
+     * Set the primary name for this command.
+     *
+     * @param string $name
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+
+    /**
+     * Get any annotations included in the docblock comment for the
+     * implementation method of this command that are not already
+     * handled by the primary methods of this class.
+     *
+     * @return array
+     */
+    public function getAnnotations()
+    {
+        $this->parseDocBlock();
+        return $this->otherAnnotations;
+    }
+
+    /**
+     * Return a specific named annotation for this command.
+     *
+     * @param string $annotation The name of the annotation.
+     * @return string
+     */
+    public function getAnnotation($annotation)
+    {
+        // hasAnnotation parses the docblock
+        if (!$this->hasAnnotation($annotation)) {
+            return null;
+        }
+        return $this->otherAnnotations[$annotation];
+    }
+
+    /**
+     * Check to see if the specified annotation exists for this command.
+     *
+     * @param string $annotation The name of the annotation.
+     * @return boolean
+     */
+    public function hasAnnotation($annotation)
+    {
+        $this->parseDocBlock();
+        return array_key_exists($annotation, $this->otherAnnotations);
+    }
+
+    /**
+     * Save any tag that we do not explicitly recognize in the
+     * 'otherAnnotations' map.
+     */
+    public function addOtherAnnotation($name, $content)
+    {
+        $this->otherAnnotations[$name] = $content;
     }
 
     /**
@@ -178,46 +238,25 @@ class CommandInfo
     }
 
     /**
-     * Return the primary name for this command.
+     * Add an example usage for this command.
      *
-     * @return string
+     * @param string $usage An example of the command, including the command
+     *   name and all of its example arguments and options.
+     * @param string $description An explanation of what the example does.
      */
-    public function getName()
+    public function setExampleUsage($usage, $description)
     {
-        $this->parseDocBlock();
-        return $this->name;
+        $this->exampleUsage[$usage] = $description;
     }
 
     /**
-     * Set the primary name for this command.
+     * Return the list of refleaction parameters.
      *
-     * @param string $name
+     * @return ReflectionParameter[]
      */
-    public function setName($name)
+    public function getParameters()
     {
-        $this->name = $name;
-    }
-
-    /**
-     * Examine the parameters of the method for this command, and
-     * build a list of commandline arguements for them.
-     *
-     * @return array
-     */
-    protected function determineAgumentClassifications()
-    {
-        $args = [];
-        $params = $this->reflection->getParameters();
-        if (!empty($this->determineOptionsFromParameters())) {
-            array_pop($params);
-        }
-        foreach ($params as $param) {
-            $defaultValue = $this->getArgumentClassification($param);
-            if ($defaultValue !== false) {
-                $args[$param->name] = $defaultValue;
-            }
-        }
-        return $args;
+        return $this->reflection->getParameters();
     }
 
     /**
@@ -268,33 +307,6 @@ class CommandInfo
     }
 
     /**
-     * Examine the provided parameter, and determine whether it
-     * is a parameter that will be filled in with a positional
-     * commandline argument.
-     *
-     * @return false|null|string|array
-     */
-    protected function getArgumentClassification($param)
-    {
-        $defaultValue = null;
-        if ($param->isDefaultValueAvailable()) {
-            $defaultValue = $param->getDefaultValue();
-            if ($this->isAssoc($defaultValue)) {
-                return false;
-            }
-        }
-        if ($param->isArray()) {
-            return [];
-        }
-        // Commandline arguments must be strings, so ignore
-        // any parameter that is typehinted to anything else.
-        if (($param->getClass() != null) && ($param->getClass() != 'string')) {
-            return false;
-        }
-        return $defaultValue;
-    }
-
-    /**
      * Return the options for is command. The key is the options name,
      * and the value is its default value.
      *
@@ -340,28 +352,6 @@ class CommandInfo
     }
 
     /**
-     * Examine the parameters of the method for this command, and determine
-     * the disposition of the options from them.
-     *
-     * @return array
-     */
-    public function determineOptionsFromParameters()
-    {
-        $params = $this->reflection->getParameters();
-        if (empty($params)) {
-            return [];
-        }
-        $param = end($params);
-        if (!$param->isDefaultValueAvailable()) {
-            return [];
-        }
-        if (!$this->isAssoc($param->getDefaultValue())) {
-            return [];
-        }
-        return $param->getDefaultValue();
-    }
-
-    /**
      * Get the description of one argument.
      *
      * @param string $name The name of the argument.
@@ -383,113 +373,6 @@ class CommandInfo
     {
         $this->parseDocBlock();
         return $this->options->getDescription($name);
-    }
-
-    /**
-     * Helper; determine if an array is associative or not. An array
-     * is not associative if its keys are numeric, and numbered sequentially
-     * from zero. All other arrays are considered to be associative.
-     *
-     * @param arrau $arr The array
-     * @return boolean
-     */
-    protected function isAssoc($arr)
-    {
-        if (!is_array($arr)) {
-            return false;
-        }
-        return array_keys($arr) !== range(0, count($arr) - 1);
-    }
-
-    /**
-     * Get any annotations included in the docblock comment for the
-     * implementation method of this command that are not already
-     * handled by the primary methods of this class.
-     *
-     * @return array
-     */
-    public function getAnnotations()
-    {
-        $this->parseDocBlock();
-        return $this->otherAnnotations;
-    }
-
-    /**
-     * Return a specific named annotation for this command.
-     *
-     * @param string $annotation The name of the annotation.
-     * @return string
-     */
-    public function getAnnotation($annotation)
-    {
-        // hasAnnotation parses the docblock
-        if (!$this->hasAnnotation($annotation)) {
-            return null;
-        }
-        return $this->otherAnnotations[$annotation];
-    }
-
-    /**
-     * Check to see if the specified annotation exists for this command.
-     *
-     * @param string $annotation The name of the annotation.
-     * @return boolean
-     */
-    public function hasAnnotation($annotation)
-    {
-        $this->parseDocBlock();
-        return array_key_exists($annotation, $this->otherAnnotations);
-    }
-
-    /**
-     * Convert from a method name to the corresponding command name. A
-     * method 'fooBar' will become 'foo:bar', and 'fooBarBazBoz' will
-     * become 'foo:bar-baz-boz'.
-     *
-     * @param type $camel method name.
-     * @return string
-     */
-    protected function convertName($camel)
-    {
-        $splitter="-";
-        $camel=preg_replace('/(?!^)[[:upper:]][[:lower:]]/', '$0', preg_replace('/(?!^)[[:upper:]]+/', $splitter.'$0', $camel));
-        $camel = preg_replace("/$splitter/", ':', $camel, 1);
-        return strtolower($camel);
-    }
-
-    /**
-     * Add an example usage for this command.
-     *
-     * @param string $usage An example of the command, including the command
-     *   name and all of its example arguments and options.
-     * @param string $description An explanation of what the example does.
-     */
-    public function setExampleUsage($usage, $description)
-    {
-        $this->exampleUsage[$usage] = $description;
-    }
-
-    /**
-     * Parse the docBlock comment for this command, and set the
-     * fields of this class with the data thereby obtained.
-     */
-    protected function parseDocBlock()
-    {
-        if (!$this->docBlockIsParsed) {
-            $docblock = $this->reflection->getDocComment();
-            $parser = new CommandDocBlockParser($this);
-            $parser->parse($docblock);
-            $this->docBlockIsParsed = true;
-        }
-    }
-
-    /**
-     * Save any tag that we do not explicitly recognize in the
-     * 'otherAnnotations' map.
-     */
-    public function addOtherAnnotation($name, $content)
-    {
-        $this->otherAnnotations[$name] = $content;
     }
 
     /**
@@ -524,6 +407,123 @@ class CommandInfo
             }
         }
         return $optionName;
+    }
+
+    /**
+     * Examine the parameters of the method for this command, and
+     * build a list of commandline arguements for them.
+     *
+     * @return array
+     */
+    protected function determineAgumentClassifications()
+    {
+        $args = [];
+        $params = $this->reflection->getParameters();
+        if (!empty($this->determineOptionsFromParameters())) {
+            array_pop($params);
+        }
+        foreach ($params as $param) {
+            $defaultValue = $this->getArgumentClassification($param);
+            if ($defaultValue !== false) {
+                $args[$param->name] = $defaultValue;
+            }
+        }
+        return $args;
+    }
+
+    /**
+     * Examine the provided parameter, and determine whether it
+     * is a parameter that will be filled in with a positional
+     * commandline argument.
+     *
+     * @return false|null|string|array
+     */
+    protected function getArgumentClassification($param)
+    {
+        $defaultValue = null;
+        if ($param->isDefaultValueAvailable()) {
+            $defaultValue = $param->getDefaultValue();
+            if ($this->isAssoc($defaultValue)) {
+                return false;
+            }
+        }
+        if ($param->isArray()) {
+            return [];
+        }
+        // Commandline arguments must be strings, so ignore
+        // any parameter that is typehinted to anything else.
+        if (($param->getClass() != null) && ($param->getClass() != 'string')) {
+            return false;
+        }
+        return $defaultValue;
+    }
+
+    /**
+     * Examine the parameters of the method for this command, and determine
+     * the disposition of the options from them.
+     *
+     * @return array
+     */
+    protected function determineOptionsFromParameters()
+    {
+        $params = $this->reflection->getParameters();
+        if (empty($params)) {
+            return [];
+        }
+        $param = end($params);
+        if (!$param->isDefaultValueAvailable()) {
+            return [];
+        }
+        if (!$this->isAssoc($param->getDefaultValue())) {
+            return [];
+        }
+        return $param->getDefaultValue();
+    }
+
+    /**
+     * Helper; determine if an array is associative or not. An array
+     * is not associative if its keys are numeric, and numbered sequentially
+     * from zero. All other arrays are considered to be associative.
+     *
+     * @param arrau $arr The array
+     * @return boolean
+     */
+    protected function isAssoc($arr)
+    {
+        if (!is_array($arr)) {
+            return false;
+        }
+        return array_keys($arr) !== range(0, count($arr) - 1);
+    }
+
+    /**
+     * Convert from a method name to the corresponding command name. A
+     * method 'fooBar' will become 'foo:bar', and 'fooBarBazBoz' will
+     * become 'foo:bar-baz-boz'.
+     *
+     * @param string $camel method name.
+     * @return string
+     */
+    protected function convertName($camel)
+    {
+        $splitter="-";
+        $camel=preg_replace('/(?!^)[[:upper:]][[:lower:]]/', '$0', preg_replace('/(?!^)[[:upper:]]+/', $splitter.'$0', $camel));
+        $camel = preg_replace("/$splitter/", ':', $camel, 1);
+        return strtolower($camel);
+    }
+
+    /**
+     * Parse the docBlock comment for this command, and set the
+     * fields of this class with the data thereby obtained.
+     */
+    protected function parseDocBlock()
+    {
+        if (!$this->docBlockIsParsed) {
+            $docblock = $this->reflection->getDocComment();
+            $parser = new CommandDocBlockParser($this);
+            $parser->parse($docblock);
+            $this->docBlockIsParsed = true;
+        }
     }
 
     /**
