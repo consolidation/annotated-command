@@ -36,14 +36,6 @@ class CommandProcessor
         return $this->formatterManager;
     }
 
-    public function getFormatter($format, $annotationData)
-    {
-        if (!isset($this->formatterManager)) {
-            return;
-        }
-        return $this->formatterManager->getFormatter($format, $annotationData);
-    }
-
     public function process(
         OutputInterface $output,
         $names,
@@ -52,18 +44,19 @@ class CommandProcessor
         $args
     ) {
         $result = [];
+        // Recover options from the end of the args
+        $options = end($args);
         try {
             $result = $this->validateRunAndAlter(
                 $names,
                 $commandCallback,
                 $args
             );
+            return $this->handleResults($output, $names, $result, $annotationData, $options);
         } catch (\Exception $e) {
             $result = new CommandError($e->getCode(), $e->getMessage());
+            return $this->handleResults($output, $names, $result, $annotationData, $options);
         }
-        // Recover options from the end of the args
-        $options = end($args);
-        return $this->handleResults($output, $names, $result, $annotationData, $options);
     }
 
     public function validateRunAndAlter(
@@ -97,19 +90,28 @@ class CommandProcessor
     public function handleResults(OutputInterface $output, $names, $result, $annotationData, $options = [])
     {
         $status = $this->hookManager()->determineStatusCode($names, $result);
+        // If the hook manager could not determine the status code, and the
+        // result is an integer, then use the result as the status code
+        // and do not do any output.
         if (is_integer($result) && !isset($status)) {
-            $status = $result;
-            $result = null;
+            return $result;
         }
         $status = $this->interpretStatusCode($status);
 
         // Get the structured output, the output stream and the formatter
-        $outputText = $this->hookManager()->extractOutput($names, $result);
+        $structuredOutput = $this->hookManager()->extractOutput($names, $result);
         $output = $this->chooseOutputStream($output, $status);
-        $formatter = $this->chooseFormatter($annotationData, $options, $status);
-
-        // Output the result text and return status code.
-        $this->writeCommandOutput($outputText, $formatter, $options, $output);
+        if (($status == 0) && isset($this->formatterManager)) {
+            $this->writeUsingFormatter(
+                $output,
+                $structuredOutput,
+                $annotationData,
+                $options
+            );
+        } else {
+            // Output the result text and return status code.
+            $this->writeCommandOutput($output, $structuredOutput);
+        }
         return $status;
     }
 
@@ -125,23 +127,6 @@ class CommandProcessor
             $result = new CommandError($e->getMessage(), $e->getCode());
         }
         return $result;
-    }
-
-    /**
-     * Select the formatter to use.
-     *
-     * Note that if there is an error (status code is nonzero),
-     * then the result object is going to be an error object. This
-     * object may have a string that may be extracted and printed,
-     * but it should never be formatted per the --format option.
-     */
-    protected function chooseFormatter($annotationData, $options, $status)
-    {
-        if ($status) {
-            return;
-        }
-        $format = $this->getFormat($options);
-        return $this->getFormatter($format, $annotationData);
     }
 
     /**
@@ -190,23 +175,31 @@ class CommandProcessor
     }
 
     /**
+     * Call the formatter to output the provided data.
+     */
+    protected function writeUsingFormatter(OutputInterface $output, $structuredOutput, $annotationData, $options)
+    {
+        $format = $this->getFormat($options);
+        $this->formatterManager->write(
+            $output,
+            $format,
+            $structuredOutput,
+            $annotationData,
+            $options
+        );
+    }
+
+    /**
      * If the result object is a string, then print it.
      */
     protected function writeCommandOutput(
-        $outputText,
-        $formatter,
-        $options,
-        OutputInterface $output
+        OutputInterface $output,
+        $structuredOutput
     ) {
-        // If there is a formatter, use it.
-        if (isset($outputText) && $formatter) {
-            $formatter->write($outputText, $options, $output);
-            return;
-        }
         // If there is no formatter, we will print strings,
         // but can do no more than that.
-        if (is_string($outputText)) {
-            $output->writeln($outputText);
+        if (is_string($structuredOutput)) {
+            $output->writeln($structuredOutput);
         }
     }
 
