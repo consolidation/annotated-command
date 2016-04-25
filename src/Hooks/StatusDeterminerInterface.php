@@ -1,8 +1,10 @@
 <?php
-namespace Consolidation\AnnotatedCommand;
+namespace Consolidation\AnnotatedCommand\Hooks;
 
 /**
  * A StatusDeterminer maps from a result to a status exit code.
+ *
+ * @see HookManager::addStatusDeterminer()
  */
 interface StatusDeterminerInterface
 {

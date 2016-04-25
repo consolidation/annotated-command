@@ -1,9 +1,12 @@
 <?php
-namespace Consolidation\AnnotatedCommand;
+namespace Consolidation\AnnotatedCommand\Hooks;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+
+use Consolidation\AnnotatedCommand\ExitCodeInterface;
+use Consolidation\AnnotatedCommand\OutputDataInterface;
 
 /**
  * Manage named callback hooks
@@ -26,12 +29,92 @@ class HookManager
      * Add a hook
      *
      * @param string   $name     The name of the command to hook
+     *   ('*' for all)
      * @param string   $hook     The name of the hook to add
      * @param mixed $callback The callback function to call
      */
-    public function add($name, $hook, $callback)
+    public function add($name, $hook, callable $callback)
     {
         $this->hooks[$name][$hook][] = $callback;
+    }
+
+    /**
+     * Add a validator hook
+     *
+     * @param type ValidatorInterface $validator
+     * @param type $name The name of the command to hook
+     *   ('*' for all)
+     */
+    public function addValidator(ValidatorInterface $validator, $name = '*')
+    {
+        $this->hooks[$name][self::ARGUMENT_VALIDATOR][] = $validator;
+    }
+
+    /**
+     * Add a result processor.
+     *
+     * @param type ProcessResultInterface $resultProcessor
+     * @param type $name The name of the command to hook
+     *   ('*' for all)
+     */
+    public function addResultProcessor(ProcessResultInterface $resultProcessor, $name = '*')
+    {
+        $this->hooks[$name][self::PROCESS_RESULT][] = $resultProcessor;
+    }
+
+    /**
+     * Add a result alterer. After a result is processed
+     * by a result processor, an alter hook may be used
+     * to convert the result from one form to another.
+     *
+     * @param type AlterResultInterface $resultAlterer
+     * @param type $name The name of the command to hook
+     *   ('*' for all)
+     */
+    public function addAlterResult(AlterResultInterface $resultAlterer, $name = '*')
+    {
+        $this->hooks[$name][self::ALTER_RESULT][] = $resultAlterer;
+    }
+
+    /**
+     * Add a status determiner. Usually, a command should return
+     * an integer on error, or a result object on success (which
+     * implies a status code of zero). If a result contains the
+     * status code in some other field, then a status determiner
+     * can be used to call the appropriate accessor method to
+     * determine the status code.  This is usually not necessary,
+     * though; a command that fails may return a CommandError
+     * object, which contains a status code and a result message
+     * to display.
+     * @see CommandError::getExitCode()
+     *
+     * @param type StatusDeterminerInterface $statusDeterminer
+     * @param type $name The name of the command to hook
+     *   ('*' for all)
+     */
+    public function addStatusDeterminer(StatusDeterminerInterface $statusDeterminer, $name = '*')
+    {
+        $this->hooks[$name][self::STATUS_DETERMINER][] = $statusDeterminer;
+    }
+
+    /**
+     * Add an output extractor. If a command returns an object
+     * object, by default it is passed directly to the output
+     * formatter (if in use) for rendering. If the result object
+     * contains more information than just the data to render, though,
+     * then an output extractor can be used to call the appopriate
+     * accessor method of the result object to get the data to
+     * rendered.  This is usually not necessary, though; it is preferable
+     * to have complex result objects implement the OutputDataInterface.
+     * @see OutputDataInterface::getOutputData()
+     *
+     * @param type ExtractOutputInterface $outputExtractor
+     * @param type $name The name of the command to hook
+     *   ('*' for all)
+     */
+    public function addOutputExtractor(ExtractOutputInterface $outputExtractor, $name = '*')
+    {
+        $this->hooks[$name][self::EXTRACT_OUTPUT][] = $outputExtractor;
     }
 
     /**
