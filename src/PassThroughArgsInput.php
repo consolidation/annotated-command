@@ -5,6 +5,13 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\InputDefinition;
 
+/**
+ * PassThroughArgsInput may be used in conjunction with
+ * an ArgvInput to include pass-through args (anything after
+ * a '--' option) to the application.
+ *
+ * @package Consolidation\AnnotatedCommand
+ */
 class PassThroughArgsInput implements InputInterface
 {
     /**

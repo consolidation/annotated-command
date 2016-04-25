@@ -1,8 +1,13 @@
 <?php
-namespace Consolidation\AnnotatedCommand;
+namespace Consolidation\AnnotatedCommand\Hooks;
 
 /**
- * A StatusDeterminer maps from a result to a status exit code.
+ * A result processor takes a result object, processes it, and
+ * returns another result object.  For example, if a result object
+ * represents a 'task', then a task-runner hook could run the
+ * task and return the result from that execution.
+ *
+ * @see HookManager::addResultProcessor()
  */
 interface ProcessResultInterface
 {

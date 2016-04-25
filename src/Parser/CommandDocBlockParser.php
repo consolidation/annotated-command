@@ -1,5 +1,5 @@
 <?php
-namespace Consolidation\AnnotatedCommand;
+namespace Consolidation\AnnotatedCommand\Parser;
 
 use phpDocumentor\Reflection\DocBlock\Tag\ParamTag;
 use phpDocumentor\Reflection\DocBlock;
@@ -7,7 +7,7 @@ use phpDocumentor\Reflection\DocBlock;
 /**
  * Given a class and method name, parse the annotations in the
  * DocBlock comment, and provide accessor methods for all of
- * the elements that are needed to create a Symfony Console Command.
+ * the elements that are needed to create an annotated Command.
  */
 class CommandDocBlockParser
 {
@@ -31,7 +31,7 @@ class CommandDocBlockParser
         'desc' => 'processAlternateDescriptionTag',
     ];
 
-    public function __construct($commandInfo)
+    public function __construct(CommandInfo $commandInfo)
     {
         $this->commandInfo = $commandInfo;
     }

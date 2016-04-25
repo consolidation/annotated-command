@@ -4,7 +4,17 @@ namespace Consolidation\AnnotatedCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Consolidation\AnnotatedCommand\Hooks\HookManager;
+use Consolidation\AnnotatedCommand\Parser\CommandInfo;
 
+/**
+ * The AnnotatedCommandFactory creates commands for your application.
+ * Use the CommandFileDiscovery to find commandfiles, and then use
+ * AnnotatedCommandFactory::createCommandsFromClass() to create
+ * commands.  See the README for more information.
+ *
+ * @package Consolidation\AnnotatedCommand
+ */
 class AnnotatedCommandFactory
 {
     protected $commandProcessor;
@@ -23,6 +33,11 @@ class AnnotatedCommandFactory
     public function commandProcessor()
     {
         return $this->commandProcessor;
+    }
+
+    public function hookManager()
+    {
+        return $this->commandProcessor()->hookManager();
     }
 
     public function addListener($listener)

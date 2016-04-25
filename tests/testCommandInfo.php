@@ -1,6 +1,8 @@
 <?php
 namespace Consolidation\AnnotatedCommand;
 
+use Consolidation\AnnotatedCommand\Parser\CommandInfo;
+
 class CommandInfoTests extends \PHPUnit_Framework_TestCase
 {
     function flattenArray($actualValue)
