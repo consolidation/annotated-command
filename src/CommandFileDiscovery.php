@@ -30,9 +30,13 @@ use Symfony\Component\Finder\Finder;
  */
 class CommandFileDiscovery
 {
+    /** @var string[] */
     protected $excludeList;
+    /** @var string[] */
     protected $searchLocations;
+    /** @var string */
     protected $searchPattern = '*Commands.php';
+    /** @var boolean */
     protected $includeFilesAtBase = true;
 
     public function __construct()
@@ -49,7 +53,7 @@ class CommandFileDiscovery
      * ($directoryList parameter to discover and discoverNamespaced
      * methods), or only in the directories listed in the search paths.
      *
-     * @param type $includeFilesAtBase
+     * @param boolean $includeFilesAtBase
      */
     public function setIncludeFilesAtBase($includeFilesAtBase)
     {
