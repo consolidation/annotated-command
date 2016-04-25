@@ -3,8 +3,5 @@
     <testsuite name="annotation-command">
       <directory prefix="test" suffix=".php">tests</directory>
     </testsuite>
-    <logging>
-        <log type="coverage-clover" target="build/logs/clover.xml"/>
-    </logging>
   </testsuites>
 </phpunit>
