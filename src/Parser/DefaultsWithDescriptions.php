@@ -1,6 +1,5 @@
 <?php
-
-namespace Consolidation\AnnotatedCommand;
+namespace Consolidation\AnnotatedCommand\Parser;
 
 /**
  * An associative array that maps from key to default value;

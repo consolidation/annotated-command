@@ -1,5 +1,5 @@
 <?php
-namespace Consolidation\AnnotatedCommand;
+namespace Consolidation\AnnotatedCommand\Parser;
 
 /**
  * Given a class and method name, parse the annotations in the
