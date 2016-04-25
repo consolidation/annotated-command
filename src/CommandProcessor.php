@@ -9,7 +9,10 @@ use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Consolidation\OutputFormatters\FormatterManager;
 
 /**
- * Process a command, including hooks and other callbacks
+ * Process a command, including hooks and other callbacks.
+ * There should only be one command processor per application.
+ * Provide your command processor to the AnnotatedCommandFactory
+ * via AnnotatedCommandFactory::setCommandProcessor().
  */
 class CommandProcessor
 {
@@ -90,9 +93,7 @@ class CommandProcessor
     public function handleResults(OutputInterface $output, $names, $result, $annotationData, $options = [])
     {
         $status = $this->hookManager()->determineStatusCode($names, $result);
-        // If the hook manager could not determine the status code, and the
-        // result is an integer, then use the result as the status code
-        // and do not do any output.
+        // If the result is an integer and no separate status code was provided, then use the result as the status and do no output.
         if (is_integer($result) && !isset($status)) {
             return $result;
         }
@@ -102,14 +103,8 @@ class CommandProcessor
         $structuredOutput = $this->hookManager()->extractOutput($names, $result);
         $output = $this->chooseOutputStream($output, $status);
         if (($status == 0) && isset($this->formatterManager)) {
-            $this->writeUsingFormatter(
-                $output,
-                $structuredOutput,
-                $annotationData,
-                $options
-            );
+            $this->writeUsingFormatter($output, $structuredOutput, $annotationData, $options);
         } else {
-            // Output the result text and return status code.
             $this->writeCommandOutput($output, $structuredOutput);
         }
         return $status;

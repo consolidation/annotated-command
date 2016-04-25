@@ -9,6 +9,21 @@ use Symfony\Component\Console\Input\InputArgument;
 use Consolidation\AnnotatedCommand\Hooks\HookManager;
 use Consolidation\AnnotatedCommand\Parser\CommandInfo;
 
+/**
+ * AnnotatedCommands are created automatically by the
+ * AnnotatedCommandFactory.  Each command method in a
+ * command file will produce one AnnotatedCommand.  These
+ * are then added to your Symfony Console Application object;
+ * nothing else is needed.
+ *
+ * Optionally, though, you may extend AnnotatedCommand directly
+ * to make a single command.  The usage pattern is the same
+ * as for any other Symfony Console command, except that you may
+ * omit the 'Confiure' method, and instead place your annotations
+ * on the execute() method.
+ *
+ * @package Consolidation\AnnotatedCommand
+ */
 class AnnotatedCommand extends Command
 {
     protected $commandCallback;

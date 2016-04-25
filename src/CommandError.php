@@ -1,6 +1,12 @@
 <?php
 namespace Consolidation\AnnotatedCommand;
 
+/**
+ * Return a CommandError as the result of a command to pass a status
+ * code and error message to be displayed.
+ *
+ * @package Consolidation\AnnotatedCommand
+ */
 class CommandError implements ExitCodeInterface, OutputDataInterface
 {
     protected $message;
