@@ -33,6 +33,7 @@ class CommandFileDiscovery
     protected $excludeList;
     protected $searchLocations;
     protected $searchPattern = '*Commands.php';
+    protected $includeFilesAtBase = true;
 
     public function __construct()
     {
@@ -41,6 +42,19 @@ class CommandFileDiscovery
             'Command',
             'CliTools', // TODO: Maybe remove
         ];
+    }
+
+    /**
+     * Specify whether to search for files at the base directory
+     * ($directoryList parameter to discover and discoverNamespaced
+     * methods), or only in the directories listed in the search paths.
+     *
+     * @param type $includeFilesAtBase
+     */
+    public function setIncludeFilesAtBase($includeFilesAtBase)
+    {
+        $this->includeFilesAtBase = $includeFilesAtBase;
+        return $this;
     }
 
     /**
@@ -181,9 +195,12 @@ class CommandFileDiscovery
      */
     protected function discoverCommandFiles($directory, $baseNamespace)
     {
+        $commandFiles = [];
         // In the search location itself, we will search for command files
         // immediately inside the directory only.
-        $commandFiles = $this->discoverCommandFilesInLocation($directory, '== 0', $baseNamespace);
+        if ($this->includeFilesAtBase) {
+            $commandFiles = $this->discoverCommandFilesInLocation($directory, '== 0', $baseNamespace);
+        }
 
         // In the other search locations,
         foreach ($this->searchLocations as $location) {

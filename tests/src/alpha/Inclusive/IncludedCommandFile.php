@@ -1,5 +1,5 @@
 <?php
-namespace Consolidation\TestUtils\alpha\Include;
+namespace Consolidation\TestUtils\alpha\Inclusive;
 
 /**
  * Test file used in the testCommandDiscovery() test.

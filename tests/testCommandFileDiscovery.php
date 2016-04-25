@@ -20,7 +20,7 @@ class CommandFileDiscoveryTests extends \PHPUnit_Framework_TestCase
         // find were all found.
         $this->assertContains('./src/ExampleCommandFile.php', $commandFilePaths);
         $this->assertContains('./src/alpha/AlphaCommandFile.php', $commandFilePaths);
-        $this->assertContains('./src/alpha/Include/IncludedCommandFile.php', $commandFilePaths);
+        $this->assertContains('./src/alpha/Inclusive/IncludedCommandFile.php', $commandFilePaths);
 
         // Make sure that there are no additional items found.
         $this->assertEquals(3, count($commandFilePaths));
@@ -29,7 +29,7 @@ class CommandFileDiscoveryTests extends \PHPUnit_Framework_TestCase
         // to be generated all match.
         $this->assertContains('\Consolidation\TestUtils\ExampleCommandFile', $commandFileNamespaces);
         $this->assertContains('\Consolidation\TestUtils\alpha\AlphaCommandFile', $commandFileNamespaces);
-        $this->assertContains('\Consolidation\TestUtils\alpha\Include\IncludedCommandFile', $commandFileNamespaces);
+        $this->assertContains('\Consolidation\TestUtils\alpha\Inclusive\IncludedCommandFile', $commandFileNamespaces);
 
         // We do not need to test for additional namespace items, because we
         // know that the length of the array_keys must be the same as the

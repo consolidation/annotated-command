@@ -61,6 +61,7 @@ class AnnotatedCommandFactory
     {
         $this->notify($commandFileInstance);
         $commandInfoList = $this->getCommandInfoListFromClass($commandFileInstance);
+        $this->registerCommandHooksFromClassInfo($commandInfoList, $commandFileInstance);
         return $this->createCommandsFromClassInfo($commandInfoList, $commandFileInstance);
     }
 
