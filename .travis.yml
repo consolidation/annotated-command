@@ -24,3 +24,6 @@ before_script:
 script:
   - vendor/bin/phpcs --standard=PSR2 -n src
   - vendor/bin/phpunit
+
+after_success:
+  - travis_retry php vendor/bin/coveralls -v
