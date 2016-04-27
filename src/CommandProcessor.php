@@ -149,6 +149,8 @@ class CommandProcessor
      * (or perhaps even Drush 1) that indicates that the command
      * should select the output format that is most appropriate
      * for use in scripts (e.g. to pipe to another command).
+     *
+     * @return string
      */
     protected function getFormat($options)
     {
