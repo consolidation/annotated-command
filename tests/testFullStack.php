@@ -10,11 +10,15 @@ use Symfony\Component\Console\Application;
 
 use Consolidation\AnnotatedCommand\Parser\CommandInfo;
 
+use Consolidation\AnnotatedCommand\CommandProcessor;
+use Consolidation\AnnotatedCommand\Hooks\HookManager;
 use Consolidation\AnnotatedCommand\Hooks\ValidatorInterface;
 use Consolidation\AnnotatedCommand\Hooks\ProcessResultInterface;
 use Consolidation\AnnotatedCommand\Hooks\AlterResultInterface;
 use Consolidation\AnnotatedCommand\Hooks\ExtractOutputInterface;
 use Consolidation\AnnotatedCommand\Hooks\StatusDeterminerInterface;
+
+use Consolidation\OutputFormatters\FormatterManager;
 
 /**
  * Do a test of all of the classes in this project, top-to-bottom.
@@ -41,11 +45,17 @@ class FullStackTests extends \PHPUnit_Framework_TestCase
         chdir(__DIR__);
         $commandFiles = $discovery->discover('.', '\Consolidation\TestUtils');
 
+        $formatter = new FormatterManager();
+        $hookManager = new HookManager();
+        $commandProcessor = new CommandProcessor($hookManager);
+        $commandProcessor->setFormatterManager($formatter);
+
         // Create a new factory, and load all of the files
         // discovered above.  The command factory class is
         // tested in isolation in testAnnotatedCommandFactory.php,
         // but this is the only place where
         $factory = new AnnotatedCommandFactory();
+        $factory->setCommandProcessor($commandProcessor);
         // $factory->addListener(...);
         foreach ($commandFiles as $path => $commandClass) {
             $this->assertFileExists($path);
@@ -79,6 +89,30 @@ class FullStackTests extends \PHPUnit_Framework_TestCase
         $this->assertRunCommandViaApplicationEquals('example:cat bet alpha --flip', 'alphabeta');
         $this->assertRunCommandViaApplicationEquals('example:echo a b c', 'a,b,c');
         $this->assertRunCommandViaApplicationEquals('example:message', 'Shipwrecked; send bananas.');
+
+        $expected = <<<EOT
++------+------+-------+
+| I    | II   | III   |
++------+------+-------+
+| One  | Two  | Three |
+| Eins | Zwei | Drei  |
+| Ichi | Ni   | San   |
+| Uno  | Dos  | Tres  |
++------+------+-------+
+EOT;
+        $this->assertRunCommandViaApplicationEquals('example:table', $expected);
+
+        $expected = <<<EOT
++-------+------+
+| III   | II   |
++-------+------+
+| Three | Two  |
+| Drei  | Zwei |
+| San   | Ni   |
+| Tres  | Dos  |
++-------+------+
+EOT;
+        $this->assertRunCommandViaApplicationEquals('example:table --fields=III,II', $expected);
     }
 
     function assertRunCommandViaApplicationEquals($cmd, $expectedOutput, $expectedStatusCode = 0)
