@@ -9,6 +9,7 @@ use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Consolidation\OutputFormatters\FormatterManager;
 use Consolidation\OutputFormatters\FormatterOptions;
 use Consolidation\AnnotatedCommand\Hooks\HookManager;
+
 /**
  * Process a command, including hooks and other callbacks.
  * There should only be one command processor per application.
