@@ -7,6 +7,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 
 use Consolidation\OutputFormatters\FormatterManager;
+use Consolidation\OutputFormatters\FormatterOptions;
+use Consolidation\AnnotatedCommand\Hooks\HookManager;
 
 /**
  * Process a command, including hooks and other callbacks.
@@ -16,14 +18,20 @@ use Consolidation\OutputFormatters\FormatterManager;
  */
 class CommandProcessor
 {
+    /** var HookManager */
     protected $hookManager;
+    /** var FormatterManager */
     protected $formatterManager;
 
-    public function __construct($hookManager)
+    public function __construct(HookManager $hookManager)
     {
         $this->hookManager = $hookManager;
     }
 
+    /**
+     * Return the hook manager
+     * @return HookManager
+     */
     public function hookManager()
     {
         return $this->hookManager;
@@ -34,6 +42,10 @@ class CommandProcessor
         $this->formatterManager = $formatterManager;
     }
 
+    /**
+     * Return the formatter manager
+     * @return FormatterManager
+     */
     public function formatterManager()
     {
         return $this->formatterManager;
@@ -137,6 +149,8 @@ class CommandProcessor
      * (or perhaps even Drush 1) that indicates that the command
      * should select the output format that is most appropriate
      * for use in scripts (e.g. to pipe to another command).
+     *
+     * @return string
      */
     protected function getFormat($options)
     {
@@ -175,12 +189,12 @@ class CommandProcessor
     protected function writeUsingFormatter(OutputInterface $output, $structuredOutput, $annotationData, $options)
     {
         $format = $this->getFormat($options);
+        $formatterOptions = new FormatterOptions($annotationData, $options);
         $this->formatterManager->write(
             $output,
             $format,
             $structuredOutput,
-            $annotationData,
-            $options
+            $formatterOptions
         );
     }
 
