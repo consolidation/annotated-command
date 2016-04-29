@@ -2,6 +2,7 @@
 namespace Consolidation\AnnotatedCommand\Parser;
 
 use phpDocumentor\Reflection\DocBlock\Tag\ParamTag;
+use phpDocumentor\Reflection\DocBlock\Tag\ReturnTag;
 use phpDocumentor\Reflection\DocBlock;
 
 /**
@@ -23,6 +24,7 @@ class CommandDocBlockParser
         'command' => 'processCommandTag',
         'name' => 'processCommandTag',
         'param' => 'processArgumentTag',
+        'return' => 'processReturnTag',
         'option' => 'processOptionTag',
         'default' => 'processDefaultTag',
         'aliases' => 'processAliases',
@@ -102,6 +104,17 @@ class CommandDocBlockParser
         $variableName = str_replace('$', '', $variableName);
         $description = static::removeLineBreaks($tag->getDescription());
         $this->commandInfo->arguments()->add($variableName, $description);
+    }
+
+    /**
+     * Store the data from a @return annotation in our argument descriptions.
+     */
+    protected function processReturnTag($tag)
+    {
+        if (!$tag instanceof ReturnTag) {
+            return;
+        }
+        $this->commandInfo->setReturnType($tag->getType());
     }
 
     /**

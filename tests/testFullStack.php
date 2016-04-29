@@ -30,6 +30,14 @@ class FullStackTests extends \PHPUnit_Framework_TestCase
         $this->application->setAutoExit(false);
     }
 
+    function testValidFormats()
+    {
+        $formatter = new FormatterManager();
+        $commandInfo = new CommandInfo('\Consolidation\TestUtils\alpha\AlphaCommandFile', 'exampleTable');
+        $this->assertEquals('example:table', $commandInfo->getName());
+        $this->assertEquals('\Consolidation\OutputFormatters\StructuredData\RowsOfFields', $commandInfo->getReturnType());
+    }
+
     function testCommandsAndHooks()
     {
         // First, search for commandfiles in the 'alpha'
@@ -59,13 +67,22 @@ class FullStackTests extends \PHPUnit_Framework_TestCase
         // $factory->addListener(...);
         foreach ($commandFiles as $path => $commandClass) {
             $this->assertFileExists($path);
-            include $path;
+            if (!class_exists($commandClass)) {
+                include $path;
+            }
             $commandInstance = new $commandClass();
             $commandList = $factory->createCommandsFromClass($commandInstance);
             foreach ($commandList as $command) {
                 $this->application->add($command);
             }
         }
+
+        // Fetch a reference to the 'example:table' command and test its valid format types
+        $exampleTableCommand = $this->application->find('example:table');
+        $returnType = $exampleTableCommand->getReturnType();
+        $this->assertEquals('\Consolidation\OutputFormatters\StructuredData\RowsOfFields', $returnType);
+        $validFormats = $formatter->validFormats($returnType);
+        $this->assertEquals('csv,json,list,php,print-r,sections,table,var_export,yaml', implode(',', $validFormats));
 
         // Control: run commands without hooks.
         $this->assertRunCommandViaApplicationEquals('always:fail', 'This command always fails.', 13);

@@ -65,6 +65,11 @@ class CommandInfo
     protected $methodName;
 
     /**
+     * @var string
+     */
+    protected $returnType;
+
+    /**
      * Create a new CommandInfo class for a particular method of a class.
      *
      * @param string|mixed $classNameOrInstance The name of a class, or an
@@ -111,6 +116,17 @@ class CommandInfo
     public function setName($name)
     {
         $this->name = $name;
+    }
+
+    public function getReturnType()
+    {
+        $this->parseDocBlock();
+        return $this->returnType;
+    }
+
+    public function setReturnType($returnType)
+    {
+        $this->returnType = $returnType;
     }
 
     /**
