@@ -363,7 +363,8 @@ class CommandInfo
     {
         $args = [];
         $params = $this->reflection->getParameters();
-        if (!empty($this->determineOptionsFromParameters())) {
+        $optionsFromParameters = $this->determineOptionsFromParameters();
+        if (!empty($optionsFromParameters)) {
             array_pop($params);
         }
         foreach ($params as $param) {
