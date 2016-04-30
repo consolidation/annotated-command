@@ -21,6 +21,10 @@ class HookManager
     const STATUS_DETERMINER = 'status';
     const EXTRACT_OUTPUT = 'extract';
 
+    const PRE_STAGE = 'pre-';
+    const PRIMARY_STAGE = '';
+    const POST_STAGE = 'post-';
+
     public function __construct()
     {
     }
@@ -45,9 +49,10 @@ class HookManager
      * @param type $name The name of the command to hook
      *   ('*' for all)
      */
-    public function addValidator(ValidatorInterface $validator, $name = '*')
+    public function addValidator(ValidatorInterface $validator, $name = '*', $stage = self::PRIMARY_STAGE)
     {
-        $this->hooks[$name][self::ARGUMENT_VALIDATOR][] = $validator;
+        $this->checkValidStage($stage);
+        $this->hooks[$name][$stage . self::ARGUMENT_VALIDATOR][] = $validator;
     }
 
     /**
@@ -57,9 +62,10 @@ class HookManager
      * @param type $name The name of the command to hook
      *   ('*' for all)
      */
-    public function addResultProcessor(ProcessResultInterface $resultProcessor, $name = '*')
+    public function addResultProcessor(ProcessResultInterface $resultProcessor, $name = '*', $stage = self::PRIMARY_STAGE)
     {
-        $this->hooks[$name][self::PROCESS_RESULT][] = $resultProcessor;
+        $this->checkValidStage($stage);
+        $this->hooks[$name][$stage . self::PROCESS_RESULT][] = $resultProcessor;
     }
 
     /**
@@ -71,9 +77,10 @@ class HookManager
      * @param type $name The name of the command to hook
      *   ('*' for all)
      */
-    public function addAlterResult(AlterResultInterface $resultAlterer, $name = '*')
+    public function addAlterResult(AlterResultInterface $resultAlterer, $name = '*', $stage = self::PRIMARY_STAGE)
     {
-        $this->hooks[$name][self::ALTER_RESULT][] = $resultAlterer;
+        $this->checkValidStage($stage);
+        $this->hooks[$name][$stage . self::ALTER_RESULT][] = $resultAlterer;
     }
 
     /**
@@ -318,6 +325,14 @@ class HookManager
         }
         if (is_callable($extractor)) {
             return $extractor($result);
+        }
+    }
+
+    protected function checkValidStage($stage)
+    {
+        $validStages = [self::PRE_STAGE, self::PRIMARY_STAGE, self::POST_STAGE];
+        if (!in_array($stage, $validStages)) {
+            throw new \Exception("Invalid stage '$stage' specified; must be one of " . implode(',', $validStages));
         }
     }
 }
