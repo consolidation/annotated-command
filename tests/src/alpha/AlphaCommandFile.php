@@ -57,6 +57,7 @@ class AlphaCommandFile
      * @usage try:formatters --format=csv
      * @usage try:formatters --fields=first,third
      * @usage try:formatters --fields=III,II
+     * @return \Consolidation\OutputFormatters\StructuredData\RowsOfFields
      */
     public function exampleTable($options = ['format' => 'table', 'fields' => ''])
     {

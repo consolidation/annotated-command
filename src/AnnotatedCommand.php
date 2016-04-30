@@ -31,6 +31,7 @@ class AnnotatedCommand extends Command
     protected $annotationData;
     protected $usesInputInterface;
     protected $usesOutputInterface;
+    protected $returnType;
 
     public function __construct($name = null)
     {
@@ -78,6 +79,16 @@ class AnnotatedCommand extends Command
         return $this->commandProcessor;
     }
 
+    public function getReturnType()
+    {
+        return $this->returnType;
+    }
+
+    public function setReturnType($returnType)
+    {
+        $this->returnType = $returnType;
+    }
+
     public function setAnnotationData($annotationData)
     {
         $this->annotationData = $annotationData;
@@ -95,6 +106,7 @@ class AnnotatedCommand extends Command
         }
         $this->setCommandArguments($commandInfo);
         $this->setCommandOptions($commandInfo);
+        $this->setReturnType($commandInfo->getReturnType());
     }
 
     protected function setCommandArguments($commandInfo)

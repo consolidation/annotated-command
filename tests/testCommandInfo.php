@@ -51,4 +51,11 @@ class CommandInfoTests extends \PHPUnit_Framework_TestCase
             $commandInfo->options()->getDescription('negate')
         );
     }
+
+    function testReturnValue()
+    {
+        $commandInfo = new CommandInfo('\Consolidation\TestUtils\alpha\AlphaCommandFile', 'exampleTable');
+        $this->assertEquals('example:table', $commandInfo->getName());
+        $this->assertEquals('\Consolidation\OutputFormatters\StructuredData\RowsOfFields', $commandInfo->getReturnType());
+    }
 }
