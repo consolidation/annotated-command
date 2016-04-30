@@ -22,7 +22,7 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
 
         $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
 
-        $this->assertInstanceOf(Command::class, $command);
+        $this->assertInstanceOf('\Symfony\Component\Console\Command\Command', $command);
         $this->assertEquals('test:arithmatic', $command->getName());
         $this->assertEquals('This is the test:arithmatic command', $command->getDescription());
         $this->assertEquals("This command will add one and two. If the --negate flag\nis provided, then the result is negated.", $command->getHelp());
@@ -42,7 +42,7 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
 
         $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
 
-        $this->assertInstanceOf(Command::class, $command);
+        $this->assertInstanceOf('\Symfony\Component\Console\Command\Command', $command);
         $this->assertEquals('my:cat', $command->getName());
         $this->assertEquals('This is the my:cat command', $command->getDescription());
         $this->assertEquals("This command will concatinate two parameters. If the --flip flag\nis provided, then the result is the concatination of two and one.", $command->getHelp());
@@ -62,7 +62,7 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
 
         $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
 
-        $this->assertInstanceOf(Command::class, $command);
+        $this->assertInstanceOf('\Symfony\Component\Console\Command\Command', $command);
         $this->assertEquals('command:with-no-options', $command->getName());
         $this->assertEquals('This is a command with no options', $command->getDescription());
         $this->assertEquals("This command will concatinate two parameters.", $command->getHelp());
@@ -82,7 +82,7 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
 
         $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
 
-        $this->assertInstanceOf(Command::class, $command);
+        $this->assertInstanceOf('\Symfony\Component\Console\Command\Command', $command);
         $this->assertEquals('command:with-no-arguments', $command->getName());
         $this->assertEquals('This command has no arguments--only options', $command->getDescription());
         $this->assertEquals("Return a result only if not silent.", $command->getHelp());
@@ -104,7 +104,7 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
 
         $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
 
-        $this->assertInstanceOf(Command::class, $command);
+        $this->assertInstanceOf('\Symfony\Component\Console\Command\Command', $command);
         $this->assertEquals('shortcut:on-annotation', $command->getName());
         $this->assertEquals('Shortcut on annotation', $command->getDescription());
         $this->assertEquals("This command defines the option shortcut on the annotation instead of in the options array.", $command->getHelp());
@@ -126,7 +126,7 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
 
         $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
 
-        $this->assertInstanceOf(Command::class, $command);
+        $this->assertInstanceOf('\Symfony\Component\Console\Command\Command', $command);
         $this->assertEquals('test:state', $command->getName());
 
         $input = new StringInput('test:state');
@@ -141,7 +141,7 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
 
         $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
 
-        $this->assertInstanceOf(Command::class, $command);
+        $this->assertInstanceOf('\Symfony\Component\Console\Command\Command', $command);
         $this->assertEquals('test:passthrough', $command->getName());
 
         $input = new StringInput('test:passthrough a b c');
@@ -183,7 +183,7 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
         $commandInfo = $commandFactory->createCommandInfo($commandFileInstance, 'testHook');
         $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
 
-        $this->assertInstanceOf(Command::class, $command);
+        $this->assertInstanceOf('\Symfony\Component\Console\Command\Command', $command);
         $this->assertEquals('test:hook', $command->getName());
 
         $input = new StringInput('test:hook bar');
@@ -198,7 +198,7 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
 
         $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
 
-        $this->assertInstanceOf(Command::class, $command);
+        $this->assertInstanceOf('\Symfony\Component\Console\Command\Command', $command);
         $this->assertEquals('test:hook', $command->getName());
 
         // Run the command once without the hook
@@ -244,7 +244,7 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
         $commandInfo = $commandFactory->createCommandInfo($commandFileInstance, 'testHello');
         $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
 
-        $this->assertInstanceOf(Command::class, $command);
+        $this->assertInstanceOf('\Symfony\Component\Console\Command\Command', $command);
         $this->assertEquals('test:hello', $command->getName());
 
         $input = new StringInput('test:hello "Mickey Mouse"');
