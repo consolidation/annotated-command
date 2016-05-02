@@ -9,8 +9,9 @@ use Consolidation\AnnotatedCommand\Parser\CommandInfo;
 
 /**
  * The AnnotatedCommandFactory creates commands for your application.
- * Use the CommandFileDiscovery to find commandfiles, and then use
- * AnnotatedCommandFactory::createCommandsFromClass() to create
+ * Use with a Dependency Injection Container and the CommandFactory.
+ * Alternately, use the CommandFileDiscovery to find commandfiles, and
+ * then use AnnotatedCommandFactory::createCommandsFromClass() to create
  * commands.  See the README for more information.
  *
  * @package Consolidation\AnnotatedCommand
@@ -19,6 +20,7 @@ class AnnotatedCommandFactory
 {
     protected $commandProcessor;
     protected $listeners = [];
+    protected $allPublicMethodsAreCommands = true;
 
     public function __construct()
     {
@@ -33,6 +35,16 @@ class AnnotatedCommandFactory
     public function commandProcessor()
     {
         return $this->commandProcessor;
+    }
+
+    public function setAllPublicMethodsAreCommands($allPublicMethods)
+    {
+        $this->allPublicMethodsAreCommands = $allPublicMethods;
+    }
+
+    public function getAllPublicMethodsAreCommands()
+    {
+        return $this->allPublicMethodsAreCommands;
     }
 
     public function hookManager()
@@ -96,13 +108,24 @@ class AnnotatedCommandFactory
         $commandList = [];
 
         foreach ($commandInfoList as $commandInfo) {
-            if (!$commandInfo->hasAnnotation('hook')) {
+            if ($this->isCommandMethod($commandInfo)) {
                 $command = $this->createCommand($commandInfo, $commandFileInstance);
                 $commandList[] = $command;
             }
         }
 
         return $commandList;
+    }
+
+    protected function isCommandMethod($commandInfo)
+    {
+        if ($commandInfo->hasAnnotation('hook')) {
+            return false;
+        }
+        if ($commandInfo->hasAnnotation('command')) {
+            return true;
+        }
+        return $this->getAllPublicMethodsAreCommands();
     }
 
     public function registerCommandHooksFromClassInfo($commandInfoList, $commandFileInstance)
