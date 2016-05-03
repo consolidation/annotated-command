@@ -20,7 +20,6 @@ class AnnotatedCommandFactory
 {
     protected $commandProcessor;
     protected $listeners = [];
-    protected $allPublicMethodsAreCommands = true;
 
     public function __construct()
     {
@@ -35,16 +34,6 @@ class AnnotatedCommandFactory
     public function commandProcessor()
     {
         return $this->commandProcessor;
-    }
-
-    public function setAllPublicMethodsAreCommands($allPublicMethods)
-    {
-        $this->allPublicMethodsAreCommands = $allPublicMethods;
-    }
-
-    public function getAllPublicMethodsAreCommands()
-    {
-        return $this->allPublicMethodsAreCommands;
     }
 
     public function hookManager()
@@ -69,12 +58,12 @@ class AnnotatedCommandFactory
         }
     }
 
-    public function createCommandsFromClass($commandFileInstance)
+    public function createCommandsFromClass($commandFileInstance, $includeAllPublicMethods = true)
     {
         $this->notify($commandFileInstance);
         $commandInfoList = $this->getCommandInfoListFromClass($commandFileInstance);
         $this->registerCommandHooksFromClassInfo($commandInfoList, $commandFileInstance);
-        return $this->createCommandsFromClassInfo($commandInfoList, $commandFileInstance);
+        return $this->createCommandsFromClassInfo($commandInfoList, $commandFileInstance, $includeAllPublicMethods);
     }
 
     public function getCommandInfoListFromClass($classNameOrInstance)
@@ -103,12 +92,12 @@ class AnnotatedCommandFactory
         return new CommandInfo($classNameOrInstance, $commandMethodName);
     }
 
-    public function createCommandsFromClassInfo($commandInfoList, $commandFileInstance)
+    public function createCommandsFromClassInfo($commandInfoList, $commandFileInstance, $includeAllPublicMethods = true)
     {
         $commandList = [];
 
         foreach ($commandInfoList as $commandInfo) {
-            if ($this->isCommandMethod($commandInfo)) {
+            if ($this->isCommandMethod($commandInfo, $includeAllPublicMethods)) {
                 $command = $this->createCommand($commandInfo, $commandFileInstance);
                 $commandList[] = $command;
             }
@@ -117,7 +106,7 @@ class AnnotatedCommandFactory
         return $commandList;
     }
 
-    protected function isCommandMethod($commandInfo)
+    protected function isCommandMethod($commandInfo, $includeAllPublicMethods)
     {
         if ($commandInfo->hasAnnotation('hook')) {
             return false;
@@ -125,7 +114,7 @@ class AnnotatedCommandFactory
         if ($commandInfo->hasAnnotation('command')) {
             return true;
         }
-        return $this->getAllPublicMethodsAreCommands();
+        return $includeAllPublicMethods;
     }
 
     public function registerCommandHooksFromClassInfo($commandInfoList, $commandFileInstance)

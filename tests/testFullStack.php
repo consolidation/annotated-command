@@ -65,17 +65,10 @@ class FullStackTests extends \PHPUnit_Framework_TestCase
         $factory = new AnnotatedCommandFactory();
         $factory->setCommandProcessor($commandProcessor);
         // $factory->addListener(...);
-        foreach ($commandFiles as $path => $commandClass) {
-            $this->assertFileExists($path);
-            if (!class_exists($commandClass)) {
-                include $path;
-            }
-            $commandInstance = new $commandClass();
-            $commandList = $factory->createCommandsFromClass($commandInstance);
-            foreach ($commandList as $command) {
-                $this->application->add($command);
-            }
-        }
+        $this->addDiscoveredCommands($factory, $commandFiles, false);
+
+        $this->assertTrue($this->application->has('example:table'));
+        $this->assertFalse($this->application->has('without:annotations'));
 
         // Fetch a reference to the 'example:table' command and test its valid format types
         $exampleTableCommand = $this->application->find('example:table');
@@ -130,6 +123,25 @@ EOT;
 +-------+------+
 EOT;
         $this->assertRunCommandViaApplicationEquals('example:table --fields=III,II', $expected);
+
+        // Now we will once again add all commands, this time including all
+        // public methods.  The command 'withoutAnnotations' should now be found.
+        $this->addDiscoveredCommands($factory, $commandFiles, true);
+        $this->assertTrue($this->application->has('without:annotations'));
+    }
+
+    public function addDiscoveredCommands($factory, $commandFiles, $includeAllPublicMethods) {
+        foreach ($commandFiles as $path => $commandClass) {
+            $this->assertFileExists($path);
+            if (!class_exists($commandClass)) {
+                include $path;
+            }
+            $commandInstance = new $commandClass();
+            $commandList = $factory->createCommandsFromClass($commandInstance, $includeAllPublicMethods);
+            foreach ($commandList as $command) {
+                $this->application->add($command);
+            }
+        }
     }
 
     function assertRunCommandViaApplicationEquals($cmd, $expectedOutput, $expectedStatusCode = 0)
