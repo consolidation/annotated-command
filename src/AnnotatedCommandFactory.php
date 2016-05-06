@@ -159,7 +159,7 @@ class AnnotatedCommandFactory
 
         // Register the hook
         $callback = [$commandFileInstance, $commandInfo->getMethodName()];
-        $this->commandProcessor()->hookManager()->add($commandName, $hook, $callback);
+        $this->commandProcessor()->hookManager()->add($callback, $hook, $commandName);
     }
 
     protected function getNthWord($string, $n, $default, $delimiter = ' ')

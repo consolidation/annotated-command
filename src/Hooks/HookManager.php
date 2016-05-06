@@ -34,12 +34,12 @@ class HookManager
     /**
      * Add a hook
      *
+     * @param mixed $callback The callback function to call
+     * @param string   $hook     The name of the hook to add
      * @param string   $name     The name of the command to hook
      *   ('*' for all)
-     * @param string   $hook     The name of the hook to add
-     * @param mixed $callback The callback function to call
      */
-    public function add($name, $hook, callable $callback)
+    public function add(callable $callback, $hook, $name = '*')
     {
         $this->hooks[$name][$hook][] = $callback;
     }
