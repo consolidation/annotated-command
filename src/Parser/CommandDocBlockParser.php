@@ -23,7 +23,8 @@ class CommandDocBlockParser
     protected $tagProcessors = [
         'command' => 'processCommandTag',
         'name' => 'processCommandTag',
-        'param' => 'processArgumentTag',
+        'arg' => 'processArgumentTag',
+        'param' => 'processParamTag',
         'return' => 'processReturnTag',
         'option' => 'processOptionTag',
         'default' => 'processDefaultTag',
@@ -93,9 +94,17 @@ class CommandDocBlockParser
     }
 
     /**
-     * Store the data from a @param annotation in our argument descriptions.
+     * Store the data from a @arg annotation in our argument descriptions.
      */
     protected function processArgumentTag($tag)
+    {
+        $this->addOptionOrArgumentTag($tag, $this->commandInfo->arguments());
+    }
+
+    /**
+     * Store the data from a @param annotation in our argument descriptions.
+     */
+    protected function processParamTag($tag)
     {
         if (!$tag instanceof ParamTag) {
             return;
@@ -135,13 +144,18 @@ class CommandDocBlockParser
      */
     protected function processOptionTag($tag)
     {
+        $this->addOptionOrArgumentTag($tag, $this->commandInfo->options());
+    }
+
+    protected function addOptionOrArgumentTag($tag, DefaultsWithDescriptions $set)
+    {
         if (!$this->pregMatchNameAndDescription($tag->getDescription(), $match)) {
             return;
         }
         $variableName = $this->commandInfo->findMatchingOption($match['name']);
         $desc = $match['description'];
         $description = static::removeLineBreaks($desc);
-        $this->commandInfo->options()->add($variableName, $description);
+        $set->add($variableName, $description);
     }
 
     /**

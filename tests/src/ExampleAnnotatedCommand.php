@@ -34,8 +34,8 @@ class ExampleAnnotatedCommand extends AnnotatedCommand
      * is provided, then the result is the concatination of two and one.
      *
      * @command my:cat
-     * @param string $one The first parameter.
-     * @param string $two The other parameter.
+     * @arg string $one The first parameter.
+     * @arg string $two The other parameter.
      * @default $two ''
      * @option boolean $flip Whether or not the second parameter should come first in the result.
      * @aliases c
