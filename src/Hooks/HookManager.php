@@ -5,16 +5,23 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+use Symfony\Component\Console\ConsoleEvents;
+use Symfony\Component\Console\Event\ConsoleCommandEvent;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+
 use Consolidation\AnnotatedCommand\ExitCodeInterface;
 use Consolidation\AnnotatedCommand\OutputDataInterface;
 
 /**
  * Manage named callback hooks
  */
-class HookManager
+class HookManager implements EventSubscriberInterface
 {
     protected $hooks = [];
 
+    const PRE_COMMAND_EVENT = 'pre-command';
+    const COMMAND_EVENT = 'command';
+    const POST_COMMAND_EVENT = 'post-command';
     const PRE_ARGUMENT_VALIDATOR = 'pre-validate';
     const ARGUMENT_VALIDATOR = 'validate';
     const POST_ARGUMENT_VALIDATOR = 'post-validate';
@@ -245,6 +252,11 @@ class HookManager
         return $this->getHooks($names, self::EXTRACT_OUTPUT);
     }
 
+    protected function getCommandEvents($names)
+    {
+        return $this->getHooks($names, self::COMMAND_EVENT);
+    }
+
     /**
      * Get a set of hooks with the provided name(s). Include the
      * pre- and post- hooks, and also include the global hooks ('*')
@@ -325,5 +337,30 @@ class HookManager
         if (is_callable($extractor)) {
             return $extractor($result);
         }
+    }
+
+
+    /**
+     * @param ConsoleCommandEvent $event
+     */
+    public function callCommandEventHooks(ConsoleCommandEvent $event)
+    {
+        /* @var Command $command */
+        $command = $event->getCommand();
+        $names = [$command->getName()];
+        $commandEventHooks = $this->getCommandEvents($names);
+        foreach ($commandEventHooks as $commandEvent) {
+            if (is_callable($commandEvent)) {
+                $commandEvent($event);
+            }
+        }
+    }
+
+    /**
+     * @{@inheritdoc}
+     */
+    public static function getSubscribedEvents()
+    {
+        return [ConsoleEvents::COMMAND => 'callCommandEventHooks'];
     }
 }
