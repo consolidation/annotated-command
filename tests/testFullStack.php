@@ -101,26 +101,26 @@ class FullStackTests extends \PHPUnit_Framework_TestCase
         $this->assertRunCommandViaApplicationEquals('example:message', 'Shipwrecked; send bananas.');
 
         $expected = <<<EOT
-+------+------+-------+
-| I    | II   | III   |
-+------+------+-------+
-| One  | Two  | Three |
-| Eins | Zwei | Drei  |
-| Ichi | Ni   | San   |
-| Uno  | Dos  | Tres  |
-+------+------+-------+
+ ------ ------ -------
+  I      II     III
+ ------ ------ -------
+  One    Two    Three
+  Eins   Zwei   Drei
+  Ichi   Ni     San
+  Uno    Dos    Tres
+ ------ ------ -------
 EOT;
         $this->assertRunCommandViaApplicationEquals('example:table', $expected);
 
         $expected = <<<EOT
-+-------+------+
-| III   | II   |
-+-------+------+
-| Three | Two  |
-| Drei  | Zwei |
-| San   | Ni   |
-| Tres  | Dos  |
-+-------+------+
+ ------- ------
+  III     II
+ ------- ------
+  Three   Two
+  Drei    Zwei
+  San     Ni
+  Tres    Dos
+ ------- ------
 EOT;
         $this->assertRunCommandViaApplicationEquals('example:table --fields=III,II', $expected);
 
@@ -152,8 +152,16 @@ EOT;
         $statusCode = $this->application->run($input, $output);
         $commandOutput = trim($output->fetch());
 
+        $expectedOutput = $this->simplifyWhitespace($expectedOutput);
+        $commandOutput = $this->simplifyWhitespace($commandOutput);
+
         $this->assertEquals($expectedOutput, $commandOutput);
         $this->assertEquals($expectedStatusCode, $statusCode);
+    }
+
+    function simplifyWhitespace($data)
+    {
+        return trim(preg_replace('#[ \t]+$#m', '', $data));
     }
 }
 
