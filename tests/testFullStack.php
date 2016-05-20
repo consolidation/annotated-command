@@ -75,7 +75,7 @@ class FullStackTests extends \PHPUnit_Framework_TestCase
         $returnType = $exampleTableCommand->getReturnType();
         $this->assertEquals('\Consolidation\OutputFormatters\StructuredData\RowsOfFields', $returnType);
         $validFormats = $formatter->validFormats($returnType);
-        $this->assertEquals('csv,json,list,php,print-r,sections,table,var_export,yaml', implode(',', $validFormats));
+        $this->assertEquals('csv,json,list,php,print-r,sections,table,var_export,xml,yaml', implode(',', $validFormats));
 
         // Control: run commands without hooks.
         $this->assertRunCommandViaApplicationEquals('always:fail', 'This command always fails.', 13);
