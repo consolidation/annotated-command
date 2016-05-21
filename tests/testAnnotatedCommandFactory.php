@@ -54,6 +54,28 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
         $this->assertRunCommandViaApplicationEquals($command, $input, 'alphabet');
     }
 
+    function testDefaultsCommand()
+    {
+        $commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile;
+        $commandFactory = new AnnotatedCommandFactory();
+        $commandInfo = $commandFactory->createCommandInfo($commandFileInstance, 'defaults');
+
+        $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
+
+        $this->assertInstanceOf('\Symfony\Component\Console\Command\Command', $command);
+        $this->assertEquals('defaults', $command->getName());
+        $this->assertEquals('Test default values in arguments', $command->getDescription());
+
+        $input = new StringInput('defaults');
+        $this->assertRunCommandViaApplicationEquals($command, $input, 'nothing provided');
+
+        $input = new StringInput('defaults ichi');
+        $this->assertRunCommandViaApplicationEquals($command, $input, 'only ichi');
+
+        $input = new StringInput('defaults I II');
+        $this->assertRunCommandViaApplicationEquals($command, $input, 'I and II');
+    }
+
     function testCommandWithNoOptions()
     {
         $commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile;

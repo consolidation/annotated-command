@@ -84,7 +84,7 @@ class CommandInfo
         // This can be overridden via @command or @name annotations.
         $this->name = $this->convertName($this->reflection->name);
         $this->options = new DefaultsWithDescriptions($this->determineOptionsFromParameters(), false);
-        $this->arguments = new DefaultsWithDescriptions($this->determineAgumentClassifications());
+        $this->arguments = $this->determineAgumentClassifications();
     }
 
     /**
@@ -361,46 +361,39 @@ class CommandInfo
      */
     protected function determineAgumentClassifications()
     {
-        $args = [];
+        $result = new DefaultsWithDescriptions();
         $params = $this->reflection->getParameters();
         $optionsFromParameters = $this->determineOptionsFromParameters();
         if (!empty($optionsFromParameters)) {
             array_pop($params);
         }
         foreach ($params as $param) {
-            $defaultValue = $this->getArgumentClassification($param);
-            if ($defaultValue !== false) {
-                $args[$param->name] = $defaultValue;
-            }
+            $this->addParameterToResult($result, $param);
         }
-        return $args;
+        return $result;
     }
 
     /**
      * Examine the provided parameter, and determine whether it
      * is a parameter that will be filled in with a positional
      * commandline argument.
-     *
-     * @return false|null|string|array
      */
-    protected function getArgumentClassification($param)
+    protected function addParameterToResult($result, $param)
     {
-        $defaultValue = null;
+        // Commandline arguments must be strings, so ignore any
+        // parameter that is typehinted to any non-primative class.
+        if ($param->getClass() != null) {
+            return;
+        }
+        $result->add($param->name);
         if ($param->isDefaultValueAvailable()) {
             $defaultValue = $param->getDefaultValue();
-            if ($this->isAssoc($defaultValue)) {
-                return false;
+            if (!$this->isAssoc($defaultValue)) {
+                $result->setDefaultValue($param->name, $defaultValue);
             }
+        } elseif ($param->isArray()) {
+            $result->setDefaultValue($param->name, []);
         }
-        if ($param->isArray()) {
-            return [];
-        }
-        // Commandline arguments must be strings, so ignore
-        // any parameter that is typehinted to anything else.
-        if (($param->getClass() != null) && ($param->getClass() != 'string')) {
-            return false;
-        }
-        return $defaultValue;
     }
 
     /**

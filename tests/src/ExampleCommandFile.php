@@ -167,4 +167,22 @@ class ExampleCommandFile
             return new CommandError("I won't say hello to Donald Duck.");
         }
     }
+
+    /**
+     * Test default values in arguments
+     *
+     * @param string|null $one
+     * @param string|null $two
+     * @return string
+     */
+    public function defaults($one = null, $two = null)
+    {
+        if ($one && $two) {
+            return "$one and $two";
+        }
+        if ($one) {
+            return "only $one";
+        }
+        return "nothing provided";
+    }
 }

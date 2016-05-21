@@ -154,14 +154,15 @@ class AnnotatedCommand extends Command
         $args = $commandInfo->arguments()->getValues();
         foreach ($args as $name => $defaultValue) {
             $description = $commandInfo->arguments()->getDescription($name);
-            $parameterMode = $this->getCommandArgumentMode($defaultValue);
+            $hasDefault = $commandInfo->arguments()->hasDefault($name);
+            $parameterMode = $this->getCommandArgumentMode($hasDefault, $defaultValue);
             $this->addArgument($name, $parameterMode, $description, $defaultValue);
         }
     }
 
-    protected function getCommandArgumentMode($defaultValue)
+    protected function getCommandArgumentMode($hasDefault, $defaultValue)
     {
-        if (!isset($defaultValue)) {
+        if (!$hasDefault) {
             return InputArgument::REQUIRED;
         }
         if (is_array($defaultValue)) {

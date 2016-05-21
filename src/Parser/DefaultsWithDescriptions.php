@@ -13,6 +13,12 @@ class DefaultsWithDescriptions
     protected $values;
 
     /**
+     * @var array Associative array used like a set to indicate default value
+     * exists for the key.
+     */
+    protected $hasDefault;
+
+    /**
      * @var array Associative array of key : description mappings
      */
     protected $descriptions;
@@ -23,9 +29,10 @@ class DefaultsWithDescriptions
      */
     protected $defaultDefault;
 
-    public function __construct($values, $defaultDefault = null)
+    public function __construct($values = [], $defaultDefault = null)
     {
         $this->values = $values;
+        $this->hasDefault = [];
         $this->descriptions = [];
         $this->defaultDefault = $defaultDefault;
     }
@@ -86,7 +93,7 @@ class DefaultsWithDescriptions
      * @param string $description Help text for the argument.
      * @param mixed $defaultValue The default value for the argument.
      */
-    public function add($key, $description, $defaultValue = null)
+    public function add($key, $description = '', $defaultValue = null)
     {
         if (!$this->exists($key) || isset($defaultValue)) {
             $this->values[$key] = isset($defaultValue) ? $defaultValue : $this->defaultDefault;
@@ -106,6 +113,18 @@ class DefaultsWithDescriptions
     public function setDefaultValue($key, $defaultValue)
     {
         $this->values[$key] = $defaultValue;
+        $this->hasDefault[$key] = true;
+    }
+
+    /**
+     * Check to see if the named argument definitively has a default value.
+     *
+     * @param string $key
+     * @return bool
+     */
+    public function hasDefault($key)
+    {
+        return array_key_exists($key, $this->hasDefault);
     }
 
     /**
