@@ -17,7 +17,7 @@ class AnnotatedCommandTests extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('\Symfony\Component\Console\Command\Command', $command);
         $this->assertEquals('my:cat', $command->getName());
         $this->assertEquals('This is the my:cat command implemented as an AnnotatedCommand subclass.', $command->getDescription());
-        $this->assertEquals("This command will concatinate two parameters. If the --flip flag\nis provided, then the result is the concatination of two and one.", $command->getHelp());
+        $this->assertEquals("This command will concatenate two parameters. If the --flip flag\nis provided, then the result is the concatenation of two and one.", $command->getHelp());
         $this->assertEquals('c', implode(',', $command->getAliases()));
         // Symfony Console composes the synopsis; perhaps we should not test it. Remove if this gives false failures.
         $this->assertEquals('my:cat [--flip] [--] <one> [<two>]', $command->getSynopsis());
