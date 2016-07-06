@@ -45,7 +45,7 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('\Symfony\Component\Console\Command\Command', $command);
         $this->assertEquals('my:cat', $command->getName());
         $this->assertEquals('This is the my:cat command', $command->getDescription());
-        $this->assertEquals("This command will concatinate two parameters. If the --flip flag\nis provided, then the result is the concatination of two and one.", $command->getHelp());
+        $this->assertEquals("This command will concatenate two parameters. If the --flip flag\nis provided, then the result is the concatenation of two and one.", $command->getHelp());
         $this->assertEquals('c', implode(',', $command->getAliases()));
         $this->assertEquals('my:cat [--flip] [--] <one> [<two>]', $command->getSynopsis());
         $this->assertEquals('my:cat bet alpha --flip', implode(',', $command->getUsages()));
@@ -87,7 +87,7 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('\Symfony\Component\Console\Command\Command', $command);
         $this->assertEquals('command:with-no-options', $command->getName());
         $this->assertEquals('This is a command with no options', $command->getDescription());
-        $this->assertEquals("This command will concatinate two parameters.", $command->getHelp());
+        $this->assertEquals("This command will concatenate two parameters.", $command->getHelp());
         $this->assertEquals('nope', implode(',', $command->getAliases()));
         $this->assertEquals('command:with-no-options <one> [<two>]', $command->getSynopsis());
         $this->assertEquals('command:with-no-options alpha bet', implode(',', $command->getUsages()));

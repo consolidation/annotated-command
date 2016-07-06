@@ -30,8 +30,8 @@ class ExampleAnnotatedCommand extends AnnotatedCommand
     /**
      * This is the my:cat command implemented as an AnnotatedCommand subclass.
      *
-     * This command will concatinate two parameters. If the --flip flag
-     * is provided, then the result is the concatination of two and one.
+     * This command will concatenate two parameters. If the --flip flag
+     * is provided, then the result is the concatenation of two and one.
      *
      * @command my:cat
      * @arg string $one The first parameter.
@@ -40,7 +40,7 @@ class ExampleAnnotatedCommand extends AnnotatedCommand
      * @option boolean $flip Whether or not the second parameter should come first in the result.
      * @aliases c
      * @usage bet alpha --flip
-     *   Concatinate "alpha" and "bet".
+     *   Concatenate "alpha" and "bet".
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {

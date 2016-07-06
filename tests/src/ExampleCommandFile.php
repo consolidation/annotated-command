@@ -26,15 +26,15 @@ class ExampleCommandFile
     /**
      * This is the my:cat command
      *
-     * This command will concatinate two parameters. If the --flip flag
-     * is provided, then the result is the concatination of two and one.
+     * This command will concatenate two parameters. If the --flip flag
+     * is provided, then the result is the concatenation of two and one.
      *
      * @param string $one The first parameter.
      * @param string $two The other parameter.
      * @option boolean $flip Whether or not the second parameter should come first in the result.
      * @aliases c
      * @usage bet alpha --flip
-     *   Concatinate "alpha" and "bet".
+     *   Concatenate "alpha" and "bet".
      */
     public function myCat($one, $two = '', $options = ['flip' => false])
     {
@@ -47,13 +47,13 @@ class ExampleCommandFile
     /**
      * This is a command with no options
      *
-     * This command will concatinate two parameters.
+     * This command will concatenate two parameters.
      *
      * @param $one The first parameter.
      * @param $two The other parameter.
      * @aliases nope
      * @usage alpha bet
-     *   Concatinate "alpha" and "bet".
+     *   Concatenate "alpha" and "bet".
      */
     public function commandWithNoOptions($one, $two = 'default')
     {
