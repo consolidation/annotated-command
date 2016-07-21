@@ -37,12 +37,12 @@ class CommandInfo
     /**
      * @var DefaultsWithDescriptions
      */
-    protected $options = [];
+    protected $options;
 
     /**
      * @var DefaultsWithDescriptions
      */
-    protected $arguments = [];
+    protected $arguments;
 
     /**
      * @var array
@@ -70,6 +70,11 @@ class CommandInfo
     protected $returnType;
 
     /**
+     * @var string
+     */
+    protected $optionParamName;
+
+    /**
      * Create a new CommandInfo class for a particular method of a class.
      *
      * @param string|mixed $classNameOrInstance The name of a class, or an
@@ -85,6 +90,11 @@ class CommandInfo
         $this->name = $this->convertName($this->reflection->name);
         $this->options = new DefaultsWithDescriptions($this->determineOptionsFromParameters(), false);
         $this->arguments = $this->determineAgumentClassifications();
+        // Remember the name of the last parameter, if it holds the options.
+        // We will use this information to ignore @param annotations for the options.
+        if (!empty($this->options)) {
+            $this->optionParamName = $this->lastParameterName();
+        }
     }
 
     /**
@@ -296,6 +306,15 @@ class CommandInfo
     }
 
     /**
+     * Return the name of the last parameter if it holds the options.
+     */
+    public function optionParamName()
+    {
+        return $this->optionParamName;
+    }
+
+
+    /**
      * An option might have a name such as 'silent|s'. In this
      * instance, we will allow the @option or @default tag to
      * reference the option only by name (e.g. 'silent' or 's'
@@ -416,6 +435,16 @@ class CommandInfo
             return [];
         }
         return $param->getDefaultValue();
+    }
+
+    protected function lastParameterName()
+    {
+        $params = $this->reflection->getParameters();
+        $param = end($params);
+        if (!$param) {
+            return '';
+        }
+        return $param->name;
     }
 
     /**

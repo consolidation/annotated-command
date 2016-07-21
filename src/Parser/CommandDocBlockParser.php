@@ -112,6 +112,9 @@ class CommandDocBlockParser
         $variableName = $tag->getVariableName();
         $variableName = str_replace('$', '', $variableName);
         $description = static::removeLineBreaks($tag->getDescription());
+        if ($variableName == $this->commandInfo->optionParamName()) {
+            return;
+        }
         $this->commandInfo->arguments()->add($variableName, $description);
     }
 

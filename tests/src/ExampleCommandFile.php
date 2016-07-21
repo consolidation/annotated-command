@@ -79,6 +79,7 @@ class ExampleCommandFile
      *
      * This command defines the option shortcut on the annotation instead of in the options array.
      *
+     * @param $opts The options
      * @option $silent|s Supress output.
      */
     public function shortcutOnAnnotation($opts = ['silent' => false])
