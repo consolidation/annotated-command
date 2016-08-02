@@ -20,7 +20,8 @@ class CommandDocBlockParser3 extends AbstractCommandDocBlockParser
     public function parse()
     {
         // DocBlockFactory::create fails if the comment is empty.
-        if (empty($this->reflection->getDocComment())) {
+        $docComment = $this->reflection->getDocComment();
+        if (empty($docComment)) {
             return;
         }
         $phpdoc = $this->createDocBlock();

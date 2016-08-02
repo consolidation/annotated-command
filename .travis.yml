@@ -20,7 +20,6 @@ cache:
     - $HOME/.composer/cache
 
 before_script:
-  - 'if [ "$TRAVIS_PHP_VERSION" = "5.4" ]; then composer require "phpdocumentor/reflection-docblock:^2.0"; fi'
   - composer install
 
 script:
