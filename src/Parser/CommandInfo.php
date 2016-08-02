@@ -1,6 +1,9 @@
 <?php
 namespace Consolidation\AnnotatedCommand\Parser;
 
+use Consolidation\AnnotatedCommand\Parser\Internal\CommandDocBlockParser;
+use Consolidation\AnnotatedCommand\Parser\Internal\CommandDocBlockParserFactory;
+
 /**
  * Given a class and method name, parse the annotations in the
  * DocBlock comment, and provide accessor methods for all of
@@ -486,9 +489,9 @@ class CommandInfo
     protected function parseDocBlock()
     {
         if (!$this->docBlockIsParsed) {
-            $docblock = $this->reflection->getDocComment();
-            $parser = new CommandDocBlockParser($this);
-            $parser->parse($docblock);
+            // The parse function will insert data from the provided method
+            // into this object, using our accessors.
+            CommandDocBlockParserFactory::parse($this, $this->reflection);
             $this->docBlockIsParsed = true;
         }
     }
