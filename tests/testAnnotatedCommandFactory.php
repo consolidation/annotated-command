@@ -182,6 +182,30 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
         $input = new StringInput('my:cat bet --flip');
         $input = new PassThroughArgsInput(['x', 'y', 'z'], $input);
         $this->assertRunCommandViaApplicationEquals($command, $input, 'x y zbet');
+        // Can't look at 'hasOption' until after the command initializes the
+        // option, because Symfony.
+        $this->assertTrue($input->hasOption('flip'));
+    }
+
+    function testPassThroughWithInputManipulation()
+    {
+        $commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile;
+        $commandFactory = new AnnotatedCommandFactory();
+        $commandInfo = $commandFactory->createCommandInfo($commandFileInstance, 'myRepeat');
+
+        $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
+
+        $input = new StringInput('my:repeat bet --repeat=2');
+        $input = new PassThroughArgsInput(['x', 'y', 'z'], $input);
+        $this->assertRunCommandViaApplicationEquals($command, $input, 'betx y zbetx y z');
+        // Symfony does not allow us to manipulate the options via setOption until
+        // the definition from the command object has been set up.
+        $input->setOption('repeat', 3);
+        $this->assertEquals(3, $input->getOption('repeat'));
+        $input->setArgument(0, 'q');
+        // Manipulating $input does not work -- the changes are not effective.
+        // The end result here should be 'qx y yqx y yqx y y'
+        $this->assertRunCommandViaApplicationEquals($command, $input, 'betx y zbetx y z');
     }
 
     function testHookedCommand()

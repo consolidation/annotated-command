@@ -44,6 +44,11 @@ class ExampleCommandFile
         return "{$one}{$two}";
     }
 
+    public function myRepeat($one, $two = '', $options = ['repeat' => 1])
+    {
+        return str_repeat("{$one}{$two}", $options['repeat']);
+    }
+
     /**
      * This is a command with no options
      *
