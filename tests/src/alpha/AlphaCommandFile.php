@@ -98,4 +98,20 @@ class AlphaCommandFile
     {
         return 'ok';
     }
+
+    /**
+     * @command command:with-one-optional-argument
+     *
+     * This command has just one optional argument.
+     *
+     * Return a result only if not silent.
+     *
+     * @option $silent Supress output.
+     */
+    public function commandWithOneOptionalArgument($who = 'world', $opts = ['silent|s' => false])
+    {
+        if (!$opts['silent']) {
+            return "Hello, $who";
+        }
+    }
 }

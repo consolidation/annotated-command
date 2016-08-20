@@ -84,6 +84,8 @@ class FullStackTests extends \PHPUnit_Framework_TestCase
         $this->assertRunCommandViaApplicationEquals('example:cat bet alpha --flip', 'alphabet');
         $this->assertRunCommandViaApplicationEquals('example:echo a b c', '');
         $this->assertRunCommandViaApplicationEquals('example:message', '');
+        $this->assertRunCommandViaApplicationEquals('command:with-one-optional-argument', 'Hello, world');
+        $this->assertRunCommandViaApplicationEquals('command:with-one-optional-argument Joe', 'Hello, Joe');
 
         // Add some hooks.
         $factory->hookManager()->addValidator(new ExampleValidator());
