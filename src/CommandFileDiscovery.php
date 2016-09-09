@@ -38,6 +38,8 @@ class CommandFileDiscovery
     protected $searchPattern = '*Commands.php';
     /** @var boolean */
     protected $includeFilesAtBase = true;
+    /** @var integer */
+    protected $searchDepth = 2;
 
     public function __construct()
     {
@@ -84,6 +86,18 @@ class CommandFileDiscovery
     {
         $this->excludeList[] = $exclude;
         return $this;
+    }
+
+    /**
+     * Set the search depth.  By default, fills immediately in the
+     * base directory are searched, plus all of the search locations
+     * to this specified depth.  If the search locations is set to
+     * an empty array, then the base directory is searched to this
+     * depth.
+     */
+    public function setSearchDepth($searchDepth)
+    {
+        $this->searchDepth = $searchDepth;
     }
 
     /**
@@ -188,7 +202,7 @@ class CommandFileDiscovery
      * can be found. This will reduce the need to search through many unrelated
      * files.
      *
-     * The valid search locations include:
+     * The default search locations include:
      *
      *    .
      *    CliTools
@@ -203,7 +217,11 @@ class CommandFileDiscovery
         // In the search location itself, we will search for command files
         // immediately inside the directory only.
         if ($this->includeFilesAtBase) {
-            $commandFiles = $this->discoverCommandFilesInLocation($directory, '== 0', $baseNamespace);
+            $commandFiles = $this->discoverCommandFilesInLocation(
+                $directory,
+                $this->getBaseDirectorySearchDepth(),
+                $baseNamespace
+            );
         }
 
         // In the other search locations,
@@ -211,10 +229,43 @@ class CommandFileDiscovery
             $itemsNamespace = $this->joinNamespace([$baseNamespace, $location]);
             $commandFiles = array_merge(
                 $commandFiles,
-                $this->discoverCommandFilesInLocation("$directory/$location", '< 2', $itemsNamespace)
+                $this->discoverCommandFilesInLocation(
+                    "$directory/$location",
+                    $this->getSearchDepth(),
+                    $itemsNamespace
+                )
             );
         }
         return $commandFiles;
+    }
+
+    /**
+     * Return a Finder search depth appropriate for our selected search depth.
+     *
+     * @return string
+     */
+    protected function getSearchDepth()
+    {
+        return $this->searchDepth <= 0 ? '== 0' : '< ' . $this->searchDepth;
+    }
+
+    /**
+     * Return a Finder search depth for the base directory.  If the
+     * searchLocations array has been populated, then we will only search
+     * for files immediately inside the base directory; no traversal into
+     * deeper directories will be done, as that would conflict with the
+     * specification provided by the search locations.  If there is no
+     * search location, then we will search to whatever depth was specified
+     * by the client.
+     *
+     * @return string
+     */
+    protected function getBaseDirectorySearchDepth()
+    {
+        if (!empty($this->searchLocations)) {
+            return '== 0';
+        }
+        return $this->getSearchDepth();
     }
 
     /**
@@ -238,13 +289,14 @@ class CommandFileDiscovery
 
         $commands = [];
         foreach ($finder as $file) {
+            $relativePathName = $file->getRelativePathname();
             $relativeNamespaceAndClassname = str_replace(
                 ['/', '.php'],
                 ['\\', ''],
-                $file->getRelativePathname()
+                $relativePathName
             );
             $classname = $this->joinNamespace([$baseNamespace, $relativeNamespaceAndClassname]);
-            $commandFilePath = $this->joinPaths([$directory, $file->getRelativePathname()]);
+            $commandFilePath = $this->joinPaths([$directory, $relativePathName]);
             $commands[$commandFilePath] = $classname;
         }
 
