@@ -98,6 +98,7 @@ class CommandFileDiscovery
     public function setSearchDepth($searchDepth)
     {
         $this->searchDepth = $searchDepth;
+        return $this;
     }
 
     /**
@@ -246,7 +247,7 @@ class CommandFileDiscovery
      */
     protected function getSearchDepth()
     {
-        return $this->searchDepth <= 0 ? '== 0' : '< ' . $this->searchDepth;
+        return $this->searchDepth <= 0 ? '== 0' : '<= ' . $this->searchDepth;
     }
 
     /**

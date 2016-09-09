@@ -42,6 +42,7 @@ class CommandFileDiscoveryTests extends \PHPUnit_Framework_TestCase
         $discovery = new CommandFileDiscovery();
         $discovery
           ->setSearchPattern('*CommandFile.php')
+          ->setSearchDepth(1)
           ->setSearchLocations([]);
 
         chdir(__DIR__);
