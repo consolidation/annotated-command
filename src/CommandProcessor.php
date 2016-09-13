@@ -211,9 +211,10 @@ class CommandProcessor
 
     /**
      * Description
-     * @param type $output
-     * @param type $status
-     * @param type $structuredOutput
+     * @param OutputInterface $output
+     * @param int $status
+     * @param string $structuredOutput
+     * @param mixed $originalResult
      * @return type
      */
     protected function writeErrorMessage($output, $status, $structuredOutput, $originalResult)
