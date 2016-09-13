@@ -331,6 +331,19 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
 
         $input = new StringInput('test:hello "Donald Duck"');
         $this->assertRunCommandViaApplicationEquals($command, $input, "I won't say hello to Donald Duck.", 1);
+
+        $input = new StringInput('test:hello "Drumph"');
+        $this->assertRunCommandViaApplicationEquals($command, $input, "Irrational value error.", 1);
+
+        // Try the last test again with a display error function installed.
+        $commandFactory->commandProcessor()->setDisplayErrorFunction(
+            function ($output, $message) {
+                $output->writeln("*** $message ****");
+            }
+        );
+
+        $input = new StringInput('test:hello "Drumph"');
+        $this->assertRunCommandViaApplicationEquals($command, $input, "*** Irrational value error. ****", 1);
     }
 
     function assertRunCommandViaApplicationEquals($command, $input, $expectedOutput, $expectedStatusCode = 0)
