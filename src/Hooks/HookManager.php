@@ -11,6 +11,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 use Consolidation\AnnotatedCommand\ExitCodeInterface;
 use Consolidation\AnnotatedCommand\OutputDataInterface;
+use Consolidation\AnnotatedCommand\AnnotationData;
 
 /**
  * Manage named callback hooks
@@ -49,6 +50,18 @@ class HookManager implements EventSubscriberInterface
     public function add(callable $callback, $hook, $name = '*')
     {
         $this->hooks[$name][$hook][] = $callback;
+    }
+
+    /**
+     * Add a pre-validator hook
+     *
+     * @param type ValidatorInterface $validator
+     * @param type $name The name of the command to hook
+     *   ('*' for all)
+     */
+    public function addPreValidator(ValidatorInterface $validator, $name = '*')
+    {
+        $this->hooks[$name][self::PRE_ARGUMENT_VALIDATOR][] = $validator;
     }
 
     /**
@@ -130,28 +143,11 @@ class HookManager implements EventSubscriberInterface
         $this->hooks[$name][self::EXTRACT_OUTPUT][] = $outputExtractor;
     }
 
-    /**
-     * Get a set of hooks with the provided name(s).
-     *
-     * @param string|array $names The name of the function being hooked.
-     * @param string $hook The specific hook name (e.g. alter)
-     *
-     * @return callable[]
-     */
-    public function get($names, $hook)
+    public function validateArguments($names, $args, AnnotationData $annotationData)
     {
-        $hooks = [];
-        foreach ((array)$names as $name) {
-            $hooks = array_merge($hooks, $this->getHook($name, $hook));
-        }
-        return $hooks;
-    }
-
-    public function validateArguments($names, $args)
-    {
-        $validators = $this->getValidators($names);
+        $validators = $this->getValidators($names, $annotationData);
         foreach ($validators as $validator) {
-            $validated = $this->callValidator($validator, $args);
+            $validated = $this->callValidator($validator, $args, $annotationData);
             if (is_object($validated)) {
                 return $validated;
             }
@@ -167,15 +163,15 @@ class HookManager implements EventSubscriberInterface
      * Allow client to add transformation / interpretation
      * callbacks.
      */
-    public function alterResult($names, $result, $args)
+    public function alterResult($names, $result, $args, AnnotationData $annotationData)
     {
-        $processors = $this->getProcessResultHooks($names);
+        $processors = $this->getProcessResultHooks($names, $annotationData);
         foreach ($processors as $processor) {
-            $result = $this->callProcessor($processor, $result, $args);
+            $result = $this->callProcessor($processor, $result, $args, $annotationData);
         }
-        $alterers = $this->getAlterResultHooks($names);
+        $alterers = $this->getAlterResultHooks($names, $annotationData);
         foreach ($alterers as $alterer) {
-            $result = $this->callProcessor($alterer, $result, $args);
+            $result = $this->callProcessor($alterer, $result, $args, $annotationData);
         }
 
         return $result;
@@ -227,9 +223,9 @@ class HookManager implements EventSubscriberInterface
         return $result;
     }
 
-    protected function getValidators($names)
+    protected function getValidators($names, AnnotationData $annotationData)
     {
-        return $this->getHooks($names, self::ARGUMENT_VALIDATOR);
+        return $this->getHooks($names, self::ARGUMENT_VALIDATOR, $annotationData);
     }
 
     protected function getStatusDeterminers($names)
@@ -237,14 +233,14 @@ class HookManager implements EventSubscriberInterface
         return $this->getHooks($names, self::STATUS_DETERMINER);
     }
 
-    protected function getProcessResultHooks($names)
+    protected function getProcessResultHooks($names, AnnotationData $annotationData)
     {
-        return $this->getHooks($names, self::PROCESS_RESULT);
+        return $this->getHooks($names, self::PROCESS_RESULT, $annotationData);
     }
 
-    protected function getAlterResultHooks($names)
+    protected function getAlterResultHooks($names, AnnotationData $annotationData)
     {
-        return $this->getHooks($names, self::ALTER_RESULT);
+        return $this->getHooks($names, self::ALTER_RESULT, $annotationData);
     }
 
     protected function getOutputExtractors($names)
@@ -267,15 +263,37 @@ class HookManager implements EventSubscriberInterface
      *
      * @return callable[]
      */
-    protected function getHooks($names, $hook)
+    protected function getHooks($names, $hook, $annotationData = null)
     {
-        $names = (array)$names;
+        $names = array_merge(
+            (array)$names,
+            ($annotationData == null) ? [] : array_map(function ($item) {
+                return "@$item";
+            }, $annotationData->keys())
+        );
         $names[] = '*';
         return array_merge(
             $this->get($names, "pre-$hook"),
             $this->get($names, $hook),
             $this->get($names, "post-$hook")
         );
+    }
+
+    /**
+     * Get a set of hooks with the provided name(s).
+     *
+     * @param string|array $names The name of the function being hooked.
+     * @param string $hook The specific hook name (e.g. alter)
+     *
+     * @return callable[]
+     */
+    public function get($names, $hook)
+    {
+        $hooks = [];
+        foreach ((array)$names as $name) {
+            $hooks = array_merge($hooks, $this->getHook($name, $hook));
+        }
+        return $hooks;
     }
 
     /**
@@ -294,24 +312,30 @@ class HookManager implements EventSubscriberInterface
         return [];
     }
 
-    protected function callValidator($validator, $args)
+    protected function callValidator($validator, $args, AnnotationData $annotationData)
     {
+        // TODO: Adding AnnotationData to ValidatorInterface would be
+        // a breaking change. Either hold off until 2.x, or make
+        // a new interface containing a method that takes the extra parameter.
         if ($validator instanceof ValidatorInterface) {
             return $validator->validate($args);
         }
         if (is_callable($validator)) {
-            return $validator($args);
+            return $validator($args, $annotationData);
         }
     }
 
-    protected function callProcessor($processor, $result, $args)
+    protected function callProcessor($processor, $result, $args, AnnotationData $annotationData)
     {
         $processed = null;
+        // TODO: Adding AnnotationData to ProcessResultInterface would be
+        // a breaking change. Either hold off until 2.x, or make
+        // a new interface containing a method that takes the extra parameter.
         if ($processor instanceof ProcessResultInterface) {
             $processed = $processor->process($result, $args);
         }
         if (is_callable($processor)) {
-            $processed = $processor($result, $args);
+            $processed = $processor($result, $args, $annotationData);
         }
         if (isset($processed)) {
             return $processed;
@@ -338,7 +362,6 @@ class HookManager implements EventSubscriberInterface
             return $extractor($result);
         }
     }
-
 
     /**
      * @param ConsoleCommandEvent $event

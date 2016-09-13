@@ -5,6 +5,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Consolidation\AnnotatedCommand\CommandError;
+use Consolidation\AnnotatedCommand\AnnotationData;
 
 /**
  * Test file used in the Annotation Factory tests.  It is also
@@ -157,6 +158,32 @@ class ExampleCommandFile
     public function hookTestHook($result)
     {
         return "<$result>";
+    }
+
+    /**
+     * This test is very similar to the preceding test, except
+     * it uses an annotation hook instead of a named-function hook.
+     *
+     * @hookme
+     * @before >
+     * @after <
+     */
+    public function testAnnotationHook($parameter)
+    {
+        return "($parameter)";
+    }
+
+    /**
+     * Wrap the results of test:hook in whatever the @before and @after
+     * annotations contain.
+     *
+     * @hook alter @hookme
+     */
+    public function hookTestAnnotatedHook($result, $args, AnnotationData $annotationData)
+    {
+        $before = $annotationData->get('before', '-');
+        $after = $annotationData->get('after', '-');
+        return "$before$result$after";
     }
 
     public function testHello($who)

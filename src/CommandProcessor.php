@@ -55,7 +55,7 @@ class CommandProcessor
         OutputInterface $output,
         $names,
         $commandCallback,
-        $annotationData,
+        AnnotationData $annotationData,
         $args
     ) {
         $result = [];
@@ -65,7 +65,8 @@ class CommandProcessor
             $result = $this->validateRunAndAlter(
                 $names,
                 $commandCallback,
-                $args
+                $args,
+                $annotationData
             );
             return $this->handleResults($output, $names, $result, $annotationData, $options);
         } catch (\Exception $e) {
@@ -77,11 +78,12 @@ class CommandProcessor
     public function validateRunAndAlter(
         $names,
         $commandCallback,
-        $args
+        $args,
+        AnnotationData $annotationData
     ) {
         // Validators return any object to signal a validation error;
         // if the return an array, it replaces the arguments.
-        $validated = $this->hookManager()->validateArguments($names, $args);
+        $validated = $this->hookManager()->validateArguments($names, $args, $annotationData);
         if (is_object($validated)) {
             return $validated;
         }
@@ -91,18 +93,18 @@ class CommandProcessor
 
         // Run the command, alter the results, and then handle output and status
         $result = $this->runCommandCallback($commandCallback, $args);
-        return $this->processResults($names, $result, $args);
+        return $this->processResults($names, $result, $args, $annotationData);
     }
 
-    public function processResults($names, $result, $args = [])
+    public function processResults($names, $result, $args, $annotationData)
     {
-        return $this->hookManager()->alterResult($names, $result, $args);
+        return $this->hookManager()->alterResult($names, $result, $args, $annotationData);
     }
 
     /**
      * Handle the result output and status code calculation.
      */
-    public function handleResults(OutputInterface $output, $names, $result, $annotationData, $options = [])
+    public function handleResults(OutputInterface $output, $names, $result, AnnotationData $annotationData, $options = [])
     {
         $status = $this->hookManager()->determineStatusCode($names, $result);
         // If the result is an integer and no separate status code was provided, then use the result as the status and do no output.
@@ -186,10 +188,10 @@ class CommandProcessor
     /**
      * Call the formatter to output the provided data.
      */
-    protected function writeUsingFormatter(OutputInterface $output, $structuredOutput, $annotationData, $options)
+    protected function writeUsingFormatter(OutputInterface $output, $structuredOutput, AnnotationData $annotationData, $options)
     {
         $format = $this->getFormat($options);
-        $formatterOptions = new FormatterOptions($annotationData, $options);
+        $formatterOptions = new FormatterOptions($annotationData->getArrayCopy(), $options);
         $this->formatterManager->write(
             $output,
             $format,

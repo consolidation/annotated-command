@@ -269,7 +269,8 @@ class AnnotatedCommand extends Command
         $results = $commandProcessor->processResults(
             $names,
             $results,
-            $args
+            $args,
+            $this->annotationData
         );
         $options = end($args);
         return $commandProcessor->handleResults(
