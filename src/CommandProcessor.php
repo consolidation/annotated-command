@@ -22,6 +22,8 @@ class CommandProcessor
     protected $hookManager;
     /** var FormatterManager */
     protected $formatterManager;
+    /** var callable */
+    protected $displayErrorFunction;
 
     public function __construct(HookManager $hookManager)
     {
@@ -40,6 +42,11 @@ class CommandProcessor
     public function setFormatterManager(FormatterManager $formatterManager)
     {
         $this->formatterManager = $formatterManager;
+    }
+
+    public function setDisplayErrorFunction(callable $fn)
+    {
+        $this->displayErrorFunction = $fn;
     }
 
     /**
@@ -70,7 +77,7 @@ class CommandProcessor
             );
             return $this->handleResults($output, $names, $result, $annotationData, $options);
         } catch (\Exception $e) {
-            $result = new CommandError($e->getCode(), $e->getMessage());
+            $result = new CommandError($e->getMessage(), $e->getCode());
             return $this->handleResults($output, $names, $result, $annotationData, $options);
         }
     }
@@ -116,12 +123,13 @@ class CommandProcessor
         // Get the structured output, the output stream and the formatter
         $structuredOutput = $this->hookManager()->extractOutput($names, $result);
         $output = $this->chooseOutputStream($output, $status);
-        if (($status == 0) && isset($this->formatterManager)) {
-            $this->writeUsingFormatter($output, $structuredOutput, $annotationData, $options);
-        } else {
-            $this->writeCommandOutput($output, $structuredOutput);
+        if ($status != 0) {
+            return $this->writeErrorMessage($output, $status, $structuredOutput, $result);
         }
-        return $status;
+        if (isset($this->formatterManager)) {
+            return $this->writeUsingFormatter($output, $structuredOutput, $annotationData, $options);
+        }
+        return $this->writeCommandOutput($output, $structuredOutput);
     }
 
     /**
@@ -198,6 +206,24 @@ class CommandProcessor
             $structuredOutput,
             $formatterOptions
         );
+        return 0;
+    }
+
+    /**
+     * Description
+     * @param type $output
+     * @param type $status
+     * @param type $structuredOutput
+     * @return type
+     */
+    protected function writeErrorMessage($output, $status, $structuredOutput, $originalResult)
+    {
+        if (isset($this->displayErrorFunction)) {
+            call_user_func($this->displayErrorFunction, $output, $structuredOutput, $status, $originalResult);
+        } else {
+            $this->writeCommandOutput($output, $structuredOutput);
+        }
+        return $status;
     }
 
     /**
@@ -212,6 +238,7 @@ class CommandProcessor
         if (is_string($structuredOutput)) {
             $output->writeln($structuredOutput);
         }
+        return 0;
     }
 
     /**

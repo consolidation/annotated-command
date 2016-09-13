@@ -191,6 +191,11 @@ class ExampleCommandFile
         return "Hello, $who.";
     }
 
+    public function testException($what)
+    {
+        throw new \Exception($what);
+    }
+
     /**
      * @hook validate test:hello
      */
@@ -198,6 +203,9 @@ class ExampleCommandFile
     {
         if ($args['who'] == 'Donald Duck') {
             return new CommandError("I won't say hello to Donald Duck.");
+        }
+        if ($args['who'] == 'Drumph') {
+            throw new \Exception('Irrational value error.');
         }
     }
 
