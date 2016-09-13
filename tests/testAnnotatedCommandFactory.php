@@ -8,6 +8,7 @@ use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Application;
 use Consolidation\AnnotatedCommand\Parser\CommandInfo;
+use Consolidation\AnnotatedCommand\AnnotationData;
 
 class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
 {
@@ -234,6 +235,38 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
 
         $input = new StringInput('test:hook bar');
         $this->assertRunCommandViaApplicationEquals($command, $input, '<[bar]>');
+    }
+
+    function testAnnotatedHookedCommand()
+    {
+        $commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile();
+        $commandFactory = new AnnotatedCommandFactory();
+
+        $hookInfo = $commandFactory->createCommandInfo($commandFileInstance, 'hookTestAnnotatedHook');
+
+        $this->assertTrue($hookInfo->hasAnnotation('hook'));
+        $this->assertEquals('alter @hookme', $hookInfo->getAnnotation('hook'));
+
+        $commandFactory->registerCommandHook($hookInfo, $commandFileInstance);
+        $hookCallback = $commandFactory->hookManager()->get('@hookme', 'alter');
+        $this->assertTrue($hookCallback != null);
+        $this->assertEquals(1, count($hookCallback));
+        $this->assertEquals(2, count($hookCallback[0]));
+        $this->assertTrue(is_callable($hookCallback[0]));
+        $this->assertEquals('hookTestAnnotatedHook', $hookCallback[0][1]);
+
+        $commandInfo = $commandFactory->createCommandInfo($commandFileInstance, 'testAnnotationHook');
+        $annotationData = $commandInfo->getAnnotations();
+        $this->assertEquals('hookme,before,after', implode(',', $annotationData->keys()));
+        $this->assertEquals('@hookme,@before,@after', implode(',', array_map(function ($item) { return "@$item"; }, $annotationData->keys())));
+
+        $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
+
+        $this->assertInstanceOf('\Symfony\Component\Console\Command\Command', $command);
+        $this->assertEquals('test:annotation-hook', $command->getName());
+
+        $input = new StringInput('test:annotation-hook baz');
+        $this->assertRunCommandViaApplicationEquals($command, $input, '>(baz)<');
     }
 
     function testHookedCommandWithHookAddedLater()

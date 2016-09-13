@@ -3,6 +3,7 @@ namespace Consolidation\AnnotatedCommand\Parser;
 
 use Consolidation\AnnotatedCommand\Parser\Internal\CommandDocBlockParser;
 use Consolidation\AnnotatedCommand\Parser\Internal\CommandDocBlockParserFactory;
+use Consolidation\AnnotatedCommand\AnnotationData;
 
 /**
  * Given a class and method name, parse the annotations in the
@@ -53,9 +54,9 @@ class CommandInfo
     protected $exampleUsage = [];
 
     /**
-     * @var array
+     * @var AnnotationData
      */
-    protected $otherAnnotations = [];
+    protected $otherAnnotations;
 
     /**
      * @var array
@@ -88,6 +89,7 @@ class CommandInfo
     {
         $this->reflection = new \ReflectionMethod($classNameOrInstance, $methodName);
         $this->methodName = $methodName;
+        $this->otherAnnotations = new AnnotationData();
         // Set up a default name for the command from the method name.
         // This can be overridden via @command or @name annotations.
         $this->name = $this->convertName($this->reflection->name);
@@ -147,7 +149,7 @@ class CommandInfo
      * implementation method of this command that are not already
      * handled by the primary methods of this class.
      *
-     * @return array
+     * @return AnnotationData
      */
     public function getAnnotations()
     {
@@ -179,7 +181,7 @@ class CommandInfo
     public function hasAnnotation($annotation)
     {
         $this->parseDocBlock();
-        return array_key_exists($annotation, $this->otherAnnotations);
+        return isset($this->otherAnnotations[$annotation]);
     }
 
     /**
