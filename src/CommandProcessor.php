@@ -58,6 +58,15 @@ class CommandProcessor
         return $this->formatterManager;
     }
 
+    public function interact(
+        InputInterface $input,
+        OutputInterface $output,
+        $names,
+        AnnotationData $annotationData
+    ) {
+        return $this->hookManager()->interact($input, $output, $names, $annotationData);
+    }
+
     public function process(
         OutputInterface $output,
         $names,

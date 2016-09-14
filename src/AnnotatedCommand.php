@@ -239,6 +239,22 @@ class AnnotatedCommand extends Command
         );
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    protected function interact(InputInterface $input, OutputInterface $output)
+    {
+        $this->getCommandProcessor()->interact(
+            $input,
+            $output,
+            $this->getNames(),
+            $this->annotationData
+        );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         // Get passthrough args, and add the options on the end.

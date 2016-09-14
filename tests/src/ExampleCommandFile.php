@@ -197,6 +197,17 @@ class ExampleCommandFile
     }
 
     /**
+     * @hook interact test:hello
+     */
+    public function interactTestHello($input, $output)
+    {
+        $who = $input->getArgument('who');
+        if (!$who) {
+            $input->setArgument('who', 'Goofey');
+        }
+    }
+
+    /**
      * @hook validate test:hello
      */
     public function validateTestHello($args)
