@@ -231,7 +231,22 @@ class AnnotatedCommand extends Command
         return $args;
     }
 
+    /**
+     * Returns all of the hook names that may be called for this command.
+     *
+     * @return array
+     */
     protected function getNames()
+    {
+        return array_filter(
+            array_merge(
+                $this->getNamesUsingCommands(),
+                [HookManager::getClassNameFromCallback($this->commandCallback)]
+            )
+        );
+    }
+
+    protected function getNamesUsingCommands()
     {
         return array_merge(
             [$this->getName()],

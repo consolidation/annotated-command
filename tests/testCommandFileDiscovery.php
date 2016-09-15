@@ -20,15 +20,17 @@ class CommandFileDiscoveryTests extends \PHPUnit_Framework_TestCase
         // find were all found.  We don't find anything in
         // 'beta' because only 'alpha' is in the search path.
         $this->assertContains('./src/ExampleCommandFile.php', $commandFilePaths);
+        $this->assertContains('./src/ExampleHookAllCommandFile.php', $commandFilePaths);
         $this->assertContains('./src/alpha/AlphaCommandFile.php', $commandFilePaths);
         $this->assertContains('./src/alpha/Inclusive/IncludedCommandFile.php', $commandFilePaths);
 
         // Make sure that there are no additional items found.
-        $this->assertEquals(3, count($commandFilePaths));
+        $this->assertEquals(4, count($commandFilePaths));
 
         // Ensure that the command file namespaces that we expected
         // to be generated all match.
         $this->assertContains('\Consolidation\TestUtils\ExampleCommandFile', $commandFileNamespaces);
+        $this->assertContains('\Consolidation\TestUtils\ExampleHookAllCommandFile', $commandFileNamespaces);
         $this->assertContains('\Consolidation\TestUtils\alpha\AlphaCommandFile', $commandFileNamespaces);
         $this->assertContains('\Consolidation\TestUtils\alpha\Inclusive\IncludedCommandFile', $commandFileNamespaces);
 
@@ -59,15 +61,17 @@ class CommandFileDiscoveryTests extends \PHPUnit_Framework_TestCase
         // depth is only 2, which excludes directories that are
         // three levels deep.
         $this->assertContains('./src/ExampleCommandFile.php', $commandFilePaths);
+        $this->assertContains('./src/ExampleHookAllCommandFile.php', $commandFilePaths);
         $this->assertContains('./src/alpha/AlphaCommandFile.php', $commandFilePaths);
         $this->assertContains('./src/beta/BetaCommandFile.php', $commandFilePaths);
 
         // Make sure that there are no additional items found.
-        $this->assertEquals(3, count($commandFilePaths));
+        $this->assertEquals(4, count($commandFilePaths));
 
         // Ensure that the command file namespaces that we expected
         // to be generated all match.
         $this->assertContains('\Consolidation\TestUtils\ExampleCommandFile', $commandFileNamespaces);
+        $this->assertContains('\Consolidation\TestUtils\ExampleHookAllCommandFile', $commandFileNamespaces);
         $this->assertContains('\Consolidation\TestUtils\alpha\AlphaCommandFile', $commandFileNamespaces);
         $this->assertContains('\Consolidation\TestUtils\beta\BetaCommandFile', $commandFileNamespaces);
 

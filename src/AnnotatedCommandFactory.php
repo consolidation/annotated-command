@@ -141,13 +141,12 @@ class AnnotatedCommandFactory
      *
      *   @hook type name type
      *
-     * For example, the pre-validate hook for the core-init command is:
+     * For example, the pre-validate hook for the core:init command is:
      *
-     *   @hook pre-validate core-init
+     *   @hook pre-validate core:init
      *
-     * If no command name is provided, then we will presume
-     * that the name of this method is the same as the name
-     * of the command being hooked (in a different commandFile).
+     * If no command name is provided, then this hook will affect every
+     * command that is defined in the same file.
      *
      * If no hook is provided, then we will presume that ALTER_RESULT
      * is intended.
@@ -163,14 +162,14 @@ class AnnotatedCommandFactory
         }
         $hookData = $commandInfo->getAnnotation('hook');
         $hook = $this->getNthWord($hookData, 0, HookManager::ALTER_RESULT);
-        $commandName = $this->getNthWord($hookData, 1, $commandInfo->getName());
+        $commandName = $this->getNthWord($hookData, 1);
 
         // Register the hook
         $callback = [$commandFileInstance, $commandInfo->getMethodName()];
         $this->commandProcessor()->hookManager()->add($callback, $hook, $commandName);
     }
 
-    protected function getNthWord($string, $n, $default, $delimiter = ' ')
+    protected function getNthWord($string, $n, $default = '', $delimiter = ' ')
     {
         $words = explode($delimiter, $string);
         if (!empty($words[$n])) {
