@@ -2,11 +2,13 @@
 
 Initialize Symfony Console commands from annotated command class methods.
 
-[![Travis CI](https://travis-ci.org/consolidation-org/annotated-command.svg?branch=master)](https://travis-ci.org/consolidation-org/annotated-command) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/consolidation-org/annotated-command/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/consolidation-org/annotated-command/?branch=master) [![Coverage Status](https://coveralls.io/repos/github/consolidation-org/annotated-command/badge.svg?branch=master)](https://coveralls.io/github/consolidation-org/annotated-command?branch=master) [![License](https://poser.pugx.org/consolidation/annotated-command/license)](https://packagist.org/packages/consolidation/annotated-command)
+[![Travis CI](https://travis-ci.org/consolidation/annotated-command.svg?branch=master)](https://travis-ci.org/consolidation/annotated-command) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/consolidation/annotated-command/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/consolidation/annotated-command/?branch=master) [![Coverage Status](https://coveralls.io/repos/github/consolidation/annotated-command/badge.svg?branch=master)](https://coveralls.io/github/consolidation/annotated-command?branch=master) [![License](https://poser.pugx.org/consolidation/annotated-command/license)](https://packagist.org/packages/consolidation/annotated-command)
+
+**Note** If you are looking for a very fast way to write a Symfony Console-base command-line tool, you should consider using [Robo](https://github.com/consolidation/Robo). See [Using Robo as a Framework](https://github.com/consolidation/Robo/docs/framework.md).  It is possible to use this project without Robo if desired, though.
 
 ## Component Status
 
-Currently in use in [Robo](https://github.com/Codegyre/Robo).
+Currently in use in [Robo](https://github.com/consolidation/Robo).
 
 ## Motivation
 
@@ -14,7 +16,7 @@ Symfony Console provides a set of classes that are widely used to implement comm
 
 Extant commandline tools that utilize this technique include:
 
-- [Robo](https://github.com/codegyre/robo)
+- [Robo](https://github.com/consolidation/Robo)
 - [wp-cli](https://github.com/wp-cli/wp-cli)
 - [Pantheon Terminus](https://github.com/pantheon-systems/terminus)
 
@@ -33,6 +35,7 @@ class MyCommandClass
      * This command will concatenate two parameters. If the --flip flag
      * is provided, then the result is the concatenation of two and one.
      *
+     * @command my:cat
      * @param integer $one The first parameter.
      * @param integer $two The other parameter.
      * @option $flip Whether or not the second parameter should come first in the result.
@@ -53,19 +56,27 @@ class MyCommandClass
 
 Commandfiles may provide hooks in addition to commands. A commandfile method that contains a @hook annotation is registered as a hook instead of a command.  The format of the hook annotation is:
 ```
-@hook type commandname
+@hook type commandname|annotation
 ```
 The commandname may be the command's primary name (e.g. `my:command`), it's method name (e.g. myCommand) or any of its aliases.
 
-There are five types of hooks supported:
+If an annotation is given instead, then this hook function will run for all commands with the specified annotation.
 
+There are seven types of hooks supported:
+
+- Interact
 - Validate
+- Command
 - Process
 - Alter
 - Status
 - Extract
 
-Each of these also have "pre" and "post" varieties, to give more flexibility vis-a-vis hook ordering (and for consistency). Note that many validate, process and alter hooks may run, but the first status or extract hook that successfully returns a result will halt processing of further hooks of the same type.
+Most of these also have "pre" and "post" varieties, to give more flexibility vis-a-vis hook ordering (and for consistency). Note that many validate, process and alter hooks may run, but the first status or extract hook that successfully returns a result will halt processing of further hooks of the same type.
+
+### Interact Hook
+
+The interact hook runs prior to argument and option validation. Required arguments and options not supplied by the user may be provided during this phase, either from configuration or by prompting the user.  The hook is provided an `$input` object, which may be manipulated directly.
 
 ### Validate Hook
 
@@ -77,6 +88,10 @@ Validation hooks examine the arguments and options passed to a command. A valida
 - Throw an exception. The exception is converted into a CommandError.
 
 Any number of validation hooks may run, but if any fails, then execution of the command stops.
+
+### Command Hook
+
+The command hook is called just before the command actually executes.  Unlike the other hooks, this one can be applied to Symfony Console commands that were not created via the AnnotatedCommandFactory.
 
 ### Process Hook
 
@@ -106,7 +121,7 @@ If no extract hook returns any data, then the result object itself is printed if
 
 If a command method returns an integer, it is used as the command exit status code. If the command method returns a string, it is printed.
 
-If the [Consolidation/OutputFormatters](https://github.com/consolidation-org/output-formatters) project is used, then users may specify a --format option to select the formatter to use to transform the output from whatever form the command provides to a string.  To make this work, the application must provide a formatter to the AnnotatedCommandFactory.  See [API Usage](#api-usage) below.
+If the [Consolidation/OutputFormatters](https://github.com/consolidation/output-formatters) project is used, then users may specify a --format option to select the formatter to use to transform the output from whatever form the command provides to a string.  To make this work, the application must provide a formatter to the AnnotatedCommandFactory.  See [API Usage](#api-usage) below.
 
 ## Logging
 
@@ -132,7 +147,7 @@ foreach ($commandList as $command) {
 ```
 You may have more than one command class, if you wish. If so, simply call AnnotatedCommandFactory::createCommandsFromClass() multiple times.
 
-Note that the `setFormatterManager()` operation is optional; omit this if not using [Consolidation/OutputFormatters](https://github.com/consolidation-org/output-formatters).
+Note that the `setFormatterManager()` operation is optional; omit this if not using [Consolidation/OutputFormatters](https://github.com/consolidation/output-formatters).
 
 A discovery class, CommandFileDiscovery, is also provided to help find command files on the filesystem. Usage is as follows:
 ```php
@@ -143,10 +158,10 @@ foreach ($myCommandFiles as $myCommandClass) {
     // ... as above
 }
 ```
-For a discussion on command file naming conventions and search locations, see https://github.com/consolidation-org/annotated-command/issues/12.
+For a discussion on command file naming conventions and search locations, see https://github.com/consolidation/annotated-command/issues/12.
 
 If different namespaces are used at different command file paths, change the call to discover as follows:
-```
+```php
 $myCommandFiles = $discovery->discover(['\Ns1' => $path1, '\Ns2' => $path2]);
 ```
 As a shortcut for the above, the method `discoverNamespaced()` will take the last directory name of each path, and append it to the base namespace provided. This matches the conventions used by Drupal modules, for example.
