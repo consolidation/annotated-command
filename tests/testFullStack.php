@@ -81,11 +81,11 @@ class FullStackTests extends \PHPUnit_Framework_TestCase
 
         // Control: run commands without hooks.
         $this->assertRunCommandViaApplicationEquals('always:fail', 'This command always fails.', 13);
-        $this->assertRunCommandViaApplicationEquals('simulated:status', '');
+        $this->assertRunCommandViaApplicationEquals('simulated:status', '42');
         $this->assertRunCommandViaApplicationEquals('example:output', 'Hello, World.');
         $this->assertRunCommandViaApplicationEquals('example:cat bet alpha --flip', 'alphabet');
-        $this->assertRunCommandViaApplicationEquals('example:echo a b c', '');
-        $this->assertRunCommandViaApplicationEquals('example:message', '');
+        $this->assertRunCommandViaApplicationEquals('example:echo a b c', "a\tb\tc");
+        $this->assertRunCommandViaApplicationEquals('example:message', 'Shipwrecked; send bananas.');
         $this->assertRunCommandViaApplicationEquals('command:with-one-optional-argument', 'Hello, world');
         $this->assertRunCommandViaApplicationEquals('command:with-one-optional-argument Joe', 'Hello, Joe');
 

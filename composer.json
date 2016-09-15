@@ -27,7 +27,7 @@
         "phpdocumentor/reflection-docblock": "^2.0|^3.0.2"
     },
     "require-dev": {
-        "consolidation/output-formatters": "~1",
+        "consolidation/output-formatters": "2.0.0-beta1",
         "phpunit/phpunit": "4.*",
         "satooshi/php-coveralls": "^1.0",
         "squizlabs/php_codesniffer": "2.*"
