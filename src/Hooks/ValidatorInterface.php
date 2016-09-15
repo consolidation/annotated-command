@@ -1,6 +1,8 @@
 <?php
 namespace Consolidation\AnnotatedCommand\Hooks;
 
+use Consolidation\AnnotatedCommand\AnnotationData;
+
 /**
  * Validate the arguments for the current command.
  *
@@ -8,5 +10,5 @@ namespace Consolidation\AnnotatedCommand\Hooks;
  */
 interface ValidatorInterface
 {
-    public function validate($args);
+    public function validate($args, AnnotationData $annotationData);
 }
