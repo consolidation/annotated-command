@@ -302,10 +302,17 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
         $this->assertRunCommandViaApplicationEquals($command, $input, '<[bar]>');
     }
 
-    function testValidate()
+    function testInteractAndValidate()
     {
         $commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile();
         $commandFactory = new AnnotatedCommandFactory();
+
+        $hookInfo = $commandFactory->createCommandInfo($commandFileInstance, 'interactTestHello');
+
+        $this->assertTrue($hookInfo->hasAnnotation('hook'));
+        $this->assertEquals($hookInfo->getAnnotation('hook'), 'interact test:hello');
+
+        $commandFactory->registerCommandHook($hookInfo, $commandFileInstance);
 
         $hookInfo = $commandFactory->createCommandInfo($commandFileInstance, 'validateTestHello');
 
@@ -313,12 +320,20 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
         $this->assertEquals($hookInfo->getAnnotation('hook'), 'validate test:hello');
 
         $commandFactory->registerCommandHook($hookInfo, $commandFileInstance);
+
         $hookCallback = $commandFactory->hookManager()->get('test:hello', 'validate');
         $this->assertTrue($hookCallback != null);
         $this->assertEquals(1, count($hookCallback));
         $this->assertEquals(2, count($hookCallback[0]));
         $this->assertTrue(is_callable($hookCallback[0]));
         $this->assertEquals('validateTestHello', $hookCallback[0][1]);
+
+        $hookCallback = $commandFactory->hookManager()->get('test:hello', 'interact');
+        $this->assertTrue($hookCallback != null);
+        $this->assertEquals(1, count($hookCallback));
+        $this->assertEquals(2, count($hookCallback[0]));
+        $this->assertTrue(is_callable($hookCallback[0]));
+        $this->assertEquals('interactTestHello', $hookCallback[0][1]);
 
         $commandInfo = $commandFactory->createCommandInfo($commandFileInstance, 'testHello');
         $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
@@ -328,6 +343,9 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
 
         $input = new StringInput('test:hello "Mickey Mouse"');
         $this->assertRunCommandViaApplicationEquals($command, $input, 'Hello, Mickey Mouse.');
+
+        $input = new StringInput('test:hello');
+        $this->assertRunCommandViaApplicationEquals($command, $input, 'Hello, Goofey.');
 
         $input = new StringInput('test:hello "Donald Duck"');
         $this->assertRunCommandViaApplicationEquals($command, $input, "I won't say hello to Donald Duck.", 1);

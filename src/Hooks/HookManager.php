@@ -20,6 +20,9 @@ class HookManager implements EventSubscriberInterface
 {
     protected $hooks = [];
 
+    const PRE_INTERACT = 'pre-interact';
+    const INTERACT = 'interact';
+    const POST_INTERACT = 'post-interact';
     const PRE_COMMAND_EVENT = 'pre-command';
     const COMMAND_EVENT = 'command';
     const POST_COMMAND_EVENT = 'post-command';
@@ -50,6 +53,18 @@ class HookManager implements EventSubscriberInterface
     public function add(callable $callback, $hook, $name = '*')
     {
         $this->hooks[$name][$hook][] = $callback;
+    }
+
+    /**
+     * Add an interact hook
+     *
+     * @param type ValidatorInterface $validator
+     * @param type $name The name of the command to hook
+     *   ('*' for all)
+     */
+    public function addInteractor(InteractorInterface $interactor, $name = '*')
+    {
+        $this->hooks[$name][self::INTERACT][] = $interactor;
     }
 
     /**
@@ -143,6 +158,18 @@ class HookManager implements EventSubscriberInterface
         $this->hooks[$name][self::EXTRACT_OUTPUT][] = $outputExtractor;
     }
 
+    public function interact(
+        InputInterface $input,
+        OutputInterface $output,
+        $names,
+        AnnotationData $annotationData
+    ) {
+        $interactors = $this->getInteractors($names, $annotationData);
+        foreach ($interactors as $interactor) {
+            $this->callInteractor($interactor, $input, $output, $annotationData);
+        }
+    }
+
     public function validateArguments($names, $args, AnnotationData $annotationData)
     {
         $validators = $this->getValidators($names, $annotationData);
@@ -221,6 +248,11 @@ class HookManager implements EventSubscriberInterface
         }
 
         return $result;
+    }
+
+    protected function getInteractors($names, AnnotationData $annotationData)
+    {
+        return $this->getHooks($names, self::INTERACT, $annotationData);
     }
 
     protected function getValidators($names, AnnotationData $annotationData)
@@ -310,6 +342,16 @@ class HookManager implements EventSubscriberInterface
             return $this->hooks[$name][$hook];
         }
         return [];
+    }
+
+    protected function callInteractor($interactor, $input, $output, AnnotationData $annotationData)
+    {
+        if ($interactor instanceof InteractorInterface) {
+            return $interactor->interact($input, $output, $annotationData);
+        }
+        if (is_callable($interactor)) {
+            return $interactor($input, $output, $annotationData);
+        }
     }
 
     protected function callValidator($validator, $args, AnnotationData $annotationData)
