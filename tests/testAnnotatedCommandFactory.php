@@ -220,6 +220,7 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
         $this->assertEquals('alter test:hook', $hookInfo->getAnnotation('hook'));
 
         $commandFactory->registerCommandHook($hookInfo, $commandFileInstance);
+
         $hookCallback = $commandFactory->hookManager()->get('test:hook', 'alter');
         $this->assertTrue($hookCallback != null);
         $this->assertEquals(1, count($hookCallback));
@@ -235,6 +236,35 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
 
         $input = new StringInput('test:hook bar');
         $this->assertRunCommandViaApplicationEquals($command, $input, '<[bar]>');
+    }
+
+    function testHookAllCommands()
+    {
+        $commandFileInstance = new \Consolidation\TestUtils\ExampleHookAllCommandFile();
+        $commandFactory = new AnnotatedCommandFactory();
+
+        $hookInfo = $commandFactory->createCommandInfo($commandFileInstance, 'alterAllCommands');
+
+        $this->assertTrue($hookInfo->hasAnnotation('hook'));
+        $this->assertEquals('alter', $hookInfo->getAnnotation('hook'));
+
+        $commandFactory->registerCommandHook($hookInfo, $commandFileInstance);
+
+        $hookCallback = $commandFactory->hookManager()->get('Consolidation\TestUtils\ExampleHookAllCommandFile', 'alter');
+        $this->assertTrue($hookCallback != null);
+        $this->assertEquals(1, count($hookCallback));
+        $this->assertEquals(2, count($hookCallback[0]));
+        $this->assertTrue(is_callable($hookCallback[0]));
+        $this->assertEquals('alterAllCommands', $hookCallback[0][1]);
+
+        $commandInfo = $commandFactory->createCommandInfo($commandFileInstance, 'doCat');
+        $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
+
+        $this->assertInstanceOf('\Symfony\Component\Console\Command\Command', $command);
+        $this->assertEquals('do:cat', $command->getName());
+
+        $input = new StringInput('do:cat bar');
+        $this->assertRunCommandViaApplicationEquals($command, $input, '*** bar ***');
     }
 
     function testAnnotatedHookedCommand()

@@ -23,12 +23,12 @@ class HookManager implements EventSubscriberInterface
     const PRE_INTERACT = 'pre-interact';
     const INTERACT = 'interact';
     const POST_INTERACT = 'post-interact';
-    const PRE_COMMAND_EVENT = 'pre-command';
-    const COMMAND_EVENT = 'command';
-    const POST_COMMAND_EVENT = 'post-command';
     const PRE_ARGUMENT_VALIDATOR = 'pre-validate';
     const ARGUMENT_VALIDATOR = 'validate';
     const POST_ARGUMENT_VALIDATOR = 'post-validate';
+    const PRE_COMMAND_EVENT = 'pre-command';
+    const COMMAND_EVENT = 'command';
+    const POST_COMMAND_EVENT = 'post-command';
     const PRE_PROCESS_RESULT = 'pre-process';
     const PROCESS_RESULT = 'process';
     const POST_PROCESS_RESULT = 'post-process';
@@ -42,6 +42,11 @@ class HookManager implements EventSubscriberInterface
     {
     }
 
+    public function getAllHooks()
+    {
+        return $this->hooks;
+    }
+
     /**
      * Add a hook
      *
@@ -52,7 +57,26 @@ class HookManager implements EventSubscriberInterface
      */
     public function add(callable $callback, $hook, $name = '*')
     {
+        if (empty($name)) {
+            $name = static::getClassNameFromCallback($callback);
+        }
         $this->hooks[$name][$hook][] = $callback;
+    }
+
+    /**
+     * If a command hook does not specify any particular command
+     * name that it should be attached to, then it will be applied
+     * to every command that is defined in the same class as the hook.
+     * This is controlled by using the namespace + class name of
+     * the implementing class of the callback hook.
+     */
+    public static function getClassNameFromCallback($callback)
+    {
+        if (!is_array($callback)) {
+            return '';
+        }
+        $reflectionClass = new \ReflectionClass($callback[0]);
+        return $reflectionClass->getName();
     }
 
     /**
