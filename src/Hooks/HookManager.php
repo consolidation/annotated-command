@@ -384,7 +384,7 @@ class HookManager implements EventSubscriberInterface
         // a breaking change. Either hold off until 2.x, or make
         // a new interface containing a method that takes the extra parameter.
         if ($validator instanceof ValidatorInterface) {
-            return $validator->validate($args);
+            return $validator->validate($args, $annotationData);
         }
         if (is_callable($validator)) {
             return $validator($args, $annotationData);
@@ -398,7 +398,7 @@ class HookManager implements EventSubscriberInterface
         // a breaking change. Either hold off until 2.x, or make
         // a new interface containing a method that takes the extra parameter.
         if ($processor instanceof ProcessResultInterface) {
-            $processed = $processor->process($result, $args);
+            $processed = $processor->process($result, $args, $annotationData);
         }
         if (is_callable($processor)) {
             $processed = $processor($result, $args, $annotationData);

@@ -18,6 +18,8 @@ use Consolidation\AnnotatedCommand\Hooks\AlterResultInterface;
 use Consolidation\AnnotatedCommand\Hooks\ExtractOutputInterface;
 use Consolidation\AnnotatedCommand\Hooks\StatusDeterminerInterface;
 
+use Consolidation\AnnotatedCommand\AnnotationData;
+
 use Consolidation\OutputFormatters\FormatterManager;
 
 /**
@@ -169,7 +171,7 @@ EOT;
 
 class ExampleValidator implements ValidatorInterface
 {
-    public function validate($args)
+    public function validate($args, AnnotationData $annotationData)
     {
         if (isset($args['one']) && ($args['one'] == 'bet')) {
             $args['one'] = 'beta';
@@ -180,7 +182,7 @@ class ExampleValidator implements ValidatorInterface
 
 class ExampleResultProcessor implements ProcessResultInterface
 {
-    public function process($result, array $args)
+    public function process($result, array $args, AnnotationData $annotationData)
     {
         if (is_array($result) && array_key_exists('item-list', $result)) {
             return implode(',', $result['item-list']);
@@ -190,7 +192,7 @@ class ExampleResultProcessor implements ProcessResultInterface
 
 class ExampleResultAlterer implements AlterResultInterface
 {
-    public function process($result, array $args)
+    public function process($result, array $args, AnnotationData $annotationData)
     {
         if (is_string($result) && ($result == 'Hello, World.')) {
             return 'Hello, World!';

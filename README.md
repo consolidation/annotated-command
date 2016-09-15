@@ -10,6 +10,16 @@ Initialize Symfony Console commands from annotated command class methods.
 
 Currently in use in [Robo](https://github.com/consolidation/Robo).
 
+## Library Usage
+
+This is a library intended to be used in some other project.  Require from your composer.json file:
+```
+    "require": {
+        "consolidation/annotated-command": "~1|~2"
+    },
+```
+In the 2.x branch, the interfaces ValidatorInterface, ProcessResultInterface and AlterResultInterface changed. If your application uses any of these interfaces, then you should require version "~2" instead. The 2.x branch is compatible with the 1.x branch in other respects.
+
 ## Motivation
 
 Symfony Console provides a set of classes that are widely used to implement command line tools. Increasingly, it is becoming popular to use annotations to describe the characteristics of the command (e.g. its arguments, options and so on) implemented by the annotated method.
