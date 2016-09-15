@@ -1,6 +1,11 @@
 # Change Log
 
 
+### 2.0.0 - 15 September 2016
+
+- Hooks with no command name now apply to all commands defined in the same class. This is a change of behavior from the 1.x branch, where hooks with no command name applied to a command with the same method name in a *different* class.
+
+
 ### 1.4.0 - 13 September 2016
 
 - Add basic annotation hook capability, to allow hook functions to be attached to commands with arbitrary annotations.
