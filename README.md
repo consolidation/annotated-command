@@ -24,7 +24,7 @@ This library provides routines to produce the Symfony\Component\Console\Command\
 The public methods of the command class define its commands, and the parameters of each method define its arguments and options. The command options, if any, are declared as the last parameter of the methods. The options will be passed in as an associative array; the default options of the last parameter should list the options recognized by the command.
 
 The rest of the parameters are arguments. Parameters with a default value are optional; those without a default value are required.
-```
+```php
 class MyCommandClass
 {
     /**
@@ -121,7 +121,7 @@ It is also possible to add InputInterface or OutputInterface parameters to any a
 ## API Usage
 
 To use annotated commands in an application, pass an instance of your command class in to AnnotatedCommandFactory::createCommandsFromClass(). The result will be a list of Commands that may be added to your application.
-```
+```php
 $myCommandClassInstance = new MyCommandClass();
 $commandFactory = new AnnotatedCommandFactory();
 $commandFactory->commandProcessor()->setFormatterManager(new FormatterManager());
@@ -135,7 +135,7 @@ You may have more than one command class, if you wish. If so, simply call Annota
 Note that the `setFormatterManager()` operation is optional; omit this if not using [Consolidation/OutputFormatters](https://github.com/consolidation-org/output-formatters).
 
 A discovery class, CommandFileDiscovery, is also provided to help find command files on the filesystem. Usage is as follows:
-```
+```php
 $discovery = new CommandFileDiscovery();
 $myCommandFiles = $discovery->discover($path, '\Drupal');
 foreach ($myCommandFiles as $myCommandClass) {
