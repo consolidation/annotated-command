@@ -4,21 +4,9 @@ Initialize Symfony Console commands from annotated command class methods.
 
 [![Travis CI](https://travis-ci.org/consolidation/annotated-command.svg?branch=master)](https://travis-ci.org/consolidation/annotated-command) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/consolidation/annotated-command/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/consolidation/annotated-command/?branch=master) [![Coverage Status](https://coveralls.io/repos/github/consolidation/annotated-command/badge.svg?branch=master)](https://coveralls.io/github/consolidation/annotated-command?branch=master) [![License](https://poser.pugx.org/consolidation/annotated-command/license)](https://packagist.org/packages/consolidation/annotated-command)
 
-**Note** If you are looking for a very fast way to write a Symfony Console-base command-line tool, you should consider using [Robo](https://github.com/consolidation/Robo). See [Using Robo as a Framework](https://github.com/consolidation/Robo/docs/framework.md).  It is possible to use this project without Robo if desired, though.
-
 ## Component Status
 
 Currently in use in [Robo](https://github.com/consolidation/Robo).
-
-## Library Usage
-
-This is a library intended to be used in some other project.  Require from your composer.json file:
-```
-    "require": {
-        "consolidation/annotated-command": "~1|~2"
-    },
-```
-In the 2.x branch, the interfaces ValidatorInterface, ProcessResultInterface and AlterResultInterface changed. If your application uses any of these interfaces, then you should require version "~2" instead. The 2.x branch is compatible with the 1.x branch in other respects.
 
 ## Motivation
 
@@ -31,6 +19,18 @@ Extant commandline tools that utilize this technique include:
 - [Pantheon Terminus](https://github.com/pantheon-systems/terminus)
 
 This library provides routines to produce the Symfony\Component\Console\Command\Command from all public methods defined in the provided class.
+
+**Note** If you are looking for a very fast way to write a Symfony Console-base command-line tool, you should consider using [Robo](https://github.com/consolidation/Robo), which is built on top of this library, and adds additional conveniences to get you going quickly. See [Using Robo as a Framework](https://github.com/consolidation/Robo/docs/framework.md).  It is possible to use this project without Robo if desired, though.
+
+## Library Usage
+
+This is a library intended to be used in some other project.  Require from your composer.json file:
+```
+    "require": {
+        "consolidation/annotated-command": "~1|~2"
+    },
+```
+In the 2.x branch, the interfaces ValidatorInterface, ProcessResultInterface and AlterResultInterface changed. If your application uses any of these interfaces, then you should require version "~2" instead. The 2.x branch is compatible with the 1.x branch in other respects.
 
 ## Example Annotated Command Class
 The public methods of the command class define its commands, and the parameters of each method define its arguments and options. The command options, if any, are declared as the last parameter of the methods. The options will be passed in as an associative array; the default options of the last parameter should list the options recognized by the command.
