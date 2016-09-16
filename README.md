@@ -86,11 +86,15 @@ Most of these also have "pre" and "post" varieties, to give more flexibility vis
 
 ### Interact Hook
 
-The interact hook runs prior to argument and option validation. Required arguments and options not supplied by the user may be provided during this phase, either from configuration or by prompting the user.  The hook is provided an `$input` object, which may be manipulated directly.
+The interact hook runs prior to argument and option validation. Required arguments and options not supplied on the command line may be provided during this phase, either from configuration or by prompting the user.  The hook is provided an `$input` object, which may be manipulated directly.
+
+### Command Hook
+
+The command hook is called just before Symfony Console calls the `execute()` method.  At this point, the arguments and options passed to the command have already been validated by Symfony.  Unlike the other hooks, this one can be applied to Symfony Console commands that were not created via the AnnotatedCommandFactory.
 
 ### Validate Hook
 
-Validation hooks examine the arguments and options passed to a command. A validation hook may take one of several actions:
+The purpose of the validate hook is to ensure the state of the targets of the current command are usabe in the context required by that command. It is not necessary to confirm the validity of the arguments and options to the command, as Symfony has already done that.  It is possible, however, to alter the values of the arguments and options if desires (although this is better done in the interact hook). A validation hook may take one of several actions:
 
 - Do nothing. This indicates that validation succeeded.
 - Return an array. This alters the arguments that will be used during command execution.
@@ -98,10 +102,6 @@ Validation hooks examine the arguments and options passed to a command. A valida
 - Throw an exception. The exception is converted into a CommandError.
 
 Any number of validation hooks may run, but if any fails, then execution of the command stops.
-
-### Command Hook
-
-The command hook is called just before the command actually executes.  Unlike the other hooks, this one can be applied to Symfony Console commands that were not created via the AnnotatedCommandFactory.
 
 ### Process Hook
 
