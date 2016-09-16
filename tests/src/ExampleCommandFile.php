@@ -45,6 +45,9 @@ class ExampleCommandFile
         return "{$one}{$two}";
     }
 
+    /**
+     * @command my:repeat
+     */
     public function myRepeat($one, $two = '', $options = ['repeat' => 1])
     {
         return str_repeat("{$one}{$two}", $options['repeat']);
@@ -101,12 +104,14 @@ class ExampleCommandFile
      * This command will add one and two. If the --negate flag
      * is provided, then the result is negated.
      *
+     * @command test:arithmatic
      * @param integer $one The first number to add.
      * @param integer $two The other number to add.
      * @option $negate Whether or not the result should be negated.
      * @aliases arithmatic
      * @usage 2 2 --negate
      *   Add two plus two and then negate.
+     * @custom
      */
     public function testArithmatic($one, $two, $options = ['negate' => false])
     {
@@ -184,6 +189,39 @@ class ExampleCommandFile
         $before = $annotationData->get('before', '-');
         $after = $annotationData->get('after', '-');
         return "$before$result$after";
+    }
+
+    /**
+     * Alter the results of the hook with its command name.
+     *
+     * @hook alter @addmycommandname
+     */
+    public function hookAddCommandName($result, $args, AnnotationData $annotationData)
+    {
+        return "$result from " . $annotationData['command'];
+    }
+
+    /**
+     * Here is a hook with an explicit command annotation that we will alter
+     * with the preceeding hook
+     *
+     * @command alter-me
+     * @addmycommandname
+     */
+    public function alterMe()
+    {
+        return "splendiferous";
+    }
+
+    /**
+     * Here is another hook that has no command annotation that should be
+     * altered with the default value for the command name
+     *
+     * @addmycommandname
+     */
+    public function alterMeToo()
+    {
+        return "fantabulous";
     }
 
     public function testHello($who)
