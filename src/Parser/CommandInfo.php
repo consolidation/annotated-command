@@ -9,6 +9,10 @@ use Consolidation\AnnotatedCommand\AnnotationData;
  * Given a class and method name, parse the annotations in the
  * DocBlock comment, and provide accessor methods for all of
  * the elements that are needed to create a Symfony Console Command.
+ *
+ * Note that the name of this class is now somewhat of a misnomer,
+ * as we now use it to hold annotation data for hooks as well as commands.
+ * It would probably be better to rename this to MethodInfo at some point.
  */
 class CommandInfo
 {
@@ -155,6 +159,26 @@ class CommandInfo
     {
         $this->parseDocBlock();
         return $this->otherAnnotations;
+    }
+
+    /**
+     * Get any annotations included in the docblock comment,
+     * also including default values such as @command.  We add
+     * in the default @command annotation late, and only in a
+     * copy of the annotation data because we use the existance
+     * of a @command to indicate that this CommandInfo is
+     * a command, and not a hook or anything else.
+     *
+     * @return AnnotationData
+     */
+    public function getAnnotationsForCommand()
+    {
+        return new AnnotationData(
+            $this->getAnnotations()->getArrayCopy() +
+            [
+                'command' => $this->getName(),
+            ]
+        );
     }
 
     /**

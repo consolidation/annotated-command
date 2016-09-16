@@ -78,10 +78,11 @@ abstract class AbstractCommandDocBlockParser
      */
     protected function processCommandTag($tag)
     {
-        $this->commandInfo->setName($this->getTagContents($tag));
+        $commandName = $this->getTagContents($tag);
+        $this->commandInfo->setName($commandName);
         // We also store the name in the 'other annotations' so that is is
         // possible to determine if the method had a @command annotation.
-        $this->processGenericTag($tag);
+        $this->commandInfo->addOtherAnnotation($tag->getName(), $commandName);
     }
 
     /**

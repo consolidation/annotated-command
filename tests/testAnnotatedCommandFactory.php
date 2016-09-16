@@ -299,6 +299,52 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
         $this->assertRunCommandViaApplicationEquals($command, $input, '>(baz)<');
     }
 
+    function testHookHasCommandAnnotation()
+    {
+        $commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile();
+        $commandFactory = new AnnotatedCommandFactory();
+
+        $hookInfo = $commandFactory->createCommandInfo($commandFileInstance, 'hookAddCommandName');
+
+        $this->assertTrue($hookInfo->hasAnnotation('hook'));
+        $this->assertEquals('alter @addmycommandname', $hookInfo->getAnnotation('hook'));
+
+        $commandFactory->registerCommandHook($hookInfo, $commandFileInstance);
+        $hookCallback = $commandFactory->hookManager()->get('@addmycommandname', 'alter');
+        $this->assertTrue($hookCallback != null);
+        $this->assertEquals(1, count($hookCallback));
+        $this->assertEquals(2, count($hookCallback[0]));
+        $this->assertTrue(is_callable($hookCallback[0]));
+        $this->assertEquals('hookAddCommandName', $hookCallback[0][1]);
+
+        $commandInfo = $commandFactory->createCommandInfo($commandFileInstance, 'alterMe');
+        $annotationData = $commandInfo->getAnnotations();
+        $this->assertEquals('command,addmycommandname', implode(',', $annotationData->keys()));
+
+        $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
+
+        $this->assertInstanceOf('\Symfony\Component\Console\Command\Command', $command);
+        $this->assertEquals('alter-me', $command->getName());
+
+        $input = new StringInput('alter-me');
+        $this->assertRunCommandViaApplicationEquals($command, $input, 'splendiferous from alter-me');
+
+        $commandInfo = $commandFactory->createCommandInfo($commandFileInstance, 'alterMeToo');
+        $annotationData = $commandInfo->getAnnotations();
+        $this->assertEquals('addmycommandname', implode(',', $annotationData->keys()));
+        $annotationData = $commandInfo->getAnnotationsForCommand();
+        $this->assertEquals('addmycommandname,command', implode(',', $annotationData->keys()));
+
+        $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
+
+        $this->assertInstanceOf('\Symfony\Component\Console\Command\Command', $command);
+        $this->assertEquals('alter:me-too', $command->getName());
+
+        $input = new StringInput('alter:me-too');
+        $this->assertRunCommandViaApplicationEquals($command, $input, 'fantabulous from alter:me-too');
+    }
+
+
     function testHookedCommandWithHookAddedLater()
     {
         $commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile();

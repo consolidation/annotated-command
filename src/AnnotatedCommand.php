@@ -99,7 +99,7 @@ class AnnotatedCommand extends Command
         $this->setDescription($commandInfo->getDescription());
         $this->setHelp($commandInfo->getHelp());
         $this->setAliases($commandInfo->getAliases());
-        $this->setAnnotationData($commandInfo->getAnnotations());
+        $this->setAnnotationData($commandInfo->getAnnotationsForCommand());
         foreach ($commandInfo->getExampleUsages() as $usage => $description) {
             // Symfony Console does not support attaching a description to a usage
             $this->addUsage($usage);
