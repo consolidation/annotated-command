@@ -67,7 +67,8 @@ class FullStackTests extends \PHPUnit_Framework_TestCase
         $factory = new AnnotatedCommandFactory();
         $factory->setCommandProcessor($commandProcessor);
         // $factory->addListener(...);
-        $this->addDiscoveredCommands($factory, $commandFiles, false);
+        $factory->setIncludeAllPublicMethods(false);
+        $this->addDiscoveredCommands($factory, $commandFiles);
 
         $this->assertTrue($this->application->has('example:table'));
         $this->assertFalse($this->application->has('without:annotations'));
@@ -130,18 +131,19 @@ EOT;
 
         // Now we will once again add all commands, this time including all
         // public methods.  The command 'withoutAnnotations' should now be found.
-        $this->addDiscoveredCommands($factory, $commandFiles, true);
+        $factory->setIncludeAllPublicMethods(true);
+        $this->addDiscoveredCommands($factory, $commandFiles);
         $this->assertTrue($this->application->has('without:annotations'));
     }
 
-    public function addDiscoveredCommands($factory, $commandFiles, $includeAllPublicMethods) {
+    public function addDiscoveredCommands($factory, $commandFiles) {
         foreach ($commandFiles as $path => $commandClass) {
             $this->assertFileExists($path);
             if (!class_exists($commandClass)) {
                 include $path;
             }
             $commandInstance = new $commandClass();
-            $commandList = $factory->createCommandsFromClass($commandInstance, $includeAllPublicMethods);
+            $commandList = $factory->createCommandsFromClass($commandInstance);
             foreach ($commandList as $command) {
                 $this->application->add($command);
             }

@@ -20,6 +20,7 @@ class AnnotatedCommandFactory
 {
     protected $commandProcessor;
     protected $listeners = [];
+    protected $includeAllPublicMethods = true;
 
     public function __construct()
     {
@@ -34,6 +35,16 @@ class AnnotatedCommandFactory
     public function commandProcessor()
     {
         return $this->commandProcessor;
+    }
+
+    public function setIncludeAllPublicMethods($includeAllPublicMethods)
+    {
+        $this->includeAllPublicMethods = $includeAllPublicMethods;
+    }
+
+    public function getIncludeAllPublicMethods()
+    {
+        return $this->includeAllPublicMethods;
     }
 
     public function hookManager()
@@ -58,8 +69,12 @@ class AnnotatedCommandFactory
         }
     }
 
-    public function createCommandsFromClass($commandFileInstance, $includeAllPublicMethods = true)
+    public function createCommandsFromClass($commandFileInstance, $includeAllPublicMethods = null)
     {
+        // Deprecated: avoid using the $includeAllPublicMethods in favor of the setIncludeAllPublicMethods() accessor.
+        if (!isset($includeAllPublicMethods)) {
+            $includeAllPublicMethods = $this->getIncludeAllPublicMethods();
+        }
         $this->notify($commandFileInstance);
         $commandInfoList = $this->getCommandInfoListFromClass($commandFileInstance);
         $this->registerCommandHooksFromClassInfo($commandInfoList, $commandFileInstance);
@@ -92,8 +107,12 @@ class AnnotatedCommandFactory
         return new CommandInfo($classNameOrInstance, $commandMethodName);
     }
 
-    public function createCommandsFromClassInfo($commandInfoList, $commandFileInstance, $includeAllPublicMethods = true)
+    public function createCommandsFromClassInfo($commandInfoList, $commandFileInstance, $includeAllPublicMethods = null)
     {
+        // Deprecated: avoid using the $includeAllPublicMethods in favor of the setIncludeAllPublicMethods() accessor.
+        if (!isset($includeAllPublicMethods)) {
+            $includeAllPublicMethods = $this->getIncludeAllPublicMethods();
+        }
         return $this->createSelectedCommandsFromClassInfo(
             $commandInfoList,
             $commandFileInstance,
