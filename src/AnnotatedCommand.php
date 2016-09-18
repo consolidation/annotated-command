@@ -1,13 +1,15 @@
 <?php
 namespace Consolidation\AnnotatedCommand;
 
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Input\InputArgument;
 use Consolidation\AnnotatedCommand\Hooks\HookManager;
 use Consolidation\AnnotatedCommand\Parser\CommandInfo;
+use Consolidation\OutputFormatters\FormatterManager;
+use Consolidation\OutputFormatters\FormatterOptions;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * AnnotatedCommands are created automatically by the
@@ -173,8 +175,63 @@ class AnnotatedCommand extends Command
 
     protected function setCommandOptions($commandInfo)
     {
+        $automaticOptions = $this->automaticOptions($commandInfo);
+        $explicitOptions = $this->explicitOptions($commandInfo);
+
+        $this->addOptions($explicitOptions + $automaticOptions, $automaticOptions);
+    }
+
+    protected function addOptions($inputOptions, $automaticOptions)
+    {
+        foreach ($inputOptions as $name => $inputOption) {
+            $default = $inputOption->getDefault();
+            $description = $inputOption->getDescription();
+
+            if (empty($description) && isset($automaticOptions[$name])) {
+                $description = $automaticOptions[$name]->getDescription();
+            }
+
+            // Recover the 'mode' value, because Symfony is stubborn
+            $mode = 0;
+            if ($inputOption->isValueRequired()) {
+                $mode |= InputOption::VALUE_REQUIRED;
+            }
+            if ($inputOption->isValueOptional()) {
+                $mode |= InputOption::VALUE_OPTIONAL;
+            }
+            if ($inputOption->isArray()) {
+                $mode |= InputOption::VALUE_IS_ARRAY;
+            }
+            if (!$mode) {
+                $mode = InputOption::VALUE_NONE;
+                $default = null;
+            }
+
+            // Add the option; note that Symfony doesn't have a convenient
+            // method to do this that takes an InputOption
+            $this->addOption(
+                $inputOption->getName(),
+                $inputOption->getShortcut(),
+                $mode,
+                $description,
+                $default
+            );
+        }
+    }
+
+    /**
+     * Get the options that are explicitly defined, e.g. via
+     * @option annotations, or via $options = ['someoption' => 'defaultvalue']
+     * in the command method parameter list.
+     *
+     * @return InputOption[]
+     */
+    protected function explicitOptions($commandInfo)
+    {
+        $explicitOptions = [];
+
         $opts = $commandInfo->options()->getValues();
-        foreach ($opts as $name => $val) {
+        foreach ($opts as $name => $defaultValue) {
             $description = $commandInfo->options()->getDescription($name);
 
             $fullName = $name;
@@ -183,12 +240,34 @@ class AnnotatedCommand extends Command
                 list($fullName, $shortcut) = explode('|', $name, 2);
             }
 
-            if (is_bool($val)) {
-                $this->addOption($fullName, $shortcut, InputOption::VALUE_NONE, $description);
+            if (is_bool($defaultValue)) {
+                $explicitOptions[$fullName] = new InputOption($fullName, $shortcut, InputOption::VALUE_NONE, $description);
+            } elseif ($defaultValue === InputOption::VALUE_REQUIRED) {
+                $explicitOptions[$fullName] = new InputOption($fullName, $shortcut, InputOption::VALUE_REQUIRED, $description);
             } else {
-                $this->addOption($fullName, $shortcut, InputOption::VALUE_OPTIONAL, $description, $val);
+                $explicitOptions[$fullName] = new InputOption($fullName, $shortcut, InputOption::VALUE_OPTIONAL, $description, $defaultValue);
             }
         }
+
+        return $explicitOptions;
+    }
+
+    /**
+     * Get the options that are implied by annotations, e.g. @fields implies
+     * that there should be a --fields and a --format option.
+     *
+     * @return InputOption[]
+     */
+    protected function automaticOptions($commandInfo)
+    {
+        $formatManager = $this->getCommandProcessor()->formatterManager();
+        if ($formatManager) {
+            $formatterOptions = new FormatterOptions($this->annotationData->getArrayCopy());
+            $dataType = $commandInfo->getReturnType();
+            $automaticOptions = $formatManager->automaticOptions($formatterOptions, $dataType);
+            return $automaticOptions;
+        }
+        return [];
     }
 
     protected function getArgsWithPassThrough($input)

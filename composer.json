@@ -27,10 +27,13 @@
         "phpdocumentor/reflection-docblock": "^2.0|^3.0.2"
     },
     "require-dev": {
-        "consolidation/output-formatters": "^2.0.0-beta2",
+        "consolidation/output-formatters": "dev-automatic-options",
         "phpunit/phpunit": "4.*",
         "satooshi/php-coveralls": "^1.0",
         "squizlabs/php_codesniffer": "2.*"
+    },
+    "suggest": {
+        "consolidation/output-formatters": "Format text by applying transformations provided by plug-in formatters."
     },
     "extra": {
         "branch-alias": {
