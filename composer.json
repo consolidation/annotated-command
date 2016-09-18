@@ -35,6 +35,11 @@
     "suggest": {
         "consolidation/output-formatters": "Format text by applying transformations provided by plug-in formatters."
     },
+    "scripts": {
+        "cs": "phpcs --standard=PSR2 -n src",
+        "cbf": "phpcbf --standard=PSR2 -n src",
+        "test": "phpunit"
+    },
     "extra": {
         "branch-alias": {
             "dev-master": "2.x-dev"
