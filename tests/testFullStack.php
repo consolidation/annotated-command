@@ -40,7 +40,6 @@ class FullStackTests extends \PHPUnit_Framework_TestCase
         $this->assertEquals('\Consolidation\OutputFormatters\StructuredData\RowsOfFields', $commandInfo->getReturnType());
     }
 
-
     function testAutomaticOptions()
     {
         $commandFileInstance = new \Consolidation\TestUtils\alpha\AlphaCommandFile;
@@ -193,11 +192,10 @@ EOT;
         $statusCode = $this->application->run($input, $output);
         $commandOutput = trim($output->fetch());
 
-        $expectedOutput = $this->simplifyWhitespace($expectedOutput);
         $commandOutput = $this->simplifyWhitespace($commandOutput);
 
         foreach ($containsList as $expectedToContain) {
-            $this->assertContains($expectedToContain, $commandOutput);
+            $this->assertContains($this->simplifyWhitespace($expectedToContain), $commandOutput);
         }
         $this->assertEquals($expectedStatusCode, $statusCode);
     }
