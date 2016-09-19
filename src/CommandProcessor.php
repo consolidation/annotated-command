@@ -135,10 +135,20 @@ class CommandProcessor
         if ($status != 0) {
             return $this->writeErrorMessage($output, $status, $structuredOutput, $result);
         }
-        if (isset($this->formatterManager)) {
+        if ($this->dataCanBeFormatted($structuredOutput)) {
             return $this->writeUsingFormatter($output, $structuredOutput, $annotationData, $options);
         }
         return $this->writeCommandOutput($output, $structuredOutput);
+    }
+
+    protected function dataCanBeFormatted($structuredOutput)
+    {
+        if (!isset($this->formatterManager)) {
+            return false;
+        }
+        return
+            is_object($structuredOutput) ||
+            is_array($structuredOutput);
     }
 
     /**
