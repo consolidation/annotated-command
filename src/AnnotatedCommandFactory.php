@@ -1,11 +1,12 @@
 <?php
 namespace Consolidation\AnnotatedCommand;
 
+use Consolidation\AnnotatedCommand\Hooks\HookManager;
+use Consolidation\AnnotatedCommand\Parser\CommandInfo;
+use Consolidation\OutputFormatters\Options\FormatterOptions;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Consolidation\AnnotatedCommand\Hooks\HookManager;
-use Consolidation\AnnotatedCommand\Parser\CommandInfo;
 
 /**
  * The AnnotatedCommandFactory creates commands for your application.
@@ -16,27 +17,46 @@ use Consolidation\AnnotatedCommand\Parser\CommandInfo;
  *
  * @package Consolidation\AnnotatedCommand
  */
-class AnnotatedCommandFactory
+class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
 {
+    /** var CommandProcessor */
     protected $commandProcessor;
+
+    /** var CommandCreationListenerInterface[] */
     protected $listeners = [];
+
+    /** var AutomaticOptionsProvider[] */
+
+    protected $automaticOptionsProviderList = [];
+
+    /** var boolean */
     protected $includeAllPublicMethods = true;
 
     public function __construct()
     {
         $this->commandProcessor = new CommandProcessor(new HookManager());
+        $this->addAutomaticOptionProvider($this);
     }
 
-    public function setCommandProcessor($commandProcessor)
+    public function setCommandProcessor(CommandProcessor $commandProcessor)
     {
         $this->commandProcessor = $commandProcessor;
     }
 
+    /**
+     * @return CommandProcessor
+     */
     public function commandProcessor()
     {
         return $this->commandProcessor;
     }
 
+    /**
+     * Set the 'include all public methods flag'. If true (the default), then
+     * every public method of each commandFile will be used to create commands.
+     * If it is false, then only those public methods annotated with @command
+     * or @name (deprecated) will be used to create commands.
+     */
     public function setIncludeAllPublicMethods($includeAllPublicMethods)
     {
         $this->includeAllPublicMethods = $includeAllPublicMethods;
@@ -47,26 +67,42 @@ class AnnotatedCommandFactory
         return $this->includeAllPublicMethods;
     }
 
+    /**
+     * @return HookManager
+     */
     public function hookManager()
     {
         return $this->commandProcessor()->hookManager();
     }
 
-    public function addListener($listener)
+    /**
+     * Add a listener that is notified immediately before the command
+     * factory creates commands from a commandFile instance.  This
+     * listener can use this opportunity to do more setup for the commandFile,
+     * and so on.
+     *
+     * @param CommandCreationListenerInterface $listener
+     */
+    public function addListener(CommandCreationListenerInterface $listener)
     {
         $this->listeners[] = $listener;
     }
 
+    /**
+     * Call all command creation listeners
+     *
+     * @param object $commandFileInstance
+     */
     protected function notify($commandFileInstance)
     {
         foreach ($this->listeners as $listener) {
-            if ($listener instanceof CommandCreationListenerInterface) {
-                $listener->notifyCommandFileAdded($commandFileInstance);
-            }
-            if (is_callable($listener)) {
-                $listener($commandFileInstance);
-            }
+            $listener->notifyCommandFileAdded($commandFileInstance);
         }
+    }
+
+    public function addAutomaticOptionProvider(AutomaticOptionsProviderInterface $optionsProvider)
+    {
+        $this->automaticOptionsProviderList[] = $optionsProvider;
     }
 
     public function createCommandsFromClass($commandFileInstance, $includeAllPublicMethods = null)
@@ -204,10 +240,46 @@ class AnnotatedCommandFactory
         $command->setCommandCallback($commandCallback);
         $command->setCommandProcessor($this->commandProcessor);
         $command->setCommandInfo($commandInfo);
+        $automaticOptions = $this->callAutomaticOptionsProviders($commandInfo);
+        $command->setCommandOptions($commandInfo, $automaticOptions);
         // Annotation commands are never bootstrap-aware, but for completeness
         // we will notify on every created command, as some clients may wish to
         // use this notification for some other purpose.
         $this->notify($command);
         return $command;
+    }
+
+    /**
+     * Get the options that are implied by annotations, e.g. @fields implies
+     * that there should be a --fields and a --format option.
+     *
+     * @return InputOption[]
+     */
+    public function callAutomaticOptionsProviders(CommandInfo $commandInfo)
+    {
+        $automaticOptions = [];
+        foreach ($this->automaticOptionsProviderList as $automaticOptionsProvider) {
+            $automaticOptions += $automaticOptionsProvider->automaticOptions($commandInfo);
+        }
+        return $automaticOptions;
+    }
+
+    /**
+     * Get the options that are implied by annotations, e.g. @fields implies
+     * that there should be a --fields and a --format option.
+     *
+     * @return InputOption[]
+     */
+    public function automaticOptions(CommandInfo $commandInfo)
+    {
+        $automaticOptions = [];
+        $formatManager = $this->commandProcessor()->formatterManager();
+        if ($formatManager) {
+            $annotationData = $commandInfo->getAnnotationsForCommand()->getArrayCopy();
+            $formatterOptions = new FormatterOptions($annotationData);
+            $dataType = $commandInfo->getReturnType();
+            $automaticOptions = $formatManager->automaticOptions($formatterOptions, $dataType);
+        }
+        return $automaticOptions;
     }
 }

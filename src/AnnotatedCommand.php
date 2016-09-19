@@ -54,6 +54,7 @@ class AnnotatedCommand extends Command
         parent::__construct($name);
         if ($commandInfo && $commandInfo->hasAnnotation('command')) {
             $this->setCommandInfo($commandInfo);
+            $this->setCommandOptions($commandInfo);
         }
     }
 
@@ -67,7 +68,7 @@ class AnnotatedCommand extends Command
         $this->commandProcessor = $commandProcessor;
     }
 
-    public function getCommandProcessor()
+    public function commandProcessor()
     {
         // If someone is using an AnnotatedCommand, and is NOT getting
         // it from an AnnotatedCommandFactory OR not correctly injecting
@@ -107,7 +108,6 @@ class AnnotatedCommand extends Command
             $this->addUsage($usage);
         }
         $this->setCommandArguments($commandInfo);
-        $this->setCommandOptions($commandInfo);
         $this->setReturnType($commandInfo->getReturnType());
     }
 
@@ -173,9 +173,8 @@ class AnnotatedCommand extends Command
         return InputArgument::OPTIONAL;
     }
 
-    protected function setCommandOptions($commandInfo)
+    public function setCommandOptions($commandInfo, $automaticOptions = [])
     {
-        $automaticOptions = $this->automaticOptions($commandInfo);
         $explicitOptions = $this->explicitOptions($commandInfo);
 
         $this->addOptions($explicitOptions + $automaticOptions, $automaticOptions);
@@ -252,24 +251,6 @@ class AnnotatedCommand extends Command
         return $explicitOptions;
     }
 
-    /**
-     * Get the options that are implied by annotations, e.g. @fields implies
-     * that there should be a --fields and a --format option.
-     *
-     * @return InputOption[]
-     */
-    protected function automaticOptions($commandInfo)
-    {
-        $formatManager = $this->getCommandProcessor()->formatterManager();
-        if ($formatManager) {
-            $formatterOptions = new FormatterOptions($this->annotationData->getArrayCopy());
-            $dataType = $commandInfo->getReturnType();
-            $automaticOptions = $formatManager->automaticOptions($formatterOptions, $dataType);
-            return $automaticOptions;
-        }
-        return [];
-    }
-
     protected function getArgsWithPassThrough($input)
     {
         $args = $input->getArguments();
@@ -338,7 +319,7 @@ class AnnotatedCommand extends Command
      */
     protected function interact(InputInterface $input, OutputInterface $output)
     {
-        $this->getCommandProcessor()->interact(
+        $this->commandProcessor()->interact(
             $input,
             $output,
             $this->getNames(),
@@ -362,7 +343,7 @@ class AnnotatedCommand extends Command
         }
 
         // Validate, run, process, alter, handle results.
-        return $this->getCommandProcessor()->process(
+        return $this->commandProcessor()->process(
             $output,
             $this->getNames(),
             $this->commandCallback,
@@ -373,7 +354,7 @@ class AnnotatedCommand extends Command
 
     public function processResults(InputInterface $input, OutputInterface $output, $results)
     {
-        $commandProcessor = $this->getCommandProcessor();
+        $commandProcessor = $this->commandProcessor();
         $names = $this->getNames();
         $args = $this->getArgsAndOptions($input);
         $results = $commandProcessor->processResults(
