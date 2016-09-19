@@ -4,7 +4,7 @@ namespace Consolidation\AnnotatedCommand;
 use Consolidation\AnnotatedCommand\Hooks\HookManager;
 use Consolidation\AnnotatedCommand\Parser\CommandInfo;
 use Consolidation\OutputFormatters\FormatterManager;
-use Consolidation\OutputFormatters\FormatterOptions;
+use Consolidation\OutputFormatters\Options\FormatterOptions;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
