@@ -7,7 +7,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 
 use Consolidation\OutputFormatters\FormatterManager;
-use Consolidation\OutputFormatters\FormatterOptions;
+use Consolidation\OutputFormatters\Options\FormatterOptions;
 use Consolidation\AnnotatedCommand\Hooks\HookManager;
 
 /**

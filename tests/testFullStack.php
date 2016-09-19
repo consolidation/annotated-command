@@ -40,6 +40,25 @@ class FullStackTests extends \PHPUnit_Framework_TestCase
         $this->assertEquals('\Consolidation\OutputFormatters\StructuredData\RowsOfFields', $commandInfo->getReturnType());
     }
 
+    function testAutomaticOptions()
+    {
+        $commandFileInstance = new \Consolidation\TestUtils\alpha\AlphaCommandFile;
+        $commandFactory = new AnnotatedCommandFactory();
+        $formatter = new FormatterManager();
+        $commandFactory->commandProcessor()->setFormatterManager($formatter);
+        $commandInfo = $commandFactory->createCommandInfo($commandFileInstance, 'exampleTable');
+
+        $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
+        $this->application->add($command);
+
+        $containsList =
+        [
+            '--format[=FORMAT]  Format the result data. Available formats: csv,json,list,php,print-r,sections,string,table,tsv,var_export,xml,yaml [default: "table"]',
+            '--fields[=FIELDS]  Available fields: I (first), II (second), III (third) [default: ""]',
+        ];
+        $this->assertRunCommandViaApplicationContains('help example:table', $containsList);
+    }
+
     function testCommandsAndHooks()
     {
         // First, search for commandfiles in the 'alpha'
@@ -78,7 +97,7 @@ class FullStackTests extends \PHPUnit_Framework_TestCase
         $returnType = $exampleTableCommand->getReturnType();
         $this->assertEquals('\Consolidation\OutputFormatters\StructuredData\RowsOfFields', $returnType);
         $validFormats = $formatter->validFormats($returnType);
-        $this->assertEquals('csv,json,list,php,print-r,sections,table,tsv,var_export,xml,yaml', implode(',', $validFormats));
+        $this->assertEquals('csv,json,list,php,print-r,sections,string,table,tsv,var_export,xml,yaml', implode(',', $validFormats));
 
         // Control: run commands without hooks.
         $this->assertRunCommandViaApplicationEquals('always:fail', 'This command always fails.', 13);
@@ -162,6 +181,22 @@ EOT;
         $commandOutput = $this->simplifyWhitespace($commandOutput);
 
         $this->assertEquals($expectedOutput, $commandOutput);
+        $this->assertEquals($expectedStatusCode, $statusCode);
+    }
+
+    function assertRunCommandViaApplicationContains($cmd, $containsList, $expectedStatusCode = 0)
+    {
+        $input = new StringInput($cmd);
+        $output = new BufferedOutput();
+
+        $statusCode = $this->application->run($input, $output);
+        $commandOutput = trim($output->fetch());
+
+        $commandOutput = $this->simplifyWhitespace($commandOutput);
+
+        foreach ($containsList as $expectedToContain) {
+            $this->assertContains($this->simplifyWhitespace($expectedToContain), $commandOutput);
+        }
         $this->assertEquals($expectedStatusCode, $statusCode);
     }
 
