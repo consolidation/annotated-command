@@ -416,6 +416,29 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf('\Symfony\Component\Console\Command\Command', $command);
         $this->assertEquals('test:hello', $command->getName());
+        $commandGetNames = $this->callProtected($command, 'getNames');
+        $this->assertEquals('test:hello,Consolidation\TestUtils\ExampleCommandFile', implode(',', $commandGetNames));
+
+        $testInteractInput = new StringInput('test:hello');
+        $definition = new \Symfony\Component\Console\Input\InputDefinition(
+            [
+                new \Symfony\Component\Console\Input\InputArgument('application', \Symfony\Component\Console\Input\InputArgument::REQUIRED),
+                new \Symfony\Component\Console\Input\InputArgument('who', \Symfony\Component\Console\Input\InputArgument::REQUIRED),
+            ]
+        );
+        $testInteractInput->bind($definition);
+        $testInteractOutput = new BufferedOutput();
+        $command->commandProcessor()->interact(
+            $testInteractInput,
+            $testInteractOutput,
+            $commandGetNames,
+            $command->getAnnotationData()
+        );
+        $this->assertEquals('Goofey', $testInteractInput->getArgument('who'));
+
+        $hookCallback = $command->commandProcessor()->hookManager()->get('test:hello', 'interact');
+        $this->assertTrue($hookCallback != null);
+        $this->assertEquals('interactTestHello', $hookCallback[0][1]);
 
         $input = new StringInput('test:hello "Mickey Mouse"');
         $this->assertRunCommandViaApplicationEquals($command, $input, 'Hello, Mickey Mouse.');
@@ -438,6 +461,13 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
 
         $input = new StringInput('test:hello "Drumph"');
         $this->assertRunCommandViaApplicationEquals($command, $input, "*** Irrational value error. ****", 1);
+    }
+
+    function callProtected($object, $method, $args = [])
+    {
+        $r = new \ReflectionMethod($object, $method);
+        $r->setAccessible(true);
+        return $r->invokeArgs($object, $args);
     }
 
     function assertRunCommandViaApplicationEquals($command, $input, $expectedOutput, $expectedStatusCode = 0)

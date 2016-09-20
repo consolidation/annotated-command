@@ -92,6 +92,11 @@ class AnnotatedCommand extends Command
         $this->returnType = $returnType;
     }
 
+    public function getAnnotationData()
+    {
+        return $this->annotationData;
+    }
+
     public function setAnnotationData($annotationData)
     {
         $this->annotationData = $annotationData;
