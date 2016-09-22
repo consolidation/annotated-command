@@ -20,15 +20,21 @@ class HookManager implements EventSubscriberInterface
 {
     protected $hooks = [];
 
+    const PRE_COMMAND_EVENT = 'pre-command-event';
+    const COMMAND_EVENT = 'command-event';
+    const POST_COMMAND_EVENT = 'post-command-event';
+    const PRE_INITIALIZE = 'pre-initialize';
+    const INITIALIZE = 'initialize';
+    const POST_INITIALIZE = 'post-initialize';
     const PRE_INTERACT = 'pre-interact';
     const INTERACT = 'interact';
     const POST_INTERACT = 'post-interact';
     const PRE_ARGUMENT_VALIDATOR = 'pre-validate';
     const ARGUMENT_VALIDATOR = 'validate';
     const POST_ARGUMENT_VALIDATOR = 'post-validate';
-    const PRE_COMMAND_EVENT = 'pre-command';
-    const COMMAND_EVENT = 'command';
-    const POST_COMMAND_EVENT = 'post-command';
+    const PRE_COMMAND_HOOK = 'pre-command';
+    const COMMAND_HOOK = 'command';
+    const POST_COMMAND_HOOK = 'post-command';
     const PRE_PROCESS_RESULT = 'pre-process';
     const PROCESS_RESULT = 'process';
     const POST_PROCESS_RESULT = 'post-process';
@@ -80,6 +86,18 @@ class HookManager implements EventSubscriberInterface
     }
 
     /**
+     * Add an configuration provider hook
+     *
+     * @param type InitializeHookInterface $provider
+     * @param type $name The name of the command to hook
+     *   ('*' for all)
+     */
+    public function addInitializeHook(InitializeHookInterface $initializeHook, $name = '*')
+    {
+        $this->hooks[$name][self::INITIALIZE][] = $initializeHook;
+    }
+
+    /**
      * Add an interact hook
      *
      * @param type ValidatorInterface $validator
@@ -113,6 +131,32 @@ class HookManager implements EventSubscriberInterface
     public function addValidator(ValidatorInterface $validator, $name = '*')
     {
         $this->hooks[$name][self::ARGUMENT_VALIDATOR][] = $validator;
+    }
+
+    /**
+     * Add a pre-command hook.  This is the same as a validator hook, except
+     * that it will run after all of the post-validator hooks.
+     *
+     * @param type ValidatorInterface $preCommand
+     * @param type $name The name of the command to hook
+     *   ('*' for all)
+     */
+    public function addPreCommandHook(ValidatorInterface $preCommand, $name = '*')
+    {
+        $this->hooks[$name][self::PRE_COMMAND_HOOK][] = $preCommand;
+    }
+
+    /**
+     * Add a post-command hook.  This is the same as a pre-process hook,
+     * except that it will run before the first pre-process hook.
+     *
+     * @param type ProcessResultInterface $postCommand
+     * @param type $name The name of the command to hook
+     *   ('*' for all)
+     */
+    public function addPostCommandHook(ProcessResultInterface $postCommand, $name = '*')
+    {
+        $this->hooks[$name][self::POST_COMMAND_HOOK][] = $postCommand;
     }
 
     /**
@@ -180,6 +224,17 @@ class HookManager implements EventSubscriberInterface
     public function addOutputExtractor(ExtractOutputInterface $outputExtractor, $name = '*')
     {
         $this->hooks[$name][self::EXTRACT_OUTPUT][] = $outputExtractor;
+    }
+
+    public function initializeHook(
+        InputInterface $input,
+        $names,
+        AnnotationData $annotationData
+    ) {
+        $providers = $this->getInitializeHooks($names, $annotationData);
+        foreach ($providers as $provider) {
+            $this->callInjectConfigurationHook($provider, $input, $annotationData);
+        }
     }
 
     public function interact(
@@ -274,6 +329,16 @@ class HookManager implements EventSubscriberInterface
         return $result;
     }
 
+    protected function getCommandEventHooks($names)
+    {
+        return $this->getHooks($names, self::COMMAND_EVENT);
+    }
+
+    protected function getInitializeHooks($names, AnnotationData $annotationData)
+    {
+        return $this->getHooks($names, self::INITIALIZE, $annotationData);
+    }
+
     protected function getInteractors($names, AnnotationData $annotationData)
     {
         return $this->getHooks($names, self::INTERACT, $annotationData);
@@ -281,17 +346,18 @@ class HookManager implements EventSubscriberInterface
 
     protected function getValidators($names, AnnotationData $annotationData)
     {
-        return $this->getHooks($names, self::ARGUMENT_VALIDATOR, $annotationData);
-    }
-
-    protected function getStatusDeterminers($names)
-    {
-        return $this->getHooks($names, self::STATUS_DETERMINER);
+        return array_merge(
+            $this->getHooks($names, self::ARGUMENT_VALIDATOR, $annotationData),
+            $this->getHooks($names, self::COMMAND_HOOK, $annotationData, ['pre-', ''])
+        );
     }
 
     protected function getProcessResultHooks($names, AnnotationData $annotationData)
     {
-        return $this->getHooks($names, self::PROCESS_RESULT, $annotationData);
+        return array_merge(
+            $this->getHooks($names, self::COMMAND_HOOK, $annotationData, ['post-']),
+            $this->getHooks($names, self::PROCESS_RESULT, $annotationData)
+        );
     }
 
     protected function getAlterResultHooks($names, AnnotationData $annotationData)
@@ -299,15 +365,16 @@ class HookManager implements EventSubscriberInterface
         return $this->getHooks($names, self::ALTER_RESULT, $annotationData);
     }
 
+    protected function getStatusDeterminers($names)
+    {
+        return $this->getHooks($names, self::STATUS_DETERMINER);
+    }
+
     protected function getOutputExtractors($names)
     {
         return $this->getHooks($names, self::EXTRACT_OUTPUT);
     }
 
-    protected function getCommandEvents($names)
-    {
-        return $this->getHooks($names, self::COMMAND_EVENT);
-    }
 
     /**
      * Get a set of hooks with the provided name(s). Include the
@@ -316,10 +383,11 @@ class HookManager implements EventSubscriberInterface
      *
      * @param string|array $names The name of the function being hooked.
      * @param string $hook The specific hook name (e.g. alter)
+     * @param string[] $stages The stages to apply hooks at (e.g. pre, post)
      *
      * @return callable[]
      */
-    protected function getHooks($names, $hook, $annotationData = null)
+    protected function getHooks($names, $hook, $annotationData = null, $stages = ['pre-', '', 'post-'])
     {
         $names = array_merge(
             (array)$names,
@@ -328,11 +396,7 @@ class HookManager implements EventSubscriberInterface
             }, $annotationData->keys())
         );
         $names[] = '*';
-        return array_merge(
-            $this->get($names, "pre-$hook"),
-            $this->get($names, $hook),
-            $this->get($names, "post-$hook")
-        );
+        return $this->get($names, $hook, $stages);
     }
 
     /**
@@ -343,11 +407,13 @@ class HookManager implements EventSubscriberInterface
      *
      * @return callable[]
      */
-    public function get($names, $hook)
+    public function get($names, $hook, $stages = [''])
     {
         $hooks = [];
-        foreach ((array)$names as $name) {
-            $hooks = array_merge($hooks, $this->getHook($name, $hook));
+        foreach ($stages as $stage) {
+            foreach ((array)$names as $name) {
+                $hooks = array_merge($hooks, $this->getHook($name, $stage . $hook));
+            }
         }
         return $hooks;
     }
@@ -366,6 +432,16 @@ class HookManager implements EventSubscriberInterface
             return $this->hooks[$name][$hook];
         }
         return [];
+    }
+
+    protected function callInjectConfigurationHook($provider, $input, AnnotationData $annotationData)
+    {
+        if ($provider instanceof InitializeHookInterface) {
+            return $provider->applyConfiguration($input, $annotationData);
+        }
+        if (is_callable($provider)) {
+            return $provider($input, $annotationData);
+        }
     }
 
     protected function callInteractor($interactor, $input, $output, AnnotationData $annotationData)
@@ -437,7 +513,7 @@ class HookManager implements EventSubscriberInterface
         /* @var Command $command */
         $command = $event->getCommand();
         $names = [$command->getName()];
-        $commandEventHooks = $this->getCommandEvents($names);
+        $commandEventHooks = $this->getCommandEventHooks($names);
         foreach ($commandEventHooks as $commandEvent) {
             if (is_callable($commandEvent)) {
                 $commandEvent($event);

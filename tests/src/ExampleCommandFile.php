@@ -6,6 +6,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Consolidation\AnnotatedCommand\CommandError;
 use Consolidation\AnnotatedCommand\AnnotationData;
+use Symfony\Component\Console\Event\ConsoleCommandEvent;
 
 /**
  * Test file used in the Annotation Factory tests.  It is also
@@ -18,10 +19,16 @@ use Consolidation\AnnotatedCommand\AnnotationData;
 class ExampleCommandFile
 {
     protected $state;
+    protected $output;
 
     public function __construct($state = '')
     {
         $this->state = $state;
+    }
+
+    public function setOutput($output)
+    {
+        $this->output = $output;
     }
 
     /**
@@ -224,6 +231,32 @@ class ExampleCommandFile
         return "fantabulous";
     }
 
+    /**
+     * @hook pre-command test:post-command
+     */
+    public function hookTestPreCommandHook($args, AnnotationData $annotationData)
+    {
+        // Use 'writeln' to detect order that hooks are called
+        $this->output->writeln("foo");
+    }
+
+    /**
+     * @command test:post-command
+     */
+    public function testPostCommand($value)
+    {
+        $this->output->writeln($value);
+    }
+
+    /**
+     * @hook post-command test:post-command
+     */
+    public function hookTestPostCommandHook($result, array $args, AnnotationData $annotationData)
+    {
+        // Use 'writeln' to detect order that hooks are called
+        $this->output->writeln("baz");
+    }
+
     public function testHello($who)
     {
         return "Hello, $who.";
@@ -232,6 +265,30 @@ class ExampleCommandFile
     public function testException($what)
     {
         throw new \Exception($what);
+    }
+
+    /**
+     * @hook initialize test:hello
+     */
+    public function initializeTestHello($input, AnnotationData $annotationData)
+    {
+        $who = $input->getArgument('who');
+        if (!$who) {
+            $input->setArgument('who', 'Huey');
+        }
+    }
+
+    /**
+     * @hook command-event test:hello
+     */
+    public function commandEventTestHello(ConsoleCommandEvent $event)
+    {
+        // Note that Symfony Console will not allow us to alter the
+        // input from this hook, so we'll just print something to
+        // show that this hook was executed.
+        $input = $event->getInput();
+        $who = $input->getArgument('who');
+        $this->output->writeln("Here comes $who!");
     }
 
     /**
