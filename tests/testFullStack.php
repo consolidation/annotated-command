@@ -153,6 +153,17 @@ EOT;
         $factory->setIncludeAllPublicMethods(true);
         $this->addDiscoveredCommands($factory, $commandFiles);
         $this->assertTrue($this->application->has('without:annotations'));
+
+        $expectedSingleField = <<<EOT
+Two
+Zwei
+Ni
+Dos
+EOT;
+
+        // When --field is specified (instead of --fields), then the format
+        // is forced to 'string'.
+        $this->assertRunCommandViaApplicationEquals('example:table --field=II', $expectedSingleField);
     }
 
     public function addDiscoveredCommands($factory, $commandFiles) {

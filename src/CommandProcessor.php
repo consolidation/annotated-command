@@ -191,6 +191,14 @@ class CommandProcessor
      */
     protected function getFormat($options)
     {
+        // In Symfony Console, there is no way for us to differentiate
+        // between the user specifying '--format=table', and the user
+        // not specifying --format when the default value is 'table'.
+        // Therefore, we must make --field always override --format; it
+        // cannot become the default value for --format.
+        if ($options['field']) {
+            return 'string';
+        }
         $options += [
             'default-format' => false,
             'pipe' => false,
