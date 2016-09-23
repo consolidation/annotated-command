@@ -196,7 +196,7 @@ class CommandProcessor
         // not specifying --format when the default value is 'table'.
         // Therefore, we must make --field always override --format; it
         // cannot become the default value for --format.
-        if ($options['field']) {
+        if (!empty($options['field'])) {
             return 'string';
         }
         $options += [
