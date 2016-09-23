@@ -3,6 +3,7 @@ namespace Consolidation\TestUtils\alpha;
 
 use Consolidation\AnnotatedCommand\CommandError;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
+use Consolidation\OutputFormatters\StructuredData\AssociativeList;
 
 /**
  * Test file used in the testCommandDiscovery() test.
@@ -87,6 +88,59 @@ class AlphaCommandFile
             [ 'first' => 'Uno',  'second' => 'Dos',  'third' => 'Tres'  ],
         ];
         return new RowsOfFields($outputData);
+    }
+
+    /**
+     * Test command with formatters using an associative list
+     *
+     * @command example:list
+     * @field-labels
+     *   sftp_command: SFTP Command
+     *   sftp_username: SFTP Username
+     *   sftp_host: SFTP Host
+     *   sftp_password: SFTP Password
+     *   sftp_url: SFTP URL
+     *   git_command: Git Command
+     *   git_username: Git Username
+     *   git_host: Git Host
+     *   git_port: Git Port
+     *   git_url: Git URL
+     *   mysql_command: MySQL Command
+     *   mysql_username: MySQL Username
+     *   mysql_host: MySQL Host
+     *   mysql_password: MySQL Password
+     *   mysql_url: MySQL URL
+     *   mysql_port: MySQL Port
+     *   mysql_database: MySQL Database
+     *   redis_command: Redis Command
+     *   redis_port: Redis Port
+     *   redis_url: Redis URL
+     *   redis_password: Redis Password
+     * @default-fields *_command
+     * @return \Consolidation\OutputFormatters\StructuredData\AssociativeList
+     */
+    public function exampleAssociativeList()
+    {
+        $outputData = [
+            'sftp_command' => 'sftp -o Port=2222 dev@appserver.dev.drush.in',
+            'sftp_username' => 'dev',
+            'sftp_host' => 'appserver.dev.drush.in',
+            'sftp_password' => 'Use your account password',
+            'sftp_url' => 'sftp://dev@appserver.dev.drush.in:2222',
+            'git_command' => 'git clone ssh://codeserver.dev@codeserver.dev.drush.in:2222/~/repository.git wp-update',
+            'git_username' => 'codeserver.dev',
+            'git_host' => 'codeserver.dev.drush.in',
+            'git_port' => 2222,
+            'git_url' => 'ssh://codeserver.dev@codeserver.dev.drush.in:2222/~/repository.git',
+            'mysql_command' => 'mysql -u pantheon -p4b33cb -h dbserver.dev.drush.in -P 16191 pantheon',
+            'mysql_username' => 'pantheon',
+            'mysql_host' => 'dbserver.dev.drush.in',
+            'mysql_password' => '4b33cb',
+            'mysql_url' => 'mysql://pantheon:4b33cb@dbserver.dev.drush.in:16191/pantheon',
+            'mysql_port' => 16191,
+            'mysql_database' => 'pantheon',
+        ];
+        return new AssociativeList($outputData);
     }
 
     /**

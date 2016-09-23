@@ -148,12 +148,6 @@ EOT;
 EOT;
         $this->assertRunCommandViaApplicationEquals('example:table --fields=III,II', $expected);
 
-        // Now we will once again add all commands, this time including all
-        // public methods.  The command 'withoutAnnotations' should now be found.
-        $factory->setIncludeAllPublicMethods(true);
-        $this->addDiscoveredCommands($factory, $commandFiles);
-        $this->assertTrue($this->application->has('without:annotations'));
-
         $expectedSingleField = <<<EOT
 Two
 Zwei
@@ -164,6 +158,23 @@ EOT;
         // When --field is specified (instead of --fields), then the format
         // is forced to 'string'.
         $this->assertRunCommandViaApplicationEquals('example:table --field=II', $expectedSingleField);
+
+        $expectedAssociativeListTable = <<<EOT
+ --------------- ----------------------------------------------------------------------------------------
+  SFTP Command    sftp -o Port=2222 dev@appserver.dev.drush.in
+  Git Command     git clone ssh://codeserver.dev@codeserver.dev.drush.in:2222/~/repository.git wp-update
+  MySQL Command   mysql -u pantheon -p4b33cb -h dbserver.dev.drush.in -P 16191 pantheon
+ --------------- ----------------------------------------------------------------------------------------
+EOT;
+        $this->assertRunCommandViaApplicationEquals('example:list', $expectedAssociativeListTable);
+        $this->assertRunCommandViaApplicationEquals('example:list --field=sftp_command', 'sftp -o Port=2222 dev@appserver.dev.drush.in');
+
+        // Now we will once again add all commands, this time including all
+        // public methods.  The command 'withoutAnnotations' should now be found.
+        $factory->setIncludeAllPublicMethods(true);
+        $this->addDiscoveredCommands($factory, $commandFiles);
+        $this->assertTrue($this->application->has('without:annotations'));
+
     }
 
     public function addDiscoveredCommands($factory, $commandFiles) {
