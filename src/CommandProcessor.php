@@ -58,6 +58,14 @@ class CommandProcessor
         return $this->formatterManager;
     }
 
+    public function initializeHook(
+        InputInterface $input,
+        $names,
+        AnnotationData $annotationData
+    ) {
+        return $this->hookManager()->initializeHook($input, $names, $annotationData);
+    }
+
     public function interact(
         InputInterface $input,
         OutputInterface $output,
@@ -135,7 +143,7 @@ class CommandProcessor
         if ($status != 0) {
             return $this->writeErrorMessage($output, $status, $structuredOutput, $result);
         }
-        if ($this->dataCanBeFormatted($structuredOutput)) {
+        if ($this->dataCanBeFormatted($structuredOutput) && isset($this->formatterManager)) {
             return $this->writeUsingFormatter($output, $structuredOutput, $annotationData, $options);
         }
         return $this->writeCommandOutput($output, $structuredOutput);

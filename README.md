@@ -72,9 +72,11 @@ The commandname may be the command's primary name (e.g. `my:command`), it's meth
 
 If an annotation is given instead, then this hook function will run for all commands with the specified annotation.
 
-There are seven types of hooks supported:
+There are nine types of hooks supported:
 
-- Interact
+- Command Event (Symfony)
+- Initialize (Symfony)
+- Interact (Symfony)
 - Validate
 - Command
 - Process
@@ -84,17 +86,21 @@ There are seven types of hooks supported:
 
 Most of these also have "pre" and "post" varieties, to give more flexibility vis-a-vis hook ordering (and for consistency). Note that many validate, process and alter hooks may run, but the first status or extract hook that successfully returns a result will halt processing of further hooks of the same type.
 
+### Command Event Hook
+
+The command-event hook is called via the Symfony Console command event notification callback mechanism. This happens prior to event dispatching and command / option validation.  Note that Symfony does not allow the $input object to be altered in this hook; any change made here will be reset before the interact hook is called.
+
+### Initialize Hook
+
+The initialize hook runs prior to the interact hook.  It may supply command arguments and options from a configuration file or other sources. It should never do any user interaction.
+
 ### Interact Hook
 
-The interact hook runs prior to argument and option validation. Required arguments and options not supplied on the command line may be provided during this phase, either from configuration or by prompting the user.  The hook is provided an `$input` object, which may be manipulated directly.
-
-### Command Hook
-
-The command hook is called just before Symfony Console calls the `execute()` method.  At this point, the arguments and options passed to the command have already been validated by Symfony.  Unlike the other hooks, this one can be applied to Symfony Console commands that were not created via the AnnotatedCommandFactory.
+The interact hook runs prior to argument and option validation. Required arguments and options not supplied on the command line may be provided during this phase by prompting the user.  Note that the interact hook is not called if the --no-interaction flag is supplied, whereas the command-event hook and the inject-configuration hook are.
 
 ### Validate Hook
 
-The purpose of the validate hook is to ensure the state of the targets of the current command are usabe in the context required by that command. It is not necessary to confirm the validity of the arguments and options to the command, as Symfony has already done that.  It is possible, however, to alter the values of the arguments and options if desires (although this is better done in the interact hook). A validation hook may take one of several actions:
+The purpose of the validate hook is to ensure the state of the targets of the current command are usabe in the context required by that command. Symfony has already validated the arguments and options prior to this hook.  It is possible to alter the values of the arguments and options if necessary, although this is better done in the configure hook. A validation hook may take one of several actions:
 
 - Do nothing. This indicates that validation succeeded.
 - Return an array. This alters the arguments that will be used during command execution.
@@ -102,6 +108,12 @@ The purpose of the validate hook is to ensure the state of the targets of the cu
 - Throw an exception. The exception is converted into a CommandError.
 
 Any number of validation hooks may run, but if any fails, then execution of the command stops.
+
+### Command Hook
+
+The command hook is provided for semantic purposes.  The pre-command and command hooks are equivalent to the post-validate hook, although all of the post-validate hooks will be called before the first pre-command hook is called.  Similarly, the post-command hook is equivalent to the pre-process hook.
+
+The command callback itself (the method annotated @command) is called after the last command hook, and prior to the first post-command hook.
 
 ### Process Hook
 
@@ -175,6 +187,34 @@ If different namespaces are used at different command file paths, change the cal
 $myCommandFiles = $discovery->discover(['\Ns1' => $path1, '\Ns2' => $path2]);
 ```
 As a shortcut for the above, the method `discoverNamespaced()` will take the last directory name of each path, and append it to the base namespace provided. This matches the conventions used by Drupal modules, for example.
+
+## Other Callbacks
+
+In addition to the hooks provided by the hook manager, there are additional callbacks available to alter the way the annotated command library operates.
+
+### Factory Listeners
+
+Factory listeners are notified every time a command file instance is used to create annotated commands.
+```
+public function AnnotatedCommandFactory::addListener(CommandCreationListenerInterface $listener);
+```
+Listeners can be used to construct command file instances as they are provided to the command factory.
+
+### Option Providers
+
+An option provider is given an opportunity to add options to a command as it is being constructed.  
+```
+public function AnnotatedCommandFactory::addAutomaticOptionProvider(AutomaticOptionsProviderInterface $listener);
+```
+The complete CommandInfo record with all of the annotation data is available, so you can, for example, add an option `--foo` to every command whose method is annotated `@fooable`.
+
+### Configuration Providers
+
+A configuration provider is given an opportunity to inject values for arguments and options immediately before a command runs.
+```
+public function 
+```
+This happens prior to the `interact` phase, so values that exist in configuration will be used in preference to prompting the user whenver such values exist.
 
 ## Comparison to Existing Solutions
 

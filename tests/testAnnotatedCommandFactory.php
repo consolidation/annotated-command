@@ -12,16 +12,19 @@ use Consolidation\AnnotatedCommand\AnnotationData;
 
 class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
 {
+    protected $commandFileInstance;
+    protected $commandFactory;
+
     /**
      * Test CommandInfo command annotation parsing.
      */
     function testAnnotatedCommandCreation()
     {
-        $commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile;
-        $commandFactory = new AnnotatedCommandFactory();
-        $commandInfo = $commandFactory->createCommandInfo($commandFileInstance, 'testArithmatic');
+        $this->commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile;
+        $this->commandFactory = new AnnotatedCommandFactory();
+        $commandInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'testArithmatic');
 
-        $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
+        $command = $this->commandFactory->createCommand($commandInfo, $this->commandFileInstance);
 
         $this->assertInstanceOf('\Symfony\Component\Console\Command\Command', $command);
         $this->assertEquals('test:arithmatic', $command->getName());
@@ -37,11 +40,11 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
 
     function testMyCatCommand()
     {
-        $commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile;
-        $commandFactory = new AnnotatedCommandFactory();
-        $commandInfo = $commandFactory->createCommandInfo($commandFileInstance, 'myCat');
+        $this->commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile;
+        $this->commandFactory = new AnnotatedCommandFactory();
+        $commandInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'myCat');
 
-        $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
+        $command = $this->commandFactory->createCommand($commandInfo, $this->commandFileInstance);
 
         $this->assertInstanceOf('\Symfony\Component\Console\Command\Command', $command);
         $this->assertEquals('my:cat', $command->getName());
@@ -57,11 +60,11 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
 
     function testDefaultsCommand()
     {
-        $commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile;
-        $commandFactory = new AnnotatedCommandFactory();
-        $commandInfo = $commandFactory->createCommandInfo($commandFileInstance, 'defaults');
+        $this->commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile;
+        $this->commandFactory = new AnnotatedCommandFactory();
+        $commandInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'defaults');
 
-        $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
+        $command = $this->commandFactory->createCommand($commandInfo, $this->commandFileInstance);
 
         $this->assertInstanceOf('\Symfony\Component\Console\Command\Command', $command);
         $this->assertEquals('defaults', $command->getName());
@@ -79,11 +82,11 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
 
     function testCommandWithNoOptions()
     {
-        $commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile;
-        $commandFactory = new AnnotatedCommandFactory();
-        $commandInfo = $commandFactory->createCommandInfo($commandFileInstance, 'commandWithNoOptions');
+        $this->commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile;
+        $this->commandFactory = new AnnotatedCommandFactory();
+        $commandInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'commandWithNoOptions');
 
-        $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
+        $command = $this->commandFactory->createCommand($commandInfo, $this->commandFileInstance);
 
         $this->assertInstanceOf('\Symfony\Component\Console\Command\Command', $command);
         $this->assertEquals('command:with-no-options', $command->getName());
@@ -99,11 +102,11 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
 
     function testCommandWithNoArguments()
     {
-        $commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile;
-        $commandFactory = new AnnotatedCommandFactory();
-        $commandInfo = $commandFactory->createCommandInfo($commandFileInstance, 'commandWithNoArguments');
+        $this->commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile;
+        $this->commandFactory = new AnnotatedCommandFactory();
+        $commandInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'commandWithNoArguments');
 
-        $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
+        $command = $this->commandFactory->createCommand($commandInfo, $this->commandFileInstance);
 
         $this->assertInstanceOf('\Symfony\Component\Console\Command\Command', $command);
         $this->assertEquals('command:with-no-arguments', $command->getName());
@@ -121,11 +124,11 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
 
     function testCommandWithShortcutOnAnnotation()
     {
-        $commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile;
-        $commandFactory = new AnnotatedCommandFactory();
-        $commandInfo = $commandFactory->createCommandInfo($commandFileInstance, 'shortcutOnAnnotation');
+        $this->commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile;
+        $this->commandFactory = new AnnotatedCommandFactory();
+        $commandInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'shortcutOnAnnotation');
 
-        $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
+        $command = $this->commandFactory->createCommand($commandInfo, $this->commandFileInstance);
 
         $this->assertInstanceOf('\Symfony\Component\Console\Command\Command', $command);
         $this->assertEquals('shortcut:on-annotation', $command->getName());
@@ -143,11 +146,11 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
 
     function testState()
     {
-        $commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile('secret secret');
-        $commandFactory = new AnnotatedCommandFactory();
-        $commandInfo = $commandFactory->createCommandInfo($commandFileInstance, 'testState');
+        $this->commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile('secret secret');
+        $this->commandFactory = new AnnotatedCommandFactory();
+        $commandInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'testState');
 
-        $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
+        $command = $this->commandFactory->createCommand($commandInfo, $this->commandFileInstance);
 
         $this->assertInstanceOf('\Symfony\Component\Console\Command\Command', $command);
         $this->assertEquals('test:state', $command->getName());
@@ -158,11 +161,11 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
 
     function testPassthroughArray()
     {
-        $commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile;
-        $commandFactory = new AnnotatedCommandFactory();
-        $commandInfo = $commandFactory->createCommandInfo($commandFileInstance, 'testPassthrough');
+        $this->commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile;
+        $this->commandFactory = new AnnotatedCommandFactory();
+        $commandInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'testPassthrough');
 
-        $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
+        $command = $this->commandFactory->createCommand($commandInfo, $this->commandFileInstance);
 
         $this->assertInstanceOf('\Symfony\Component\Console\Command\Command', $command);
         $this->assertEquals('test:passthrough', $command->getName());
@@ -174,11 +177,11 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
 
     function testPassThroughNonArray()
     {
-        $commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile;
-        $commandFactory = new AnnotatedCommandFactory();
-        $commandInfo = $commandFactory->createCommandInfo($commandFileInstance, 'myCat');
+        $this->commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile;
+        $this->commandFactory = new AnnotatedCommandFactory();
+        $commandInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'myCat');
 
-        $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
+        $command = $this->commandFactory->createCommand($commandInfo, $this->commandFileInstance);
 
         $input = new StringInput('my:cat bet --flip');
         $input = new PassThroughArgsInput(['x', 'y', 'z'], $input);
@@ -190,11 +193,11 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
 
     function testPassThroughWithInputManipulation()
     {
-        $commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile;
-        $commandFactory = new AnnotatedCommandFactory();
-        $commandInfo = $commandFactory->createCommandInfo($commandFileInstance, 'myRepeat');
+        $this->commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile;
+        $this->commandFactory = new AnnotatedCommandFactory();
+        $commandInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'myRepeat');
 
-        $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
+        $command = $this->commandFactory->createCommand($commandInfo, $this->commandFileInstance);
 
         $input = new StringInput('my:repeat bet --repeat=2');
         $input = new PassThroughArgsInput(['x', 'y', 'z'], $input);
@@ -211,25 +214,25 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
 
     function testHookedCommand()
     {
-        $commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile();
-        $commandFactory = new AnnotatedCommandFactory();
+        $this->commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile();
+        $this->commandFactory = new AnnotatedCommandFactory();
 
-        $hookInfo = $commandFactory->createCommandInfo($commandFileInstance, 'hookTestHook');
+        $hookInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'hookTestHook');
 
         $this->assertTrue($hookInfo->hasAnnotation('hook'));
         $this->assertEquals('alter test:hook', $hookInfo->getAnnotation('hook'));
 
-        $commandFactory->registerCommandHook($hookInfo, $commandFileInstance);
+        $this->commandFactory->registerCommandHook($hookInfo, $this->commandFileInstance);
 
-        $hookCallback = $commandFactory->hookManager()->get('test:hook', 'alter');
+        $hookCallback = $this->commandFactory->hookManager()->get('test:hook', 'alter');
         $this->assertTrue($hookCallback != null);
         $this->assertEquals(1, count($hookCallback));
         $this->assertEquals(2, count($hookCallback[0]));
         $this->assertTrue(is_callable($hookCallback[0]));
         $this->assertEquals('hookTestHook', $hookCallback[0][1]);
 
-        $commandInfo = $commandFactory->createCommandInfo($commandFileInstance, 'testHook');
-        $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
+        $commandInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'testHook');
+        $command = $this->commandFactory->createCommand($commandInfo, $this->commandFileInstance);
 
         $this->assertInstanceOf('\Symfony\Component\Console\Command\Command', $command);
         $this->assertEquals('test:hook', $command->getName());
@@ -238,27 +241,70 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
         $this->assertRunCommandViaApplicationEquals($command, $input, '<[bar]>');
     }
 
+    function testPostCommandCalledAfterCommand()
+    {
+        $this->commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile();
+        $this->commandFactory = new AnnotatedCommandFactory();
+
+        $hookInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'hookTestPostCommandHook');
+
+        $this->assertTrue($hookInfo->hasAnnotation('hook'));
+        $this->assertEquals('post-command test:post-command', $hookInfo->getAnnotation('hook'));
+
+        $this->commandFactory->registerCommandHook($hookInfo, $this->commandFileInstance);
+
+        $hookCallback = $this->commandFactory->hookManager()->get('test:post-command', 'post-command');
+        $this->assertTrue($hookCallback != null);
+        $this->assertEquals(1, count($hookCallback));
+        $this->assertEquals(2, count($hookCallback[0]));
+        $this->assertTrue(is_callable($hookCallback[0]));
+        $this->assertEquals('hookTestPostCommandHook', $hookCallback[0][1]);
+
+        $hookInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'hookTestPreCommandHook');
+
+        $this->assertTrue($hookInfo->hasAnnotation('hook'));
+        $this->assertEquals('pre-command test:post-command', $hookInfo->getAnnotation('hook'));
+
+        $this->commandFactory->registerCommandHook($hookInfo, $this->commandFileInstance);
+
+        $hookCallback = $this->commandFactory->hookManager()->get('test:post-command', 'pre-command');
+        $this->assertTrue($hookCallback != null);
+        $this->assertEquals(1, count($hookCallback));
+        $this->assertEquals(2, count($hookCallback[0]));
+        $this->assertTrue(is_callable($hookCallback[0]));
+        $this->assertEquals('hookTestPreCommandHook', $hookCallback[0][1]);
+
+        $commandInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'testPostCommand');
+        $command = $this->commandFactory->createCommand($commandInfo, $this->commandFileInstance);
+
+        $this->assertInstanceOf('\Symfony\Component\Console\Command\Command', $command);
+        $this->assertEquals('test:post-command', $command->getName());
+
+        $input = new StringInput('test:post-command bar');
+        $this->assertRunCommandViaApplicationEquals($command, $input, "foo\nbar\nbaz", 0, $this->commandFileInstance);
+    }
+
     function testHookAllCommands()
     {
-        $commandFileInstance = new \Consolidation\TestUtils\ExampleHookAllCommandFile();
-        $commandFactory = new AnnotatedCommandFactory();
+        $this->commandFileInstance = new \Consolidation\TestUtils\ExampleHookAllCommandFile();
+        $this->commandFactory = new AnnotatedCommandFactory();
 
-        $hookInfo = $commandFactory->createCommandInfo($commandFileInstance, 'alterAllCommands');
+        $hookInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'alterAllCommands');
 
         $this->assertTrue($hookInfo->hasAnnotation('hook'));
         $this->assertEquals('alter', $hookInfo->getAnnotation('hook'));
 
-        $commandFactory->registerCommandHook($hookInfo, $commandFileInstance);
+        $this->commandFactory->registerCommandHook($hookInfo, $this->commandFileInstance);
 
-        $hookCallback = $commandFactory->hookManager()->get('Consolidation\TestUtils\ExampleHookAllCommandFile', 'alter');
+        $hookCallback = $this->commandFactory->hookManager()->get('Consolidation\TestUtils\ExampleHookAllCommandFile', 'alter');
         $this->assertTrue($hookCallback != null);
         $this->assertEquals(1, count($hookCallback));
         $this->assertEquals(2, count($hookCallback[0]));
         $this->assertTrue(is_callable($hookCallback[0]));
         $this->assertEquals('alterAllCommands', $hookCallback[0][1]);
 
-        $commandInfo = $commandFactory->createCommandInfo($commandFileInstance, 'doCat');
-        $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
+        $commandInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'doCat');
+        $command = $this->commandFactory->createCommand($commandInfo, $this->commandFileInstance);
 
         $this->assertInstanceOf('\Symfony\Component\Console\Command\Command', $command);
         $this->assertEquals('do:cat', $command->getName());
@@ -269,28 +315,28 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
 
     function testAnnotatedHookedCommand()
     {
-        $commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile();
-        $commandFactory = new AnnotatedCommandFactory();
+        $this->commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile();
+        $this->commandFactory = new AnnotatedCommandFactory();
 
-        $hookInfo = $commandFactory->createCommandInfo($commandFileInstance, 'hookTestAnnotatedHook');
+        $hookInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'hookTestAnnotatedHook');
 
         $this->assertTrue($hookInfo->hasAnnotation('hook'));
         $this->assertEquals('alter @hookme', $hookInfo->getAnnotation('hook'));
 
-        $commandFactory->registerCommandHook($hookInfo, $commandFileInstance);
-        $hookCallback = $commandFactory->hookManager()->get('@hookme', 'alter');
+        $this->commandFactory->registerCommandHook($hookInfo, $this->commandFileInstance);
+        $hookCallback = $this->commandFactory->hookManager()->get('@hookme', 'alter');
         $this->assertTrue($hookCallback != null);
         $this->assertEquals(1, count($hookCallback));
         $this->assertEquals(2, count($hookCallback[0]));
         $this->assertTrue(is_callable($hookCallback[0]));
         $this->assertEquals('hookTestAnnotatedHook', $hookCallback[0][1]);
 
-        $commandInfo = $commandFactory->createCommandInfo($commandFileInstance, 'testAnnotationHook');
+        $commandInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'testAnnotationHook');
         $annotationData = $commandInfo->getAnnotations();
         $this->assertEquals('hookme,before,after', implode(',', $annotationData->keys()));
         $this->assertEquals('@hookme,@before,@after', implode(',', array_map(function ($item) { return "@$item"; }, $annotationData->keys())));
 
-        $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
+        $command = $this->commandFactory->createCommand($commandInfo, $this->commandFileInstance);
 
         $this->assertInstanceOf('\Symfony\Component\Console\Command\Command', $command);
         $this->assertEquals('test:annotation-hook', $command->getName());
@@ -301,27 +347,27 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
 
     function testHookHasCommandAnnotation()
     {
-        $commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile();
-        $commandFactory = new AnnotatedCommandFactory();
+        $this->commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile();
+        $this->commandFactory = new AnnotatedCommandFactory();
 
-        $hookInfo = $commandFactory->createCommandInfo($commandFileInstance, 'hookAddCommandName');
+        $hookInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'hookAddCommandName');
 
         $this->assertTrue($hookInfo->hasAnnotation('hook'));
         $this->assertEquals('alter @addmycommandname', $hookInfo->getAnnotation('hook'));
 
-        $commandFactory->registerCommandHook($hookInfo, $commandFileInstance);
-        $hookCallback = $commandFactory->hookManager()->get('@addmycommandname', 'alter');
+        $this->commandFactory->registerCommandHook($hookInfo, $this->commandFileInstance);
+        $hookCallback = $this->commandFactory->hookManager()->get('@addmycommandname', 'alter');
         $this->assertTrue($hookCallback != null);
         $this->assertEquals(1, count($hookCallback));
         $this->assertEquals(2, count($hookCallback[0]));
         $this->assertTrue(is_callable($hookCallback[0]));
         $this->assertEquals('hookAddCommandName', $hookCallback[0][1]);
 
-        $commandInfo = $commandFactory->createCommandInfo($commandFileInstance, 'alterMe');
+        $commandInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'alterMe');
         $annotationData = $commandInfo->getAnnotations();
         $this->assertEquals('command,addmycommandname', implode(',', $annotationData->keys()));
 
-        $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
+        $command = $this->commandFactory->createCommand($commandInfo, $this->commandFileInstance);
 
         $this->assertInstanceOf('\Symfony\Component\Console\Command\Command', $command);
         $this->assertEquals('alter-me', $command->getName());
@@ -329,13 +375,13 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
         $input = new StringInput('alter-me');
         $this->assertRunCommandViaApplicationEquals($command, $input, 'splendiferous from alter-me');
 
-        $commandInfo = $commandFactory->createCommandInfo($commandFileInstance, 'alterMeToo');
+        $commandInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'alterMeToo');
         $annotationData = $commandInfo->getAnnotations();
         $this->assertEquals('addmycommandname', implode(',', $annotationData->keys()));
         $annotationData = $commandInfo->getAnnotationsForCommand();
         $this->assertEquals('addmycommandname,command', implode(',', $annotationData->keys()));
 
-        $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
+        $command = $this->commandFactory->createCommand($commandInfo, $this->commandFileInstance);
 
         $this->assertInstanceOf('\Symfony\Component\Console\Command\Command', $command);
         $this->assertEquals('alter:me-too', $command->getName());
@@ -347,11 +393,11 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
 
     function testHookedCommandWithHookAddedLater()
     {
-        $commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile();
-        $commandFactory = new AnnotatedCommandFactory();
-        $commandInfo = $commandFactory->createCommandInfo($commandFileInstance, 'testHook');
+        $this->commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile();
+        $this->commandFactory = new AnnotatedCommandFactory();
+        $commandInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'testHook');
 
-        $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
+        $command = $this->commandFactory->createCommand($commandInfo, $this->commandFileInstance);
 
         $this->assertInstanceOf('\Symfony\Component\Console\Command\Command', $command);
         $this->assertEquals('test:hook', $command->getName());
@@ -361,13 +407,13 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
         $this->assertRunCommandViaApplicationEquals($command, $input, '[foo]');
 
         // Register the hook and run the command again
-        $hookInfo = $commandFactory->createCommandInfo($commandFileInstance, 'hookTestHook');
+        $hookInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'hookTestHook');
 
         $this->assertTrue($hookInfo->hasAnnotation('hook'));
         $this->assertEquals('alter test:hook', $hookInfo->getAnnotation('hook'));
 
-        $commandFactory->registerCommandHook($hookInfo, $commandFileInstance);
-        $hookCallback = $commandFactory->hookManager()->get('test:hook', 'alter');
+        $this->commandFactory->registerCommandHook($hookInfo, $this->commandFileInstance);
+        $hookCallback = $this->commandFactory->hookManager()->get('test:hook', 'alter');
         $this->assertTrue($hookCallback != null);
         $this->assertEquals(1, count($hookCallback));
         $this->assertEquals(2, count($hookCallback[0]));
@@ -378,41 +424,112 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
         $this->assertRunCommandViaApplicationEquals($command, $input, '<[bar]>');
     }
 
+    function testInitializeHook()
+    {
+        $this->commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile();
+        $this->commandFactory = new AnnotatedCommandFactory();
+
+        $hookInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'initializeTestHello');
+
+        $this->assertTrue($hookInfo->hasAnnotation('hook'));
+        $this->assertEquals($hookInfo->getAnnotation('hook'), 'initialize test:hello');
+
+        $this->commandFactory->registerCommandHook($hookInfo, $this->commandFileInstance);
+
+        $hookCallback = $this->commandFactory->hookManager()->get('test:hello', 'initialize');
+        $this->assertTrue($hookCallback != null);
+        $this->assertEquals(1, count($hookCallback));
+        $this->assertEquals(2, count($hookCallback[0]));
+        $this->assertTrue(is_callable($hookCallback[0]));
+        $this->assertEquals('initializeTestHello', $hookCallback[0][1]);
+
+        $commandInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'testHello');
+        $command = $this->commandFactory->createCommand($commandInfo, $this->commandFileInstance);
+
+        $this->assertInstanceOf('\Symfony\Component\Console\Command\Command', $command);
+        $this->assertEquals('test:hello', $command->getName());
+        $commandGetNames = $this->callProtected($command, 'getNames');
+        $this->assertEquals('test:hello,Consolidation\TestUtils\ExampleCommandFile', implode(',', $commandGetNames));
+
+        $hookCallback = $command->commandProcessor()->hookManager()->get('test:hello', 'initialize');
+        $this->assertTrue($hookCallback != null);
+        $this->assertEquals('initializeTestHello', $hookCallback[0][1]);
+
+        $input = new StringInput('test:hello');
+        $this->assertRunCommandViaApplicationEquals($command, $input, "Hello, Huey.");
+    }
+
+    function testCommandEventHook()
+    {
+        $this->commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile();
+        $this->commandFactory = new AnnotatedCommandFactory();
+
+        $hookInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'commandEventTestHello');
+
+        $this->assertTrue($hookInfo->hasAnnotation('hook'));
+        $this->assertEquals($hookInfo->getAnnotation('hook'), 'command-event test:hello');
+
+        $this->commandFactory->registerCommandHook($hookInfo, $this->commandFileInstance);
+
+        $hookCallback = $this->commandFactory->hookManager()->get('test:hello', 'command-event');
+        $this->assertTrue($hookCallback != null);
+        $this->assertEquals(1, count($hookCallback));
+        $this->assertEquals(2, count($hookCallback[0]));
+        $this->assertTrue(is_callable($hookCallback[0]));
+        $this->assertEquals('commandEventTestHello', $hookCallback[0][1]);
+
+        $commandInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'testHello');
+        $command = $this->commandFactory->createCommand($commandInfo, $this->commandFileInstance);
+
+        $this->assertInstanceOf('\Symfony\Component\Console\Command\Command', $command);
+        $this->assertEquals('test:hello', $command->getName());
+        $commandGetNames = $this->callProtected($command, 'getNames');
+        $this->assertEquals('test:hello,Consolidation\TestUtils\ExampleCommandFile', implode(',', $commandGetNames));
+
+        $hookCallback = $command->commandProcessor()->hookManager()->get('test:hello', 'command-event');
+        $this->assertTrue($hookCallback != null);
+        $this->assertEquals('commandEventTestHello', $hookCallback[0][1]);
+
+        $input = new StringInput('test:hello Pluto');
+        $this->assertRunCommandViaApplicationEquals($command, $input, "Here comes Pluto!\nHello, Pluto.");
+    }
+
+
     function testInteractAndValidate()
     {
-        $commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile();
-        $commandFactory = new AnnotatedCommandFactory();
+        $this->commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile();
+        $this->commandFactory = new AnnotatedCommandFactory();
 
-        $hookInfo = $commandFactory->createCommandInfo($commandFileInstance, 'interactTestHello');
+        $hookInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'interactTestHello');
 
         $this->assertTrue($hookInfo->hasAnnotation('hook'));
         $this->assertEquals($hookInfo->getAnnotation('hook'), 'interact test:hello');
 
-        $commandFactory->registerCommandHook($hookInfo, $commandFileInstance);
+        $this->commandFactory->registerCommandHook($hookInfo, $this->commandFileInstance);
 
-        $hookInfo = $commandFactory->createCommandInfo($commandFileInstance, 'validateTestHello');
+        $hookInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'validateTestHello');
 
         $this->assertTrue($hookInfo->hasAnnotation('hook'));
         $this->assertEquals($hookInfo->getAnnotation('hook'), 'validate test:hello');
 
-        $commandFactory->registerCommandHook($hookInfo, $commandFileInstance);
+        $this->commandFactory->registerCommandHook($hookInfo, $this->commandFileInstance);
 
-        $hookCallback = $commandFactory->hookManager()->get('test:hello', 'validate');
+        $hookCallback = $this->commandFactory->hookManager()->get('test:hello', 'validate');
         $this->assertTrue($hookCallback != null);
         $this->assertEquals(1, count($hookCallback));
         $this->assertEquals(2, count($hookCallback[0]));
         $this->assertTrue(is_callable($hookCallback[0]));
         $this->assertEquals('validateTestHello', $hookCallback[0][1]);
 
-        $hookCallback = $commandFactory->hookManager()->get('test:hello', 'interact');
+        $hookCallback = $this->commandFactory->hookManager()->get('test:hello', 'interact');
         $this->assertTrue($hookCallback != null);
         $this->assertEquals(1, count($hookCallback));
         $this->assertEquals(2, count($hookCallback[0]));
         $this->assertTrue(is_callable($hookCallback[0]));
         $this->assertEquals('interactTestHello', $hookCallback[0][1]);
 
-        $commandInfo = $commandFactory->createCommandInfo($commandFileInstance, 'testHello');
-        $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
+        $commandInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'testHello');
+        $command = $this->commandFactory->createCommand($commandInfo, $this->commandFileInstance);
 
         $this->assertInstanceOf('\Symfony\Component\Console\Command\Command', $command);
         $this->assertEquals('test:hello', $command->getName());
@@ -453,7 +570,7 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
         $this->assertRunCommandViaApplicationEquals($command, $input, "Irrational value error.", 1);
 
         // Try the last test again with a display error function installed.
-        $commandFactory->commandProcessor()->setDisplayErrorFunction(
+        $this->commandFactory->commandProcessor()->setDisplayErrorFunction(
             function ($output, $message) {
                 $output->writeln("*** $message ****");
             }
@@ -473,8 +590,16 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
     function assertRunCommandViaApplicationEquals($command, $input, $expectedOutput, $expectedStatusCode = 0)
     {
         $output = new BufferedOutput();
+        if ($this->commandFileInstance && method_exists($this->commandFileInstance, 'setOutput')) {
+            $this->commandFileInstance->setOutput($output);
+        }
 
         $application = new Application('TestApplication', '0.0.0');
+
+        $eventDispatcher = new \Symfony\Component\EventDispatcher\EventDispatcher();
+        $eventDispatcher->addSubscriber($this->commandFactory->commandProcessor()->hookManager());
+        $application->setDispatcher($eventDispatcher);
+
         $application->setAutoExit(false);
         $application->add($command);
 

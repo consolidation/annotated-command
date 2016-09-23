@@ -332,6 +332,13 @@ class AnnotatedCommand extends Command
         );
     }
 
+    protected function initialize(InputInterface $input, OutputInterface $output)
+    {
+        // Allow the hook manager a chance to provide configuration values,
+        // if there are any registered hooks to do that.
+        $this->commandProcessor()->initializeHook($input, $this->getNames(), $this->annotationData);
+    }
+
     /**
      * {@inheritdoc}
      */
