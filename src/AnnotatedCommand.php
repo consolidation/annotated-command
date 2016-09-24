@@ -278,7 +278,7 @@ class AnnotatedCommand extends Command
         }
         // Get passthrough args, and add the options on the end.
         $args = $this->getArgsWithPassThrough($input);
-        $args[] = $input->getOptions();
+        $args['options'] = $input->getOptions();
         return $args;
     }
 
