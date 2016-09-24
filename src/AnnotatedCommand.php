@@ -303,20 +303,7 @@ class AnnotatedCommand extends Command
      */
     protected function getNames()
     {
-        return array_filter(
-            array_merge(
-                $this->getNamesUsingCommands(),
-                [HookManager::getClassNameFromCallback($this->commandCallback)]
-            )
-        );
-    }
-
-    protected function getNamesUsingCommands()
-    {
-        return array_merge(
-            [$this->getName()],
-            $this->getAliases()
-        );
+        return HookManager::getNames($this, $this->commandCallback);
     }
 
     /**

@@ -69,6 +69,24 @@ class HookManager implements EventSubscriberInterface
         $this->hooks[$name][$hook][] = $callback;
     }
 
+    public static function getNames($command, $callback)
+    {
+        return array_filter(
+            array_merge(
+                static::getNamesUsingCommands($command),
+                [static::getClassNameFromCallback($callback)]
+            )
+        );
+    }
+
+    protected static function getNamesUsingCommands($command)
+    {
+        return array_merge(
+            [$command->getName()],
+            $command->getAliases()
+        );
+    }
+
     /**
      * If a command hook does not specify any particular command
      * name that it should be attached to, then it will be applied
@@ -76,7 +94,7 @@ class HookManager implements EventSubscriberInterface
      * This is controlled by using the namespace + class name of
      * the implementing class of the callback hook.
      */
-    public static function getClassNameFromCallback($callback)
+    protected static function getClassNameFromCallback($callback)
     {
         if (!is_array($callback)) {
             return '';
