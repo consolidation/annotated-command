@@ -180,9 +180,9 @@ class AnnotatedCommand extends Command
 
     public function setCommandOptions($commandInfo, $automaticOptions = [])
     {
-        $explicitOptions = $this->explicitOptions($commandInfo);
+        $inputOptions = $commandInfo->inputOptions();
 
-        $this->addOptions($explicitOptions + $automaticOptions, $automaticOptions);
+        $this->addOptions($inputOptions + $automaticOptions, $automaticOptions);
     }
 
     protected function addOptions($inputOptions, $automaticOptions)
@@ -224,39 +224,6 @@ class AnnotatedCommand extends Command
             $inputOption->getDefault()
         );
         return $inputOption;
-    }
-
-    /**
-     * Get the options that are explicitly defined, e.g. via
-     * @option annotations, or via $options = ['someoption' => 'defaultvalue']
-     * in the command method parameter list.
-     *
-     * @return InputOption[]
-     */
-    protected function explicitOptions($commandInfo)
-    {
-        $explicitOptions = [];
-
-        $opts = $commandInfo->options()->getValues();
-        foreach ($opts as $name => $defaultValue) {
-            $description = $commandInfo->options()->getDescription($name);
-
-            $fullName = $name;
-            $shortcut = '';
-            if (strpos($name, '|')) {
-                list($fullName, $shortcut) = explode('|', $name, 2);
-            }
-
-            if (is_bool($defaultValue)) {
-                $explicitOptions[$fullName] = new InputOption($fullName, $shortcut, InputOption::VALUE_NONE, $description);
-            } elseif ($defaultValue === InputOption::VALUE_REQUIRED) {
-                $explicitOptions[$fullName] = new InputOption($fullName, $shortcut, InputOption::VALUE_REQUIRED, $description);
-            } else {
-                $explicitOptions[$fullName] = new InputOption($fullName, $shortcut, InputOption::VALUE_OPTIONAL, $description, $defaultValue);
-            }
-        }
-
-        return $explicitOptions;
     }
 
     protected function getArgsWithPassThrough($input)
