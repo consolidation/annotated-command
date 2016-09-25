@@ -188,39 +188,42 @@ class AnnotatedCommand extends Command
     protected function addOptions($inputOptions, $automaticOptions)
     {
         foreach ($inputOptions as $name => $inputOption) {
-            $default = $inputOption->getDefault();
             $description = $inputOption->getDescription();
 
             if (empty($description) && isset($automaticOptions[$name])) {
                 $description = $automaticOptions[$name]->getDescription();
+                $inputOption = static::inputOptionSetDescription($inputOption, $description);
             }
-
-            // Recover the 'mode' value, because Symfony is stubborn
-            $mode = 0;
-            if ($inputOption->isValueRequired()) {
-                $mode |= InputOption::VALUE_REQUIRED;
-            }
-            if ($inputOption->isValueOptional()) {
-                $mode |= InputOption::VALUE_OPTIONAL;
-            }
-            if ($inputOption->isArray()) {
-                $mode |= InputOption::VALUE_IS_ARRAY;
-            }
-            if (!$mode) {
-                $mode = InputOption::VALUE_NONE;
-                $default = null;
-            }
-
-            // Add the option; note that Symfony doesn't have a convenient
-            // method to do this that takes an InputOption
-            $this->addOption(
-                $inputOption->getName(),
-                $inputOption->getShortcut(),
-                $mode,
-                $description,
-                $default
-            );
+            $this->getDefinition()->addOption($inputOption);
         }
+    }
+
+    protected static function inputOptionSetDescription($inputOption, $description)
+    {
+        // Recover the 'mode' value, because Symfony is stubborn
+        $mode = 0;
+        if ($inputOption->isValueRequired()) {
+            $mode |= InputOption::VALUE_REQUIRED;
+        }
+        if ($inputOption->isValueOptional()) {
+            $mode |= InputOption::VALUE_OPTIONAL;
+        }
+        if ($inputOption->isArray()) {
+            $mode |= InputOption::VALUE_IS_ARRAY;
+        }
+        if (!$mode) {
+            $mode = InputOption::VALUE_NONE;
+            $default = null;
+        }
+
+        $inputOption = new InputOption(
+            $inputOption->getName(),
+            $inputOption->getShortcut(),
+            $mode,
+            $description,
+            $inputOption->getDefault()
+        );
+        return $inputOption;
     }
 
     /**
