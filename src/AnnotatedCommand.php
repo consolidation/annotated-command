@@ -278,16 +278,27 @@ class AnnotatedCommand extends Command
 
     /**
      * Add any options to this command that are defined by hook implementations
-     *
-     * @return InputOption[]
      */
     public function optionsHook()
     {
-        return $this->commandProcessor()->optionsHook(
+        $this->commandProcessor()->optionsHook(
             $this,
             $this->getNames(),
             $this->annotationData
         );
+    }
+
+    public function optionsHookForHookAnnotations($commandInfoList)
+    {
+        foreach ($commandInfoList as $commandInfo) {
+            $inputOptions = $commandInfo->inputOptions();
+            $this->addOptions($inputOptions);
+            foreach ($commandInfo->getExampleUsages() as $usage => $description) {
+                if (!in_array($usage, $this->getUsages())) {
+                    $this->addUsage($usage);
+                }
+            }
+        }
     }
 
     /**

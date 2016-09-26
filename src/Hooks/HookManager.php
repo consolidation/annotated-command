@@ -281,32 +281,12 @@ class HookManager implements EventSubscriberInterface
         $names,
         AnnotationData $annotationData
     ) {
-        $inputOptions = [];
         $optionHooks = $this->getOptionHooks($names, $annotationData);
         foreach ($optionHooks as $optionHook) {
-            $inputOptions = array_merge(
-                $this->callOptionHook($optionHook, $command, $annotationData),
-                $inputOptions
-            );
+            $this->callOptionHook($optionHook, $command, $annotationData);
         }
-        return array_merge($inputOptions, $this->getHookInputOptions($command));
-    }
-
-    // TODO: cache any CommandInfo object that is a hook and defines
-    // options.  Here, find any CommandInfo object that hooks this command.
-    // Git its input options.
-    protected function getHookInputOptions($command)
-    {
-        $inputOptions = [];
-        // find all hook options for $command.
         $commandInfoList = $this->getHookOptionsForCommand($command);
-        foreach ($commandInfoList as $commandInfo) {
-            $inputOptions = array_merge(
-                $inputOptions = $commandInfo->inputOptions(),
-                $inputOptions
-            );
-        }
-        return $inputOptions;
+        $command->optionsHookForHookAnnotations($commandInfoList);
     }
 
     protected function getHookOptionsForCommand($command)
@@ -621,8 +601,7 @@ class HookManager implements EventSubscriberInterface
         if (!$command instanceof \Consolidation\AnnotatedCommand\AnnotatedCommand) {
             return;
         }
-        $commandInfoList = $command->optionsHook();
-        $command->addOptions($inputOptions);
+        $command->optionsHook();
     }
 
     /**

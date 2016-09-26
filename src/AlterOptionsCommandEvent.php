@@ -69,8 +69,7 @@ class AlterOptionsCommandEvent implements EventSubscriberInterface
         if (!$command instanceof AnnotatedCommand) {
             return;
         }
-        $inputOptions = $command->optionsHook();
-        $command->addOptions($inputOptions);
+        $command->optionsHook();
     }
 
 

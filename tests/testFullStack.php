@@ -167,8 +167,15 @@ EOT;
         // is forced to 'string'.
         $this->assertRunCommandViaApplicationEquals('example:table --field=II', $expectedSingleField);
 
-        // Check the help for the example table command
-        $this->assertRunCommandViaApplicationContains('help example:table', ['Option added by @hook option example:table']);
+        // Check the help for the example table command and see if the options
+        // from the alter hook were added.
+        $this->assertRunCommandViaApplicationContains('help example:table',
+            [
+                'Option added by @hook option example:table',
+                'example:table --french',
+                'Add a row with French numbers.'
+            ]
+        );
 
         $expectedOutputWithFrench = <<<EOT
  ------ ------ -------

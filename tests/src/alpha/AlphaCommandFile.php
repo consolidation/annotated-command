@@ -75,10 +75,10 @@ class AlphaCommandFile
      *   first: I
      *   second: II
      *   third: III
-     * @usage try:formatters --format=yaml
-     * @usage try:formatters --format=csv
-     * @usage try:formatters --fields=first,third
-     * @usage try:formatters --fields=III,II
+     * @usage example:table --format=yaml
+     * @usage example:table --format=csv
+     * @usage example:table --fields=first,third
+     * @usage example:table --fields=III,II
      * @return \Consolidation\OutputFormatters\StructuredData\RowsOfFields
      */
     public function exampleTable($options = ['format' => 'table', 'fields' => ''])
@@ -97,14 +97,12 @@ class AlphaCommandFile
      */
     public function additionalOptionForExampleTable($command, $annotationData)
     {
-        $dynamicOption = new InputOption(
+        $command->addOption(
             'dynamic',
             '',
             InputOption::VALUE_NONE,
             'Option added by @hook option example:table'
         );
-
-        return [ $dynamicOption ];
     }
 
     /**
@@ -112,6 +110,7 @@ class AlphaCommandFile
      *
      * @hook alter example:table
      * @option $french Add a row with French numbers.
+     * @usage example:table --french
      */
     public function alterFormatters($result, array $args, AnnotationData $annotationData)
     {

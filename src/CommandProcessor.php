@@ -71,7 +71,7 @@ class CommandProcessor
         $names,
         AnnotationData $annotationData
     ) {
-        return $this->hookManager()->optionsHook($command, $names, $annotationData);
+        $this->hookManager()->optionsHook($command, $names, $annotationData);
     }
 
     public function interact(
