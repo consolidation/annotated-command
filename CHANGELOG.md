@@ -10,6 +10,7 @@
 - @option and @usage annotations provided with @hook methods will be added to the help text of the command they hook.  This should be done if a hook needs to add a new option, e.g. to control the behavior of the hook.
 - @hook option can be used to programatically add options to a command.
 - If a --field option is given, it will also force the output format to 'string'.
+- Removed PassThroughArgsInput. This class was unnecessary.
 
 
 ### 1.4.0 - 13 September 2016

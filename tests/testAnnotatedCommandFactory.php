@@ -170,8 +170,7 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('\Symfony\Component\Console\Command\Command', $command);
         $this->assertEquals('test:passthrough', $command->getName());
 
-        $input = new StringInput('test:passthrough a b c');
-        $input = new PassThroughArgsInput(['x', 'y', 'z'], $input);
+        $input = new StringInput('test:passthrough a b c -- x y z');
         $this->assertRunCommandViaApplicationEquals($command, $input, 'a,b,c,x,y,z');
     }
 
@@ -179,13 +178,12 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
     {
         $this->commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile;
         $this->commandFactory = new AnnotatedCommandFactory();
-        $commandInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'myCat');
+        $commandInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'myJoin');
 
         $command = $this->commandFactory->createCommand($commandInfo, $this->commandFileInstance);
 
-        $input = new StringInput('my:cat bet --flip');
-        $input = new PassThroughArgsInput(['x', 'y', 'z'], $input);
-        $this->assertRunCommandViaApplicationEquals($command, $input, 'x y zbet');
+        $input = new StringInput('my:join bet --flip -- x y z');
+        $this->assertRunCommandViaApplicationEquals($command, $input, 'zyxbet');
         // Can't look at 'hasOption' until after the command initializes the
         // option, because Symfony.
         $this->assertTrue($input->hasOption('flip'));
@@ -195,13 +193,12 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
     {
         $this->commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile;
         $this->commandFactory = new AnnotatedCommandFactory();
-        $commandInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'myRepeat');
+        $commandInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'myJoin');
 
         $command = $this->commandFactory->createCommand($commandInfo, $this->commandFileInstance);
 
-        $input = new StringInput('my:repeat bet --repeat=2');
-        $input = new PassThroughArgsInput(['x', 'y', 'z'], $input);
-        $this->assertRunCommandViaApplicationEquals($command, $input, 'betx y zbetx y z');
+        $input = new StringInput('my:join bet --repeat=2 -- x y z');
+        $this->assertRunCommandViaApplicationEquals($command, $input, 'betxyzbetxyz');
         // Symfony does not allow us to manipulate the options via setOption until
         // the definition from the command object has been set up.
         $input->setOption('repeat', 3);
@@ -209,7 +206,7 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
         $input->setArgument(0, 'q');
         // Manipulating $input does not work -- the changes are not effective.
         // The end result here should be 'qx y yqx y yqx y y'
-        $this->assertRunCommandViaApplicationEquals($command, $input, 'betx y zbetx y z');
+        $this->assertRunCommandViaApplicationEquals($command, $input, 'betxyzbetxyz');
     }
 
     function testHookedCommand()
