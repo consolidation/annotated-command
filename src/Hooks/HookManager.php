@@ -19,10 +19,14 @@ use Consolidation\AnnotatedCommand\AnnotationData;
 class HookManager implements EventSubscriberInterface
 {
     protected $hooks = [];
+    protected $hookOptions = [];
 
     const PRE_COMMAND_EVENT = 'pre-command-event';
     const COMMAND_EVENT = 'command-event';
     const POST_COMMAND_EVENT = 'post-command-event';
+    const PRE_OPTION_HOOK = 'pre-option';
+    const OPTION_HOOK = 'option';
+    const POST_OPTION_HOOK = 'post-option';
     const PRE_INITIALIZE = 'pre-initialize';
     const INITIALIZE = 'initialize';
     const POST_INITIALIZE = 'post-initialize';
@@ -69,6 +73,29 @@ class HookManager implements EventSubscriberInterface
         $this->hooks[$name][$hook][] = $callback;
     }
 
+    public function recordHookOptions($commandInfo, $name)
+    {
+        $this->hookOptions[$name][] = $commandInfo;
+    }
+
+    public static function getNames($command, $callback)
+    {
+        return array_filter(
+            array_merge(
+                static::getNamesUsingCommands($command),
+                [static::getClassNameFromCallback($callback)]
+            )
+        );
+    }
+
+    protected static function getNamesUsingCommands($command)
+    {
+        return array_merge(
+            [$command->getName()],
+            $command->getAliases()
+        );
+    }
+
     /**
      * If a command hook does not specify any particular command
      * name that it should be attached to, then it will be applied
@@ -76,7 +103,7 @@ class HookManager implements EventSubscriberInterface
      * This is controlled by using the namespace + class name of
      * the implementing class of the callback hook.
      */
-    public static function getClassNameFromCallback($callback)
+    protected static function getClassNameFromCallback($callback)
     {
         if (!is_array($callback)) {
             return '';
@@ -95,6 +122,18 @@ class HookManager implements EventSubscriberInterface
     public function addInitializeHook(InitializeHookInterface $initializeHook, $name = '*')
     {
         $this->hooks[$name][self::INITIALIZE][] = $initializeHook;
+    }
+
+    /**
+     * Add an option hook
+     *
+     * @param type ValidatorInterface $validator
+     * @param type $name The name of the command to hook
+     *   ('*' for all)
+     */
+    public function addOptionHook(OptionHookInterface $interactor, $name = '*')
+    {
+        $this->hooks[$name][self::INTERACT][] = $interactor;
     }
 
     /**
@@ -237,6 +276,27 @@ class HookManager implements EventSubscriberInterface
         }
     }
 
+    public function optionsHook(
+        \Consolidation\AnnotatedCommand\AnnotatedCommand $command,
+        $names,
+        AnnotationData $annotationData
+    ) {
+        $optionHooks = $this->getOptionHooks($names, $annotationData);
+        foreach ($optionHooks as $optionHook) {
+            $this->callOptionHook($optionHook, $command, $annotationData);
+        }
+        $commandInfoList = $this->getHookOptionsForCommand($command);
+        $command->optionsHookForHookAnnotations($commandInfoList);
+    }
+
+    protected function getHookOptionsForCommand($command)
+    {
+        if (isset($this->hookOptions[$command->getName()])) {
+            return $this->hookOptions[$command->getName()];
+        }
+        return [];
+    }
+
     public function interact(
         InputInterface $input,
         OutputInterface $output,
@@ -337,6 +397,11 @@ class HookManager implements EventSubscriberInterface
     protected function getInitializeHooks($names, AnnotationData $annotationData)
     {
         return $this->getHooks($names, self::INITIALIZE, $annotationData);
+    }
+
+    protected function getOptionHooks($names, AnnotationData $annotationData)
+    {
+        return $this->getHooks($names, self::OPTION_HOOK, $annotationData);
     }
 
     protected function getInteractors($names, AnnotationData $annotationData)
@@ -444,6 +509,16 @@ class HookManager implements EventSubscriberInterface
         }
     }
 
+    protected function callOptionHook($optionHook, $command, AnnotationData $annotationData)
+    {
+        if ($optionHook instanceof OptionHookInterface) {
+            return $optionHook->getOptions($command, $annotationData);
+        }
+        if (is_callable($optionHook)) {
+            return $optionHook($command, $annotationData);
+        }
+    }
+
     protected function callInteractor($interactor, $input, $output, AnnotationData $annotationData)
     {
         if ($interactor instanceof InteractorInterface) {
@@ -519,6 +594,14 @@ class HookManager implements EventSubscriberInterface
                 $commandEvent($event);
             }
         }
+    }
+
+    public function findAndAddHookOptions($command)
+    {
+        if (!$command instanceof \Consolidation\AnnotatedCommand\AnnotatedCommand) {
+            return;
+        }
+        $command->optionsHook();
     }
 
     /**

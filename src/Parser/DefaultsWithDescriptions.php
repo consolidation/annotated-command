@@ -48,6 +48,16 @@ class DefaultsWithDescriptions
     }
 
     /**
+     * Return true if this set of options is empty
+     *
+     * @return
+     */
+    public function isEmpty()
+    {
+        return empty($this->values);
+    }
+
+    /**
      * Check to see whether the speicifed key exists in the collection.
      *
      * @param string $key

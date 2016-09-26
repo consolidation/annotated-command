@@ -27,8 +27,17 @@ use Consolidation\OutputFormatters\FormatterManager;
  */
 class FullStackTests extends \PHPUnit_Framework_TestCase
 {
+    protected $application;
+    protected $commandFactory;
+
     function setup() {
         $this->application = new Application('TestApplication', '0.0.0');
+        $this->commandFactory = new AnnotatedCommandFactory();
+        $alterOptionsEventManager = new AlterOptionsCommandEvent($this->application);
+        $eventDispatcher = new \Symfony\Component\EventDispatcher\EventDispatcher();
+        $eventDispatcher->addSubscriber($this->commandFactory->commandProcessor()->hookManager());
+        $eventDispatcher->addSubscriber($alterOptionsEventManager);
+        $this->application->setDispatcher($eventDispatcher);
         $this->application->setAutoExit(false);
     }
 
@@ -43,12 +52,11 @@ class FullStackTests extends \PHPUnit_Framework_TestCase
     function testAutomaticOptions()
     {
         $commandFileInstance = new \Consolidation\TestUtils\alpha\AlphaCommandFile;
-        $commandFactory = new AnnotatedCommandFactory();
         $formatter = new FormatterManager();
-        $commandFactory->commandProcessor()->setFormatterManager($formatter);
-        $commandInfo = $commandFactory->createCommandInfo($commandFileInstance, 'exampleTable');
+        $this->commandFactory->commandProcessor()->setFormatterManager($formatter);
+        $commandInfo = $this->commandFactory->createCommandInfo($commandFileInstance, 'exampleTable');
 
-        $command = $commandFactory->createCommand($commandInfo, $commandFileInstance);
+        $command = $this->commandFactory->createCommand($commandInfo, $commandFileInstance);
         $this->application->add($command);
 
         $containsList =
@@ -158,6 +166,29 @@ EOT;
         // When --field is specified (instead of --fields), then the format
         // is forced to 'string'.
         $this->assertRunCommandViaApplicationEquals('example:table --field=II', $expectedSingleField);
+
+        // Check the help for the example table command and see if the options
+        // from the alter hook were added.
+        $this->assertRunCommandViaApplicationContains('help example:table',
+            [
+                'Option added by @hook option example:table',
+                'example:table --french',
+                'Add a row with French numbers.'
+            ]
+        );
+
+        $expectedOutputWithFrench = <<<EOT
+ ------ ------ -------
+  I      II     III
+ ------ ------ -------
+  One    Two    Three
+  Eins   Zwei   Drei
+  Ichi   Ni     San
+  Uno    Dos    Tres
+  Un     Deux   Trois
+ ------ ------ -------
+EOT;
+        $this->assertRunCommandViaApplicationEquals('example:table --french', $expectedOutputWithFrench);
 
         $expectedAssociativeListTable = <<<EOT
  --------------- ----------------------------------------------------------------------------------------

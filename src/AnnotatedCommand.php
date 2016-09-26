@@ -180,80 +180,49 @@ class AnnotatedCommand extends Command
 
     public function setCommandOptions($commandInfo, $automaticOptions = [])
     {
-        $explicitOptions = $this->explicitOptions($commandInfo);
+        $inputOptions = $commandInfo->inputOptions();
 
-        $this->addOptions($explicitOptions + $automaticOptions, $automaticOptions);
+        $this->addOptions($inputOptions + $automaticOptions, $automaticOptions);
     }
 
-    protected function addOptions($inputOptions, $automaticOptions)
+    public function addOptions($inputOptions, $automaticOptions = [])
     {
         foreach ($inputOptions as $name => $inputOption) {
-            $default = $inputOption->getDefault();
             $description = $inputOption->getDescription();
 
             if (empty($description) && isset($automaticOptions[$name])) {
                 $description = $automaticOptions[$name]->getDescription();
+                $inputOption = static::inputOptionSetDescription($inputOption, $description);
             }
-
-            // Recover the 'mode' value, because Symfony is stubborn
-            $mode = 0;
-            if ($inputOption->isValueRequired()) {
-                $mode |= InputOption::VALUE_REQUIRED;
-            }
-            if ($inputOption->isValueOptional()) {
-                $mode |= InputOption::VALUE_OPTIONAL;
-            }
-            if ($inputOption->isArray()) {
-                $mode |= InputOption::VALUE_IS_ARRAY;
-            }
-            if (!$mode) {
-                $mode = InputOption::VALUE_NONE;
-                $default = null;
-            }
-
-            // Add the option; note that Symfony doesn't have a convenient
-            // method to do this that takes an InputOption
-            $this->addOption(
-                $inputOption->getName(),
-                $inputOption->getShortcut(),
-                $mode,
-                $description,
-                $default
-            );
+            $this->getDefinition()->addOption($inputOption);
         }
     }
 
-    /**
-     * Get the options that are explicitly defined, e.g. via
-     * @option annotations, or via $options = ['someoption' => 'defaultvalue']
-     * in the command method parameter list.
-     *
-     * @return InputOption[]
-     */
-    protected function explicitOptions($commandInfo)
+    protected static function inputOptionSetDescription($inputOption, $description)
     {
-        $explicitOptions = [];
-
-        $opts = $commandInfo->options()->getValues();
-        foreach ($opts as $name => $defaultValue) {
-            $description = $commandInfo->options()->getDescription($name);
-
-            $fullName = $name;
-            $shortcut = '';
-            if (strpos($name, '|')) {
-                list($fullName, $shortcut) = explode('|', $name, 2);
-            }
-
-            if (is_bool($defaultValue)) {
-                $explicitOptions[$fullName] = new InputOption($fullName, $shortcut, InputOption::VALUE_NONE, $description);
-            } elseif ($defaultValue === InputOption::VALUE_REQUIRED) {
-                $explicitOptions[$fullName] = new InputOption($fullName, $shortcut, InputOption::VALUE_REQUIRED, $description);
-            } else {
-                $explicitOptions[$fullName] = new InputOption($fullName, $shortcut, InputOption::VALUE_OPTIONAL, $description, $defaultValue);
-            }
+        // Recover the 'mode' value, because Symfony is stubborn
+        $mode = 0;
+        if ($inputOption->isValueRequired()) {
+            $mode |= InputOption::VALUE_REQUIRED;
+        }
+        if ($inputOption->isValueOptional()) {
+            $mode |= InputOption::VALUE_OPTIONAL;
+        }
+        if ($inputOption->isArray()) {
+            $mode |= InputOption::VALUE_IS_ARRAY;
+        }
+        if (!$mode) {
+            $mode = InputOption::VALUE_NONE;
         }
 
-        return $explicitOptions;
+        $inputOption = new InputOption(
+            $inputOption->getName(),
+            $inputOption->getShortcut(),
+            $mode,
+            $description,
+            $inputOption->getDefault()
+        );
+        return $inputOption;
     }
 
     protected function getArgsWithPassThrough($input)
@@ -303,20 +272,32 @@ class AnnotatedCommand extends Command
      */
     protected function getNames()
     {
-        return array_filter(
-            array_merge(
-                $this->getNamesUsingCommands(),
-                [HookManager::getClassNameFromCallback($this->commandCallback)]
-            )
+        return HookManager::getNames($this, $this->commandCallback);
+    }
+
+    /**
+     * Add any options to this command that are defined by hook implementations
+     */
+    public function optionsHook()
+    {
+        $this->commandProcessor()->optionsHook(
+            $this,
+            $this->getNames(),
+            $this->annotationData
         );
     }
 
-    protected function getNamesUsingCommands()
+    public function optionsHookForHookAnnotations($commandInfoList)
     {
-        return array_merge(
-            [$this->getName()],
-            $this->getAliases()
-        );
+        foreach ($commandInfoList as $commandInfo) {
+            $inputOptions = $commandInfo->inputOptions();
+            $this->addOptions($inputOptions);
+            foreach ($commandInfo->getExampleUsages() as $usage => $description) {
+                if (!in_array($usage, $this->getUsages())) {
+                    $this->addUsage($usage);
+                }
+            }
+        }
     }
 
     /**

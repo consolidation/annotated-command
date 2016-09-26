@@ -1,6 +1,7 @@
 <?php
 namespace Consolidation\AnnotatedCommand\Parser;
 
+use Symfony\Component\Console\Input\InputOption;
 use Consolidation\AnnotatedCommand\Parser\Internal\CommandDocBlockParser;
 use Consolidation\AnnotatedCommand\Parser\Internal\CommandDocBlockParserFactory;
 use Consolidation\AnnotatedCommand\AnnotationData;
@@ -342,6 +343,39 @@ class CommandInfo
         return $this->optionParamName;
     }
 
+    /**
+     * Get the inputOptions for the options associated with this CommandInfo
+     * object, e.g. via @option annotations, or from
+     * $options = ['someoption' => 'defaultvalue'] in the command method
+     * parameter list.
+     *
+     * @return InputOption[]
+     */
+    public function inputOptions()
+    {
+        $explicitOptions = [];
+
+        $opts = $this->options()->getValues();
+        foreach ($opts as $name => $defaultValue) {
+            $description = $this->options()->getDescription($name);
+
+            $fullName = $name;
+            $shortcut = '';
+            if (strpos($name, '|')) {
+                list($fullName, $shortcut) = explode('|', $name, 2);
+            }
+
+            if (is_bool($defaultValue)) {
+                $explicitOptions[$fullName] = new InputOption($fullName, $shortcut, InputOption::VALUE_NONE, $description);
+            } elseif ($defaultValue === InputOption::VALUE_REQUIRED) {
+                $explicitOptions[$fullName] = new InputOption($fullName, $shortcut, InputOption::VALUE_REQUIRED, $description);
+            } else {
+                $explicitOptions[$fullName] = new InputOption($fullName, $shortcut, InputOption::VALUE_OPTIONAL, $description, $defaultValue);
+            }
+        }
+
+        return $explicitOptions;
+    }
 
     /**
      * An option might have a name such as 'silent|s'. In this
