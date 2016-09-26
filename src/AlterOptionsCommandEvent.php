@@ -53,7 +53,6 @@ class AlterOptionsCommandEvent implements EventSubscriberInterface
     {
         /* @var Command $command */
         $command = $event->getCommand();
-        $names = [$command->getName()];
         if ($command->getName() == 'help') {
             $nameOfCommandToDescribe = $event->getInput()->getArgument('command_name');
             $commandToDescribe = $this->application->find($nameOfCommandToDescribe);

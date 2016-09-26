@@ -226,7 +226,7 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
         // If the hook has options, then also register the commandInfo
         // with the hook manager, so that we can add options and such to
         // the commands they hook.
-        if (!$commandInfo->options()->empty()) {
+        if (!$commandInfo->options()->isEmpty()) {
             $this->commandProcessor()->hookManager()->recordHookOptions($commandInfo, $commandName);
         }
     }

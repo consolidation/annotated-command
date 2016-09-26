@@ -52,7 +52,7 @@ class DefaultsWithDescriptions
      *
      * @return
      */
-    public function empty()
+    public function isEmpty()
     {
         return empty($this->values);
     }

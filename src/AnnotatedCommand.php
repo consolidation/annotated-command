@@ -213,7 +213,6 @@ class AnnotatedCommand extends Command
         }
         if (!$mode) {
             $mode = InputOption::VALUE_NONE;
-            $default = null;
         }
 
         $inputOption = new InputOption(
