@@ -58,8 +58,7 @@ class AlterOptionsCommandEvent implements EventSubscriberInterface
             $nameOfCommandToDescribe = $event->getInput()->getArgument('command_name');
             $commandToDescribe = $this->application->find($nameOfCommandToDescribe);
             $this->findAndAddHookOptions($commandToDescribe);
-        }
-        else {
+        } else {
             $this->findAndAddHookOptions($command);
         }
     }
