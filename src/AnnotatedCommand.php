@@ -185,7 +185,7 @@ class AnnotatedCommand extends Command
         $this->addOptions($inputOptions + $automaticOptions, $automaticOptions);
     }
 
-    protected function addOptions($inputOptions, $automaticOptions)
+    public function addOptions($inputOptions, $automaticOptions = [])
     {
         foreach ($inputOptions as $name => $inputOption) {
             $description = $inputOption->getDescription();
@@ -274,6 +274,20 @@ class AnnotatedCommand extends Command
     protected function getNames()
     {
         return HookManager::getNames($this, $this->commandCallback);
+    }
+
+    /**
+     * Add any options to this command that are defined by hook implementations
+     *
+     * @return InputOption[]
+     */
+    public function optionsHook()
+    {
+        return $this->commandProcessor()->optionsHook(
+            $this,
+            $this->getNames(),
+            $this->annotationData
+        );
     }
 
     /**

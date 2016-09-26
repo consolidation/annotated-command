@@ -20,17 +20,16 @@ Extant commandline tools that utilize this technique include:
 
 This library provides routines to produce the Symfony\Component\Console\Command\Command from all public methods defined in the provided class.
 
-**Note** If you are looking for a very fast way to write a Symfony Console-base command-line tool, you should consider using [Robo](https://github.com/consolidation/Robo), which is built on top of this library, and adds additional conveniences to get you going quickly. See [Using Robo as a Framework](https://github.com/consolidation/Robo/docs/framework.md).  It is possible to use this project without Robo if desired, though.
+**Note** If you are looking for a very fast way to write a Symfony Console-base command-line tool, you should consider using [Robo](https://github.com/consolidation/Robo), which is built on top of this library, and adds additional conveniences to get you going quickly. See [Using Robo as a Framework](https://github.com/consolidation/Robo/docs/framework.md).  It is possible to use this project without Robo if desired, of course.
 
 ## Library Usage
 
 This is a library intended to be used in some other project.  Require from your composer.json file:
 ```
     "require": {
-        "consolidation/annotated-command": "~1|~2"
+        "consolidation/annotated-command": "~2"
     },
 ```
-In the 2.x branch, the interfaces ValidatorInterface, ProcessResultInterface and AlterResultInterface changed. If your application uses any of these interfaces, then you should require version "~2" instead. The 2.x branch is compatible with the 1.x branch in other respects.
 
 ## Example Annotated Command Class
 The public methods of the command class define its commands, and the parameters of each method define its arguments and options. The command options, if any, are declared as the last parameter of the methods. The options will be passed in as an associative array; the default options of the last parameter should list the options recognized by the command.
@@ -75,6 +74,7 @@ If an annotation is given instead, then this hook function will run for all comm
 There are nine types of hooks supported:
 
 - Command Event (Symfony)
+- Option
 - Initialize (Symfony)
 - Interact (Symfony)
 - Validate
@@ -89,6 +89,10 @@ Most of these also have "pre" and "post" varieties, to give more flexibility vis
 ### Command Event Hook
 
 The command-event hook is called via the Symfony Console command event notification callback mechanism. This happens prior to event dispatching and command / option validation.  Note that Symfony does not allow the $input object to be altered in this hook; any change made here will be reset before the interact hook is called.
+
+### Option Event Hook
+
+The option event hook is called for a specific command, whenever it is executed, or its help command is called. Any additional options for the command may be added here by instantiating and returnng an InputOption array.
 
 ### Initialize Hook
 

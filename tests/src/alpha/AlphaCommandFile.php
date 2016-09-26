@@ -4,6 +4,8 @@ namespace Consolidation\TestUtils\alpha;
 use Consolidation\AnnotatedCommand\CommandError;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Consolidation\OutputFormatters\StructuredData\AssociativeList;
+use Consolidation\AnnotatedCommand\AnnotationData;
+use Symfony\Component\Console\Input\InputOption;
 
 /**
  * Test file used in the testCommandDiscovery() test.
@@ -88,6 +90,36 @@ class AlphaCommandFile
             [ 'first' => 'Uno',  'second' => 'Dos',  'third' => 'Tres'  ],
         ];
         return new RowsOfFields($outputData);
+    }
+
+    /**
+     * @hook option example:table
+     */
+    public function additionalOptionForExampleTable($command, $annotationData)
+    {
+        $dynamicOption = new InputOption(
+            'dynamic',
+            '',
+            InputOption::VALUE_NONE,
+            'Option added by @hook option example:table'
+        );
+
+        return [ $dynamicOption ];
+    }
+
+    /**
+     * Demonstrate an alter hook with an option
+     *
+     * @hook alter example:table
+     * @option $french Add a row with French numbers.
+     */
+    public function alterFormatters($result, array $args, AnnotationData $annotationData)
+    {
+        if ($args['options']['french']) {
+            $result[] = [ 'first' => 'Un',  'second' => 'Deux',  'third' => 'Trois'  ];
+        }
+
+        return $result;
     }
 
     /**

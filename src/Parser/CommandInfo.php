@@ -377,7 +377,6 @@ class CommandInfo
         return $explicitOptions;
     }
 
-
     /**
      * An option might have a name such as 'silent|s'. In this
      * instance, we will allow the @option or @default tag to

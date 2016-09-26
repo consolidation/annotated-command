@@ -595,9 +595,11 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
         }
 
         $application = new Application('TestApplication', '0.0.0');
+        $alterOptionsEventManager = new AlterOptionsCommandEvent($application);
 
         $eventDispatcher = new \Symfony\Component\EventDispatcher\EventDispatcher();
         $eventDispatcher->addSubscriber($this->commandFactory->commandProcessor()->hookManager());
+        $eventDispatcher->addSubscriber($alterOptionsEventManager);
         $application->setDispatcher($eventDispatcher);
 
         $application->setAutoExit(false);

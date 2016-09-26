@@ -66,6 +66,14 @@ class CommandProcessor
         return $this->hookManager()->initializeHook($input, $names, $annotationData);
     }
 
+    public function optionsHook(
+        AnnotatedCommand $command,
+        $names,
+        AnnotationData $annotationData
+    ) {
+        return $this->hookManager()->optionsHook($command, $names, $annotationData);
+    }
+
     public function interact(
         InputInterface $input,
         OutputInterface $output,

@@ -222,6 +222,13 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
         // Register the hook
         $callback = [$commandFileInstance, $commandInfo->getMethodName()];
         $this->commandProcessor()->hookManager()->add($callback, $hook, $commandName);
+
+        // If the hook has options, then also register the commandInfo
+        // with the hook manager, so that we can add options and such to
+        // the commands they hook.
+        if (!$commandInfo->options()->empty()) {
+            $this->commandProcessor()->hookManager()->recordHookOptions($commandInfo, $commandName);
+        }
     }
 
     protected function getNthWord($string, $n, $default = '', $delimiter = ' ')
