@@ -1,5 +1,5 @@
 <?php
-namespace Consolidation\AnnotatedCommand;
+namespace Consolidation\AnnotatedCommand\Options;
 
 use Consolidation\AnnotatedCommand\Parser\CommandInfo;
 use Symfony\Component\Console\Input\InputOption;

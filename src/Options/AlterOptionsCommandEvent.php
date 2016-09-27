@@ -1,19 +1,12 @@
 <?php
-namespace Consolidation\AnnotatedCommand;
+namespace Consolidation\AnnotatedCommand\Options;
 
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
-
+use Consolidation\AnnotatedCommand\AnnotatedCommand;
 use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\Console\Event\ConsoleCommandEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-
-use Consolidation\AnnotatedCommand\ExitCodeInterface;
-use Consolidation\AnnotatedCommand\OutputDataInterface;
-use Consolidation\AnnotatedCommand\AnnotationData;
-use Consolidation\AnnotatedCommand\AnnotatedCommand;
 
 /**
  * AlterOptionsCommandEvent is a subscriber to the Command Event

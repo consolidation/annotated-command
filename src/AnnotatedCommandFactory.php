@@ -2,6 +2,7 @@
 namespace Consolidation\AnnotatedCommand;
 
 use Consolidation\AnnotatedCommand\Hooks\HookManager;
+use Consolidation\AnnotatedCommand\Options\AutomaticOptionsProviderInterface;
 use Consolidation\AnnotatedCommand\Parser\CommandInfo;
 use Consolidation\OutputFormatters\Options\FormatterOptions;
 use Symfony\Component\Console\Command\Command;

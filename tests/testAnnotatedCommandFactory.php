@@ -9,6 +9,7 @@ use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Application;
 use Consolidation\AnnotatedCommand\Parser\CommandInfo;
 use Consolidation\AnnotatedCommand\AnnotationData;
+use Consolidation\AnnotatedCommand\Options\AlterOptionsCommandEvent;
 
 class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
 {
