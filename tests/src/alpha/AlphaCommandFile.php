@@ -109,7 +109,7 @@ class AlphaCommandFile
      * Demonstrate an alter hook with an option
      *
      * @hook alter example:table
-     * @option $french Add a row with French numbers.
+     * @option french Add a row with French numbers.
      * @usage example:table --french
      */
     public function alterFormatters($result, array $args, AnnotationData $annotationData)
@@ -191,7 +191,7 @@ class AlphaCommandFile
      *
      * Return a result only if not silent.
      *
-     * @option $silent Supress output.
+     * @option silent Supress output.
      */
     public function commandWithOneOptionalArgument($who = 'world', $opts = ['silent|s' => false])
     {

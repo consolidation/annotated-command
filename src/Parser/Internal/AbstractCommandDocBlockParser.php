@@ -102,7 +102,10 @@ abstract class AbstractCommandDocBlockParser
      */
     protected function processArgumentTag($tag)
     {
-        $this->addOptionOrArgumentTag($tag, $this->commandInfo->arguments());
+        if (!$this->pregMatchNameAndDescription((string)$tag->getDescription(), $match)) {
+            return;
+        }
+        $this->addOptionOrArgumentTag($tag, $this->commandInfo->arguments(), $match);
     }
 
     /**
@@ -110,16 +113,16 @@ abstract class AbstractCommandDocBlockParser
      */
     protected function processOptionTag($tag)
     {
-        $this->addOptionOrArgumentTag($tag, $this->commandInfo->options());
-    }
-
-    protected function addOptionOrArgumentTag($tag, DefaultsWithDescriptions $set)
-    {
-        if (!$this->pregMatchNameAndDescription((string)$tag->getDescription(), $match)) {
+        if (!$this->pregMatchOptionNameAndDescription((string)$tag->getDescription(), $match)) {
             return;
         }
-        $variableName = $this->commandInfo->findMatchingOption($match['name']);
-        $desc = $match['description'];
+        $this->addOptionOrArgumentTag($tag, $this->commandInfo->options(), $match);
+    }
+
+    protected function addOptionOrArgumentTag($tag, DefaultsWithDescriptions $set, $nameAndDescription)
+    {
+        $variableName = $this->commandInfo->findMatchingOption($nameAndDescription['name']);
+        $desc = $nameAndDescription['description'];
         $description = static::removeLineBreaks($desc);
         $set->add($variableName, $description);
     }
@@ -208,6 +211,21 @@ abstract class AbstractCommandDocBlockParser
     protected function pregMatchNameAndDescription($source, &$match)
     {
         $nameRegEx = '\\$(?P<name>[^ \t]+)[ \t]+';
+        $descriptionRegEx = '(?P<description>.*)';
+        $optionRegEx = "/{$nameRegEx}{$descriptionRegEx}/s";
+
+        return preg_match($optionRegEx, $source, $match);
+    }
+
+    /**
+     * Given a docblock description in the form "$variable description",
+     * return the variable name and description via the 'match' parameter.
+     */
+    protected function pregMatchOptionNameAndDescription($source, &$match)
+    {
+        // Strip type and $ from the text before the @option name, if present.
+        $source = preg_replace('/^[a-zA-Z]* ?\\$/', '', $source);
+        $nameRegEx = '(?P<name>[^ \t]+)[ \t]+';
         $descriptionRegEx = '(?P<description>.*)';
         $optionRegEx = "/{$nameRegEx}{$descriptionRegEx}/s";
 

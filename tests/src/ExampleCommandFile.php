@@ -93,7 +93,7 @@ class ExampleCommandFile
      *
      * Return a result only if not silent.
      *
-     * @option $silent Supress output.
+     * @option silent Supress output.
      */
     public function commandWithNoArguments($opts = ['silent|s' => false])
     {
@@ -108,7 +108,7 @@ class ExampleCommandFile
      * This command defines the option shortcut on the annotation instead of in the options array.
      *
      * @param $opts The options
-     * @option $silent|s Supress output.
+     * @option silent|s Supress output.
      */
     public function shortcutOnAnnotation($opts = ['silent' => false])
     {
@@ -126,7 +126,7 @@ class ExampleCommandFile
      * @command test:arithmatic
      * @param integer $one The first number to add.
      * @param integer $two The other number to add.
-     * @option $negate Whether or not the result should be negated.
+     * @option negate Whether or not the result should be negated.
      * @aliases arithmatic
      * @usage 2 2 --negate
      *   Add two plus two and then negate.

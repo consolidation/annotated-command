@@ -47,7 +47,7 @@ class MyCommandClass
      * @command my:cat
      * @param integer $one The first parameter.
      * @param integer $two The other parameter.
-     * @option $flip Whether or not the second parameter should come first in the result.
+     * @option flip Whether or not the second parameter should come first in the result.
      * @aliases c
      * @usage bet alpha --flip
      *   Concatenate "alpha" and "bet".
