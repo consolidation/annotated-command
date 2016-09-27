@@ -293,9 +293,10 @@ class HookManager implements EventSubscriberInterface
     {
         $result = [];
         $names = $this->addWildcardHooksToNames($command->getNames(), $command->getAnnotationData());
-        foreach ($names as $name)
-        if (isset($this->hookOptions[$name])) {
-            $result = array_merge($result, $this->hookOptions[$name]);
+        foreach ($names as $name) {
+            if (isset($this->hookOptions[$name])) {
+                $result = array_merge($result, $this->hookOptions[$name]);
+            }
         }
         return $result;
     }
