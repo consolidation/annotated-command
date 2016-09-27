@@ -41,6 +41,8 @@ class FullStackTests extends \PHPUnit_Framework_TestCase
     function testValidFormats()
     {
         $formatter = new FormatterManager();
+        $formatter->addDefaultFormatters();
+        $formatter->addDefaultSimplifiers();
         $commandInfo = new CommandInfo('\Consolidation\TestUtils\alpha\AlphaCommandFile', 'exampleTable');
         $this->assertEquals('example:table', $commandInfo->getName());
         $this->assertEquals('\Consolidation\OutputFormatters\StructuredData\RowsOfFields', $commandInfo->getReturnType());
@@ -50,6 +52,9 @@ class FullStackTests extends \PHPUnit_Framework_TestCase
     {
         $commandFileInstance = new \Consolidation\TestUtils\alpha\AlphaCommandFile;
         $formatter = new FormatterManager();
+        $formatter->addDefaultFormatters();
+        $formatter->addDefaultSimplifiers();
+
         $this->commandFactory->commandProcessor()->setFormatterManager($formatter);
         $commandInfo = $this->commandFactory->createCommandInfo($commandFileInstance, 'exampleTable');
 
@@ -80,6 +85,8 @@ class FullStackTests extends \PHPUnit_Framework_TestCase
         $commandFiles = $discovery->discover('.', '\Consolidation\TestUtils');
 
         $formatter = new FormatterManager();
+        $formatter->addDefaultFormatters();
+        $formatter->addDefaultSimplifiers();
         $hookManager = new HookManager();
         $commandProcessor = new CommandProcessor($hookManager);
         $commandProcessor->setFormatterManager($formatter);
