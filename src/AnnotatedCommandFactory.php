@@ -106,6 +106,9 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
         $this->automaticOptionsProviderList[] = $optionsProvider;
     }
 
+    /**
+     * n.b. This registers all hooks from the commandfile instance as a side-effect.
+     */
     public function createCommandsFromClass($commandFileInstance, $includeAllPublicMethods = null)
     {
         // Deprecated: avoid using the $includeAllPublicMethods in favor of the setIncludeAllPublicMethods() accessor.

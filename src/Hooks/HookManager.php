@@ -291,10 +291,13 @@ class HookManager implements EventSubscriberInterface
 
     protected function getHookOptionsForCommand($command)
     {
-        if (isset($this->hookOptions[$command->getName()])) {
-            return $this->hookOptions[$command->getName()];
+        $result = [];
+        $names = $this->addWildcardHooksToNames($command->getNames(), $command->getAnnotationData());
+        foreach ($names as $name)
+        if (isset($this->hookOptions[$name])) {
+            $result = array_merge($result, $this->hookOptions[$name]);
         }
-        return [];
+        return $result;
     }
 
     public function interact(
@@ -454,6 +457,11 @@ class HookManager implements EventSubscriberInterface
      */
     protected function getHooks($names, $hook, $annotationData = null, $stages = ['pre-', '', 'post-'])
     {
+        return $this->get($this->addWildcardHooksToNames($names, $annotationData), $hook, $stages);
+    }
+
+    protected function addWildcardHooksToNames($names, $annotationData = null)
+    {
         $names = array_merge(
             (array)$names,
             ($annotationData == null) ? [] : array_map(function ($item) {
@@ -461,7 +469,7 @@ class HookManager implements EventSubscriberInterface
             }, $annotationData->keys())
         );
         $names[] = '*';
-        return $this->get($names, $hook, $stages);
+        return $names;
     }
 
     /**

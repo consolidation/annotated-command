@@ -253,7 +253,7 @@ class AnnotatedCommand extends Command
      *
      * @return array
      */
-    protected function getNames()
+    public function getNames()
     {
         return HookManager::getNames($this, $this->commandCallback);
     }

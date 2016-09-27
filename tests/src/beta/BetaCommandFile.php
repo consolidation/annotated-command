@@ -1,6 +1,8 @@
 <?php
 namespace Consolidation\TestUtils\beta;
 
+use Consolidation\AnnotatedCommand\AnnotationData;
+
 /**
  * Test file used in the testCommandDiscovery() test.
  *
@@ -13,5 +15,37 @@ class BetaCommandFile
     public function unavailableCommand()
     {
         return 'This command is not available, because this commandfile is not in a location that is searched by the tests.';
+    }
+
+    /**
+     * Demonstrate an alter hook with an option
+     *
+     * @hook alter example:table
+     * @option $chinese Add a row with Chinese numbers.
+     * @usage example:table --chinese
+     */
+    public function alterFormattersChinese($result, array $args, AnnotationData $annotationData)
+    {
+        if ($args['options']['chinese']) {
+            $result[] = [ 'first' => '壹',  'second' => '貳',  'third' => '叁'  ];
+        }
+
+        return $result;
+    }
+
+    /**
+     * Demonstrate an alter hook with an option
+     *
+     * @hook alter *
+     * @option $kanji Add a row with Kanji numbers.
+     * @usage example:table --kanji
+     */
+    public function alterFormattersKanji($result, array $args, AnnotationData $annotationData)
+    {
+        if ($args['options']['kanji']) {
+            $result[] = [ 'first' => '一',  'second' => '二',  'third' => '三'  ];
+        }
+
+        return $result;
     }
 }

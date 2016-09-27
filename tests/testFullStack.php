@@ -174,12 +174,17 @@ EOT;
         $this->assertRunCommandViaApplicationEquals('example:table --field=II', $expectedSingleField);
 
         // Check the help for the example table command and see if the options
-        // from the alter hook were added.
+        // from the alter hook were added.  We expect that we should not see
+        // any of the information from the alter hook in the 'beta' folder yet.
         $this->assertRunCommandViaApplicationContains('help example:table',
             [
                 'Option added by @hook option example:table',
                 'example:table --french',
                 'Add a row with French numbers.'
+            ],
+            [
+                'chinese',
+                'kanji',
             ]
         );
 
@@ -205,6 +210,37 @@ EOT;
 EOT;
         $this->assertRunCommandViaApplicationEquals('example:list', $expectedAssociativeListTable);
         $this->assertRunCommandViaApplicationEquals('example:list --field=sftp_command', 'sftp -o Port=2222 dev@appserver.dev.drush.in');
+    }
+
+    function testCommandsAndHooksIncludeAllPublicMethods()
+    {
+        // First, search for commandfiles in the 'alpha'
+        // directory. Note that this same functionality
+        // is tested more thoroughly in isolation in
+        // testCommandFileDiscovery.php
+        $discovery = new CommandFileDiscovery();
+        $discovery
+          ->setSearchPattern('*CommandFile.php')
+          ->setIncludeFilesAtBase(false)
+          ->setSearchLocations(['alpha']);
+
+        chdir(__DIR__);
+        $commandFiles = $discovery->discover('.', '\Consolidation\TestUtils');
+
+        $formatter = new FormatterManager();
+        $formatter->addDefaultFormatters();
+        $formatter->addDefaultSimplifiers();
+        $hookManager = new HookManager();
+        $commandProcessor = new CommandProcessor($hookManager);
+        $commandProcessor->setFormatterManager($formatter);
+
+        // Create a new factory, and load all of the files
+        // discovered above.  The command factory class is
+        // tested in isolation in testAnnotatedCommandFactory.php,
+        // but this is the only place where
+        $factory = new AnnotatedCommandFactory();
+        $factory->setCommandProcessor($commandProcessor);
+        // $factory->addListener(...);
 
         // Now we will once again add all commands, this time including all
         // public methods.  The command 'withoutAnnotations' should now be found.
@@ -213,7 +249,101 @@ EOT;
         $this->assertTrue($this->application->has('without:annotations'));
 
         $this->assertRunCommandViaApplicationContains('list', ['example:table', 'without:annotations'], ['alter:formatters']);
+    }
 
+    function testCommandsAndHooksWithBetaFolder()
+    {
+        // First, search for commandfiles in the 'alpha'
+        // directory. Note that this same functionality
+        // is tested more thoroughly in isolation in
+        // testCommandFileDiscovery.php
+        $discovery = new CommandFileDiscovery();
+        $discovery
+          ->setSearchPattern('*CommandFile.php')
+          ->setIncludeFilesAtBase(false)
+          ->setSearchLocations(['alpha', 'beta']);
+
+        chdir(__DIR__);
+        $commandFiles = $discovery->discover('.', '\Consolidation\TestUtils');
+
+        $formatter = new FormatterManager();
+        $formatter->addDefaultFormatters();
+        $formatter->addDefaultSimplifiers();
+        $hookManager = new HookManager();
+        $commandProcessor = new CommandProcessor($hookManager);
+        $commandProcessor->setFormatterManager($formatter);
+
+        // Create a new factory, and load all of the files
+        // discovered above.  The command factory class is
+        // tested in isolation in testAnnotatedCommandFactory.php,
+        // but this is the only place where
+        $factory = new AnnotatedCommandFactory();
+        $factory->setCommandProcessor($commandProcessor);
+        // $factory->addListener(...);
+        $factory->setIncludeAllPublicMethods(true);
+        $this->addDiscoveredCommands($factory, $commandFiles);
+
+        // A few asserts, to make sure that our hooks all get registered.
+        $allRegisteredHooks = $hookManager->getAllHooks();
+        $registeredHookNames = array_keys($allRegisteredHooks);
+        sort($registeredHookNames);
+        $this->assertEquals('*,example:table', implode(',', $registeredHookNames));
+        $allHooksForExampleTable = $allRegisteredHooks['example:table'];
+        $allHookPhasesForExampleTable = array_keys($allHooksForExampleTable);
+        sort($allHookPhasesForExampleTable);
+        $this->assertEquals('alter,option', implode(',', $allHookPhasesForExampleTable));
+
+        $this->assertContains('alterFormattersChinese', var_export($allHooksForExampleTable, true));
+
+        $alterHooksForExampleTable = $this->callProtected($hookManager, 'getHooks', [['example:table'], 'alter']);
+        $this->assertContains('alterFormattersKanji', var_export($alterHooksForExampleTable, true));
+
+        $allHooksForAnyCommand = $allRegisteredHooks['*'];
+        $allHookPhasesForAnyCommand = array_keys($allHooksForAnyCommand);
+        sort($allHookPhasesForAnyCommand);
+        $this->assertEquals('alter', implode(',', $allHookPhasesForAnyCommand));
+
+        $this->assertContains('alterFormattersKanji', var_export($allHooksForAnyCommand, true));
+
+        // Help should have the information from the hooks in the 'beta' folder
+        $this->assertRunCommandViaApplicationContains('help example:table',
+            [
+                'Option added by @hook option example:table',
+                'example:table --french',
+                'Add a row with French numbers.',
+                'chinese',
+                'kanji',
+            ]
+        );
+
+        // Confirm that the "unavailable" command is now available
+        $this->assertTrue($this->application->has('unavailable:command'));
+
+        $expectedOutputWithChinese = <<<EOT
+ ------ ------ -------
+  I      II     III
+ ------ ------ -------
+  One    Two    Three
+  Eins   Zwei   Drei
+  Ichi   Ni     San
+  Uno    Dos    Tres
+  壹     貳     叁
+ ------ ------ -------
+EOT;
+        $this->assertRunCommandViaApplicationEquals('example:table --chinese', $expectedOutputWithChinese);
+
+        $expectedOutputWithKanji = <<<EOT
+ ------ ------ -------
+  I      II     III
+ ------ ------ -------
+  One    Two    Three
+  Eins   Zwei   Drei
+  Ichi   Ni     San
+  Uno    Dos    Tres
+  一     二     三
+ ------ ------ -------
+EOT;
+        $this->assertRunCommandViaApplicationEquals('example:table --kanji', $expectedOutputWithKanji);
     }
 
     public function addDiscoveredCommands($factory, $commandFiles) {
@@ -268,6 +398,14 @@ EOT;
     {
         return trim(preg_replace('#[ \t]+$#m', '', $data));
     }
+
+    function callProtected($object, $method, $args = [])
+    {
+        $r = new \ReflectionMethod($object, $method);
+        $r->setAccessible(true);
+        return $r->invokeArgs($object, $args);
+    }
+
 }
 
 class ExampleValidator implements ValidatorInterface
