@@ -61,6 +61,18 @@ class ExampleCommandFile
     }
 
     /**
+     * @command my:join
+     */
+    public function myJoin(array $args, $options = ['flip' => false, 'repeat' => 1])
+    {
+        if ($options['flip']) {
+            $args = array_reverse($args);
+        }
+        $result = implode('', $args);
+        return str_repeat($result, $options['repeat']);
+    }
+
+    /**
      * This is a command with no options
      *
      * This command will concatenate two parameters.
