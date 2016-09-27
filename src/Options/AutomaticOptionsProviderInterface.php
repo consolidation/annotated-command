@@ -15,7 +15,7 @@ use Symfony\Component\Console\Input\InputOption;
 interface AutomaticOptionsProviderInterface
 {
     /**
-     * @return InputOption
+     * @return InputOption[]
      */
     public function automaticOptions(CommandInfo $commandInfo);
 }
