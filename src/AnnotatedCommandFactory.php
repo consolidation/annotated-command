@@ -283,7 +283,7 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
         $automaticOptions = [];
         $formatManager = $this->commandProcessor()->formatterManager();
         if ($formatManager) {
-            $annotationData = $commandInfo->getAnnotationsForCommand()->getArrayCopy();
+            $annotationData = $commandInfo->getAnnotations()->getArrayCopy();
             $formatterOptions = new FormatterOptions($annotationData);
             $dataType = $commandInfo->getReturnType();
             $automaticOptions = $formatManager->automaticOptions($formatterOptions, $dataType);

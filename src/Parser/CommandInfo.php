@@ -156,7 +156,7 @@ class CommandInfo
      *
      * @return AnnotationData
      */
-    public function getAnnotations()
+    public function getRawAnnotations()
     {
         $this->parseDocBlock();
         return $this->otherAnnotations;
@@ -172,10 +172,10 @@ class CommandInfo
      *
      * @return AnnotationData
      */
-    public function getAnnotationsForCommand()
+    public function getAnnotations()
     {
         return new AnnotationData(
-            $this->getAnnotations()->getArrayCopy() +
+            $this->getRawAnnotations()->getArrayCopy() +
             [
                 'command' => $this->getName(),
             ]

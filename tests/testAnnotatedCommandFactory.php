@@ -330,7 +330,7 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
         $this->assertEquals('hookTestAnnotatedHook', $hookCallback[0][1]);
 
         $commandInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'testAnnotationHook');
-        $annotationData = $commandInfo->getAnnotations();
+        $annotationData = $commandInfo->getRawAnnotations();
         $this->assertEquals('hookme,before,after', implode(',', $annotationData->keys()));
         $this->assertEquals('@hookme,@before,@after', implode(',', array_map(function ($item) { return "@$item"; }, $annotationData->keys())));
 
@@ -362,7 +362,7 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
         $this->assertEquals('hookAddCommandName', $hookCallback[0][1]);
 
         $commandInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'alterMe');
-        $annotationData = $commandInfo->getAnnotations();
+        $annotationData = $commandInfo->getRawAnnotations();
         $this->assertEquals('command,addmycommandname', implode(',', $annotationData->keys()));
 
         $command = $this->commandFactory->createCommand($commandInfo, $this->commandFileInstance);
@@ -374,9 +374,9 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
         $this->assertRunCommandViaApplicationEquals($command, $input, 'splendiferous from alter-me');
 
         $commandInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'alterMeToo');
-        $annotationData = $commandInfo->getAnnotations();
+        $annotationData = $commandInfo->getRawAnnotations();
         $this->assertEquals('addmycommandname', implode(',', $annotationData->keys()));
-        $annotationData = $commandInfo->getAnnotationsForCommand();
+        $annotationData = $commandInfo->getAnnotations();
         $this->assertEquals('addmycommandname,command', implode(',', $annotationData->keys()));
 
         $command = $this->commandFactory->createCommand($commandInfo, $this->commandFileInstance);
