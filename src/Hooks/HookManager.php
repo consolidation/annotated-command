@@ -27,9 +27,9 @@ class HookManager implements EventSubscriberInterface
     const PRE_OPTION_HOOK = 'pre-option';
     const OPTION_HOOK = 'option';
     const POST_OPTION_HOOK = 'post-option';
-    const PRE_INITIALIZE = 'pre-initialize';
-    const INITIALIZE = 'initialize';
-    const POST_INITIALIZE = 'post-initialize';
+    const PRE_INITIALIZE = 'pre-init';
+    const INITIALIZE = 'init';
+    const POST_INITIALIZE = 'post-init';
     const PRE_INTERACT = 'pre-interact';
     const INTERACT = 'interact';
     const POST_INTERACT = 'post-interact';

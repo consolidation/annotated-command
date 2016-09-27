@@ -280,7 +280,7 @@ class ExampleCommandFile
     }
 
     /**
-     * @hook initialize test:hello
+     * @hook init test:hello
      */
     public function initializeTestHello($input, AnnotationData $annotationData)
     {

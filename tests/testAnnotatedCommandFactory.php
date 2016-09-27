@@ -430,11 +430,11 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
         $hookInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'initializeTestHello');
 
         $this->assertTrue($hookInfo->hasAnnotation('hook'));
-        $this->assertEquals($hookInfo->getAnnotation('hook'), 'initialize test:hello');
+        $this->assertEquals($hookInfo->getAnnotation('hook'), 'init test:hello');
 
         $this->commandFactory->registerCommandHook($hookInfo, $this->commandFileInstance);
 
-        $hookCallback = $this->commandFactory->hookManager()->get('test:hello', 'initialize');
+        $hookCallback = $this->commandFactory->hookManager()->get('test:hello', 'init');
         $this->assertTrue($hookCallback != null);
         $this->assertEquals(1, count($hookCallback));
         $this->assertEquals(2, count($hookCallback[0]));
@@ -449,7 +449,7 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
         $commandGetNames = $this->callProtected($command, 'getNames');
         $this->assertEquals('test:hello,Consolidation\TestUtils\ExampleCommandFile', implode(',', $commandGetNames));
 
-        $hookCallback = $command->commandProcessor()->hookManager()->get('test:hello', 'initialize');
+        $hookCallback = $command->commandProcessor()->hookManager()->get('test:hello', 'init');
         $this->assertTrue($hookCallback != null);
         $this->assertEquals('initializeTestHello', $hookCallback[0][1]);
 
