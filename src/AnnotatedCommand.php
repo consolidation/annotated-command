@@ -225,7 +225,7 @@ class AnnotatedCommand extends Command
         return $inputOption;
     }
 
-    protected function getArgsWithPassThrough($input)
+    protected function getArgsWithoutAppName($input)
     {
         $args = $input->getArguments();
 
@@ -234,9 +234,6 @@ class AnnotatedCommand extends Command
         // input definition to match, adding a 'command' argument
         // to the beginning.
         array_shift($args);
-        if ($input instanceof PassThroughArgsInput) {
-            return $this->appendPassThroughArgs($input, $args);
-        }
         return $args;
     }
 
@@ -246,22 +243,8 @@ class AnnotatedCommand extends Command
             return [];
         }
         // Get passthrough args, and add the options on the end.
-        $args = $this->getArgsWithPassThrough($input);
+        $args = $this->getArgsWithoutAppName($input);
         $args['options'] = $input->getOptions();
-        return $args;
-    }
-
-    protected function appendPassThroughArgs($input, $args)
-    {
-        $passThrough = $input->getPassThroughArgs();
-        $definition = $this->getDefinition();
-        $argumentDefinitions = $definition->getArguments();
-        $lastParameter = end($argumentDefinitions);
-        if ($lastParameter && $lastParameter->isArray()) {
-            $args[$lastParameter->getName()] = array_merge($args[$lastParameter->getName()], $passThrough);
-        } else {
-            $args[$lastParameter->getName()] = implode(' ', $passThrough);
-        }
         return $args;
     }
 
