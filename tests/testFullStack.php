@@ -101,6 +101,8 @@ class FullStackTests extends \PHPUnit_Framework_TestCase
         $factory->setIncludeAllPublicMethods(false);
         $this->addDiscoveredCommands($factory, $commandFiles);
 
+        $this->assertRunCommandViaApplicationContains('list', ['example:table'], ['additional:option', 'without:annotations']);
+
         $this->assertTrue($this->application->has('example:table'));
         $this->assertFalse($this->application->has('without:annotations'));
 
@@ -210,6 +212,8 @@ EOT;
         $this->addDiscoveredCommands($factory, $commandFiles);
         $this->assertTrue($this->application->has('without:annotations'));
 
+        $this->assertRunCommandViaApplicationContains('list', ['example:table', 'without:annotations'], ['alter:formatters']);
+
     }
 
     public function addDiscoveredCommands($factory, $commandFiles) {
@@ -241,7 +245,7 @@ EOT;
         $this->assertEquals($expectedStatusCode, $statusCode);
     }
 
-    function assertRunCommandViaApplicationContains($cmd, $containsList, $expectedStatusCode = 0)
+    function assertRunCommandViaApplicationContains($cmd, $containsList, $doesNotContainList = [], $expectedStatusCode = 0)
     {
         $input = new StringInput($cmd);
         $output = new BufferedOutput();
@@ -253,6 +257,9 @@ EOT;
 
         foreach ($containsList as $expectedToContain) {
             $this->assertContains($this->simplifyWhitespace($expectedToContain), $commandOutput);
+        }
+        foreach ($doesNotContainList as $expectedToNotContain) {
+            $this->assertNotContains($this->simplifyWhitespace($expectedToNotContain), $commandOutput);
         }
         $this->assertEquals($expectedStatusCode, $statusCode);
     }

@@ -154,7 +154,7 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
             $commandInfoList,
             $commandFileInstance,
             function ($commandInfo) use ($includeAllPublicMethods) {
-                return $includeAllPublicMethods || static::isCommandMethod($commandInfo);
+                return static::isCommandMethod($commandInfo, $includeAllPublicMethods);
             }
         );
     }
@@ -173,12 +173,12 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
         return $commandList;
     }
 
-    public static function isCommandMethod($commandInfo)
+    public static function isCommandMethod($commandInfo, $includeAllPublicMethods)
     {
         if ($commandInfo->hasAnnotation('hook')) {
             return false;
         }
-        return $commandInfo->hasAnnotation('command');
+        return $includeAllPublicMethods || $commandInfo->hasAnnotation('command');
     }
 
     public function registerCommandHooksFromClassInfo($commandInfoList, $commandFileInstance)
