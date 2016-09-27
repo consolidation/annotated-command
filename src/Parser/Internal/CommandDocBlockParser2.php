@@ -40,7 +40,10 @@ class CommandDocBlockParser2 extends AbstractCommandDocBlockParser
      */
     protected function processArgumentTag($tag)
     {
-        $this->addOptionOrArgumentTag($tag, $this->commandInfo->arguments());
+        if (!$this->pregMatchNameAndDescription((string)$tag->getDescription(), $match)) {
+            return;
+        }
+        $this->addOptionOrArgumentTag($tag, $this->commandInfo->arguments(), $match);
     }
 
     /**

@@ -21,7 +21,7 @@ class BetaCommandFile
      * Demonstrate an alter hook with an option
      *
      * @hook alter example:table
-     * @option $chinese Add a row with Chinese numbers.
+     * @option chinese Add a row with Chinese numbers.
      * @usage example:table --chinese
      */
     public function alterFormattersChinese($result, array $args, AnnotationData $annotationData)
@@ -37,7 +37,7 @@ class BetaCommandFile
      * Demonstrate an alter hook with an option
      *
      * @hook alter *
-     * @option $kanji Add a row with Kanji numbers.
+     * @option kanji Add a row with Kanji numbers.
      * @usage example:table --kanji
      */
     public function alterFormattersKanji($result, array $args, AnnotationData $annotationData)
