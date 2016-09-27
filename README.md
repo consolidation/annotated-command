@@ -71,7 +71,7 @@ The commandname may be the command's primary name (e.g. `my:command`), it's meth
 
 If an annotation is given instead, then this hook function will run for all commands with the specified annotation.
 
-There are nine types of hooks supported:
+There are ten types of hooks supported:
 
 - Command Event (Symfony)
 - Option
