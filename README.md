@@ -212,13 +212,12 @@ public function AnnotatedCommandFactory::addAutomaticOptionProvider(AutomaticOpt
 ```
 The complete CommandInfo record with all of the annotation data is available, so you can, for example, add an option `--foo` to every command whose method is annotated `@fooable`.
 
-### Configuration Providers
+### CommandInfo Alterers
 
-A configuration provider is given an opportunity to inject values for arguments and options immediately before a command runs.
+CommandInfo alterers can adjust information about a command immediately before it is created. Typically, these will be used to supply default values for annotations custom to the command, or take other actions based on the interfaces implemented by the commandfile instance.
 ```
-public function 
+public function alterCommandInfo(CommandInfo $commandInfo, $commandFileInstance);
 ```
-This happens prior to the `interact` phase, so values that exist in configuration will be used in preference to prompting the user whenver such values exist.
 
 ## Comparison to Existing Solutions
 
