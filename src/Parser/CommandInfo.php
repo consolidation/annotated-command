@@ -213,7 +213,7 @@ class CommandInfo
      * Save any tag that we do not explicitly recognize in the
      * 'otherAnnotations' map.
      */
-    public function addOtherAnnotation($name, $content)
+    public function addAnnotation($name, $content)
     {
         $this->otherAnnotations[$name] = $content;
     }
