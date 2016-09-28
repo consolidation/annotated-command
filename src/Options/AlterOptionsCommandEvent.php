@@ -46,7 +46,18 @@ class AlterOptionsCommandEvent implements EventSubscriberInterface
     {
         /* @var Command $command */
         $command = $event->getCommand();
+        $input = $event->getInput();
         if ($command->getName() == 'help') {
+            // Symfony 3.x prepares $input for us; Symfony 2.x, on the other
+            // hand, passes it in prior to binding with the command definition,
+            // so we have to go to a little extra work.  It may be inadvisable
+            // to do these steps for commands other than 'help'.
+            if (!$input->hasArgument('command_name')) {
+                $command->ignoreValidationErrors();
+                $command->mergeApplicationDefinition();
+                $input->bind($command->getDefinition());
+            }
+
             $nameOfCommandToDescribe = $event->getInput()->getArgument('command_name');
             $commandToDescribe = $this->application->find($nameOfCommandToDescribe);
             $this->findAndAddHookOptions($commandToDescribe);
