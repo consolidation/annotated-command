@@ -219,6 +219,14 @@ class CommandInfo
     }
 
     /**
+     * Remove an annotation that was previoudly set.
+     */
+    public function removeAnnotation($name)
+    {
+        unset($this->otherAnnotations[$name]);
+    }
+
+    /**
      * Get the synopsis of the command (~first line).
      *
      * @return string

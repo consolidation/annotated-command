@@ -5,7 +5,12 @@ class AnnotationData extends \ArrayObject
 {
     public function get($key, $default)
     {
-        return isset($this[$key]) ? $this[$key] : $default;
+        return $this->has($key) ? $this[$key] : $default;
+    }
+
+    public function has($key)
+    {
+        return isset($this[$key]);
     }
 
     public function keys()

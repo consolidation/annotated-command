@@ -10,6 +10,7 @@ use Symfony\Component\Console\Application;
 use Consolidation\AnnotatedCommand\Parser\CommandInfo;
 use Consolidation\AnnotatedCommand\AnnotationData;
 use Consolidation\AnnotatedCommand\Options\AlterOptionsCommandEvent;
+use Consolidation\TestUtils\ExampleCommandInfoAlterer;
 
 class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
 {
@@ -37,6 +38,30 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
 
         $input = new StringInput('arithmatic 2 3 --negate');
         $this->assertRunCommandViaApplicationEquals($command, $input, '-5');
+    }
+
+    /**
+     * Test CommandInfo command annotation altering.
+     */
+    function testAnnotatedCommandInfoAlteration()
+    {
+        $this->commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile;
+        $this->commandFactory = new AnnotatedCommandFactory();
+        $commandInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'myCat');
+
+        $command = $this->commandFactory->createCommand($commandInfo, $this->commandFileInstance);
+
+        $annotationData = $command->getAnnotationData();
+        $this->assertTrue($annotationData->has('arbitrary'));
+        $this->assertFalse($annotationData->has('dynamic'));
+
+        $this->commandFactory->addCommandInfoAlterer(new ExampleCommandInfoAlterer());
+
+        $command = $this->commandFactory->createCommand($commandInfo, $this->commandFileInstance);
+
+        $annotationData = $command->getAnnotationData();
+        $this->assertTrue($annotationData->has('arbitrary'));
+        $this->assertTrue($annotationData->has('dynamic'));
     }
 
     function testMyCatCommand()

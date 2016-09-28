@@ -33,6 +33,9 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
     /** var boolean */
     protected $includeAllPublicMethods = true;
 
+    /** var CommandInfoAltererInterface */
+    protected $commandInfoAlterers = [];
+
     public function __construct()
     {
         $this->commandProcessor = new CommandProcessor(new HookManager());
@@ -104,6 +107,11 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
     public function addAutomaticOptionProvider(AutomaticOptionsProviderInterface $optionsProvider)
     {
         $this->automaticOptionsProviderList[] = $optionsProvider;
+    }
+
+    public function addCommandInfoAlterer(CommandInfoAltererInterface $alterer)
+    {
+        $this->commandInfoAlterers[] = $alterer;
     }
 
     /**
@@ -246,6 +254,7 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
 
     public function createCommand(CommandInfo $commandInfo, $commandFileInstance)
     {
+        $this->alterCommandInfo($commandInfo, $commandFileInstance);
         $command = new AnnotatedCommand($commandInfo->getName());
         $commandCallback = [$commandFileInstance, $commandInfo->getMethodName()];
         $command->setCommandCallback($commandCallback);
@@ -258,6 +267,16 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
         // use this notification for some other purpose.
         $this->notify($command);
         return $command;
+    }
+
+    /**
+     * Give plugins an opportunity to update the commandInfo
+     */
+    public function alterCommandInfo(CommandInfo $commandInfo, $commandFileInstance)
+    {
+        foreach ($this->commandInfoAlterers as $alterer) {
+            $alterer->alterCommandInfo($commandInfo, $commandFileInstance);
+        }
     }
 
     /**

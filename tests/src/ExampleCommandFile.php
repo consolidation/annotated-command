@@ -43,6 +43,7 @@ class ExampleCommandFile
      * @aliases c
      * @usage bet alpha --flip
      *   Concatenate "alpha" and "bet".
+     * @arbitrary This annotation is here merely as a marker used in testing.
      */
     public function myCat($one, $two = '', $options = ['flip' => false])
     {
