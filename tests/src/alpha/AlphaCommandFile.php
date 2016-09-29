@@ -199,4 +199,23 @@ class AlphaCommandFile
             return "Hello, $who";
         }
     }
+
+    /**
+     * This should be a command, because it is annotated like one.
+     *
+     * @command get:serious
+     */
+    public function getSerious()
+    {
+        return 'very serious';
+    }
+
+    /**
+     * This should not be a command, because it looks like an accessor and
+     * has no @command annotation.
+     */
+    public function getLost()
+    {
+        return 'very lost';
+    }
 }
