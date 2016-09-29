@@ -19,6 +19,7 @@ use Consolidation\AnnotatedCommand\AnnotationData;
 class HookManager implements EventSubscriberInterface
 {
     protected $hooks = [];
+    /** var CommandInfo[] */
     protected $hookOptions = [];
 
     const PRE_COMMAND_EVENT = 'pre-command-event';
@@ -289,10 +290,18 @@ class HookManager implements EventSubscriberInterface
         $command->optionsHookForHookAnnotations($commandInfoList);
     }
 
-    protected function getHookOptionsForCommand($command)
+    public function getHookOptionsForCommand($command)
+    {
+        $names = $this->addWildcardHooksToNames($command->getNames(), $command->getAnnotationData());
+        return $this->getHookOptions($names);
+    }
+
+    /**
+     * @return CommandInfo[]
+     */
+    public function getHookOptions($names)
     {
         $result = [];
-        $names = $this->addWildcardHooksToNames($command->getNames(), $command->getAnnotationData());
         foreach ($names as $name) {
             if (isset($this->hookOptions[$name])) {
                 $result = array_merge($result, $this->hookOptions[$name]);
