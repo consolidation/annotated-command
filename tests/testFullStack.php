@@ -210,6 +210,9 @@ EOT;
 EOT;
         $this->assertRunCommandViaApplicationEquals('example:list', $expectedAssociativeListTable);
         $this->assertRunCommandViaApplicationEquals('example:list --field=sftp_command', 'sftp -o Port=2222 dev@appserver.dev.drush.in');
+
+        $this->assertRunCommandViaApplicationEquals('get:serious', 'very serious');
+        $this->assertRunCommandViaApplicationContains('get:lost', 'Command "get:lost" is not defined.', [], 1);
     }
 
     function testCommandsAndHooksIncludeAllPublicMethods()
@@ -249,6 +252,9 @@ EOT;
         $this->assertTrue($this->application->has('without:annotations'));
 
         $this->assertRunCommandViaApplicationContains('list', ['example:table', 'without:annotations'], ['alter:formatters']);
+
+        $this->assertRunCommandViaApplicationEquals('get:serious', 'very serious');
+        $this->assertRunCommandViaApplicationContains('get:lost', 'Command "get:lost" is not defined.', [], 1);
     }
 
     function testCommandsAndHooksWithBetaFolder()
@@ -379,6 +385,7 @@ EOT;
     {
         $input = new StringInput($cmd);
         $output = new BufferedOutput();
+        $containsList = (array) $containsList;
 
         $statusCode = $this->application->run($input, $output);
         $commandOutput = trim($output->fetch());

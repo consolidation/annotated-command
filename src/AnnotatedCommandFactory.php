@@ -133,13 +133,12 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
     {
         $commandInfoList = [];
 
-        // Ignore special functions, such as __construct and __call, and
-        // accessor methods such as getFoo and setFoo, while allowing
-        // set or setup.
+        // Ignore special functions, such as __construct and __call, which
+        // can never be commands.
         $commandMethodNames = array_filter(
             get_class_methods($classNameOrInstance) ?: [],
             function ($m) {
-                return !preg_match('#^(_|get[A-Z]|set[A-Z])#', $m);
+                return !preg_match('#^_#', $m);
             }
         );
 
@@ -186,10 +185,21 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
 
     public static function isCommandMethod($commandInfo, $includeAllPublicMethods)
     {
+        // Ignore everything labeled @hook
         if ($commandInfo->hasAnnotation('hook')) {
             return false;
         }
-        return $includeAllPublicMethods || $commandInfo->hasAnnotation('command');
+        // Include everything labeled @command
+        if ($commandInfo->hasAnnotation('command')) {
+            return true;
+        }
+        // Skip anything named like an accessor ('get' or 'set')
+        if (preg_match('#^(get[A-Z]|set[A-Z])#', $commandInfo->getMethodName())) {
+            return false;
+        }
+
+        // Default to the setting of 'include all public methods'.
+        return $includeAllPublicMethods;
     }
 
     public function registerCommandHooksFromClassInfo($commandInfoList, $commandFileInstance)
