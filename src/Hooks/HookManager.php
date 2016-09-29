@@ -466,7 +466,6 @@ class HookManager implements EventSubscriberInterface
             ],
             $annotationData
         );
-
     }
 
     protected function getProcessResultHooks($names, AnnotationData $annotationData)
