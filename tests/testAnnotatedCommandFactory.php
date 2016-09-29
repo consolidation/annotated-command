@@ -11,6 +11,7 @@ use Consolidation\AnnotatedCommand\Parser\CommandInfo;
 use Consolidation\AnnotatedCommand\AnnotationData;
 use Consolidation\AnnotatedCommand\Options\AlterOptionsCommandEvent;
 use Consolidation\TestUtils\ExampleCommandInfoAlterer;
+use Consolidation\AnnotatedCommand\Hooks\HookManager;
 
 class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
 {
@@ -247,7 +248,7 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
 
         $this->commandFactory->registerCommandHook($hookInfo, $this->commandFileInstance);
 
-        $hookCallback = $this->commandFactory->hookManager()->get('test:hook', 'alter');
+        $hookCallback = $this->commandFactory->hookManager()->get('test:hook', [HookManager::ALTER_RESULT]);
         $this->assertTrue($hookCallback != null);
         $this->assertEquals(1, count($hookCallback));
         $this->assertEquals(2, count($hookCallback[0]));
@@ -276,7 +277,7 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
 
         $this->commandFactory->registerCommandHook($hookInfo, $this->commandFileInstance);
 
-        $hookCallback = $this->commandFactory->hookManager()->get('test:post-command', 'post-command');
+        $hookCallback = $this->commandFactory->hookManager()->get('test:post-command', [HookManager::POST_COMMAND_HOOK]);
         $this->assertTrue($hookCallback != null);
         $this->assertEquals(1, count($hookCallback));
         $this->assertEquals(2, count($hookCallback[0]));
@@ -290,7 +291,7 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
 
         $this->commandFactory->registerCommandHook($hookInfo, $this->commandFileInstance);
 
-        $hookCallback = $this->commandFactory->hookManager()->get('test:post-command', 'pre-command');
+        $hookCallback = $this->commandFactory->hookManager()->get('test:post-command', [HookManager::PRE_COMMAND_HOOK]);
         $this->assertTrue($hookCallback != null);
         $this->assertEquals(1, count($hookCallback));
         $this->assertEquals(2, count($hookCallback[0]));
@@ -319,7 +320,7 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
 
         $this->commandFactory->registerCommandHook($hookInfo, $this->commandFileInstance);
 
-        $hookCallback = $this->commandFactory->hookManager()->get('Consolidation\TestUtils\ExampleHookAllCommandFile', 'alter');
+        $hookCallback = $this->commandFactory->hookManager()->get('Consolidation\TestUtils\ExampleHookAllCommandFile', [HookManager::ALTER_RESULT]);
         $this->assertTrue($hookCallback != null);
         $this->assertEquals(1, count($hookCallback));
         $this->assertEquals(2, count($hookCallback[0]));
@@ -347,7 +348,7 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
         $this->assertEquals('alter @hookme', $hookInfo->getAnnotation('hook'));
 
         $this->commandFactory->registerCommandHook($hookInfo, $this->commandFileInstance);
-        $hookCallback = $this->commandFactory->hookManager()->get('@hookme', 'alter');
+        $hookCallback = $this->commandFactory->hookManager()->get('@hookme', [HookManager::ALTER_RESULT]);
         $this->assertTrue($hookCallback != null);
         $this->assertEquals(1, count($hookCallback));
         $this->assertEquals(2, count($hookCallback[0]));
@@ -379,7 +380,7 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
         $this->assertEquals('alter @addmycommandname', $hookInfo->getAnnotation('hook'));
 
         $this->commandFactory->registerCommandHook($hookInfo, $this->commandFileInstance);
-        $hookCallback = $this->commandFactory->hookManager()->get('@addmycommandname', 'alter');
+        $hookCallback = $this->commandFactory->hookManager()->get('@addmycommandname', [HookManager::ALTER_RESULT]);
         $this->assertTrue($hookCallback != null);
         $this->assertEquals(1, count($hookCallback));
         $this->assertEquals(2, count($hookCallback[0]));
@@ -436,7 +437,7 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
         $this->assertEquals('alter test:hook', $hookInfo->getAnnotation('hook'));
 
         $this->commandFactory->registerCommandHook($hookInfo, $this->commandFileInstance);
-        $hookCallback = $this->commandFactory->hookManager()->get('test:hook', 'alter');
+        $hookCallback = $this->commandFactory->hookManager()->get('test:hook', [HookManager::ALTER_RESULT]);;
         $this->assertTrue($hookCallback != null);
         $this->assertEquals(1, count($hookCallback));
         $this->assertEquals(2, count($hookCallback[0]));
@@ -459,7 +460,7 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
 
         $this->commandFactory->registerCommandHook($hookInfo, $this->commandFileInstance);
 
-        $hookCallback = $this->commandFactory->hookManager()->get('test:hello', 'init');
+        $hookCallback = $this->commandFactory->hookManager()->get('test:hello', [HookManager::INITIALIZE]);
         $this->assertTrue($hookCallback != null);
         $this->assertEquals(1, count($hookCallback));
         $this->assertEquals(2, count($hookCallback[0]));
@@ -494,7 +495,7 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
 
         $this->commandFactory->registerCommandHook($hookInfo, $this->commandFileInstance);
 
-        $hookCallback = $this->commandFactory->hookManager()->get('test:hello', 'command-event');
+        $hookCallback = $this->commandFactory->hookManager()->get('test:hello', [HookManager::COMMAND_EVENT]);
         $this->assertTrue($hookCallback != null);
         $this->assertEquals(1, count($hookCallback));
         $this->assertEquals(2, count($hookCallback[0]));
@@ -537,14 +538,14 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
 
         $this->commandFactory->registerCommandHook($hookInfo, $this->commandFileInstance);
 
-        $hookCallback = $this->commandFactory->hookManager()->get('test:hello', 'validate');
+        $hookCallback = $this->commandFactory->hookManager()->get('test:hello', [HookManager::ARGUMENT_VALIDATOR]);
         $this->assertTrue($hookCallback != null);
         $this->assertEquals(1, count($hookCallback));
         $this->assertEquals(2, count($hookCallback[0]));
         $this->assertTrue(is_callable($hookCallback[0]));
         $this->assertEquals('validateTestHello', $hookCallback[0][1]);
 
-        $hookCallback = $this->commandFactory->hookManager()->get('test:hello', 'interact');
+        $hookCallback = $this->commandFactory->hookManager()->get('test:hello', [HookManager::INTERACT]);
         $this->assertTrue($hookCallback != null);
         $this->assertEquals(1, count($hookCallback));
         $this->assertEquals(2, count($hookCallback[0]));

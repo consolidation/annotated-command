@@ -404,55 +404,116 @@ class HookManager implements EventSubscriberInterface
 
     protected function getCommandEventHooks($names)
     {
-        return $this->getHooks($names, self::COMMAND_EVENT);
+        return $this->getHooks(
+            $names,
+            [
+                self::PRE_COMMAND_EVENT,
+                self::COMMAND_EVENT,
+                self::POST_COMMAND_EVENT
+            ]
+        );
     }
 
     protected function getInitializeHooks($names, AnnotationData $annotationData)
     {
-        return $this->getHooks($names, self::INITIALIZE, $annotationData);
+        return $this->getHooks(
+            $names,
+            [
+                self::PRE_INITIALIZE,
+                self::INITIALIZE,
+                self::POST_INITIALIZE
+            ],
+            $annotationData
+        );
     }
 
     protected function getOptionHooks($names, AnnotationData $annotationData)
     {
-        return $this->getHooks($names, self::OPTION_HOOK, $annotationData);
+        return $this->getHooks(
+            $names,
+            [
+                self::PRE_OPTION_HOOK,
+                self::OPTION_HOOK,
+                self::POST_OPTION_HOOK
+            ],
+            $annotationData
+        );
     }
 
     protected function getInteractors($names, AnnotationData $annotationData)
     {
-        return $this->getHooks($names, self::INTERACT, $annotationData);
+        return $this->getHooks(
+            $names,
+            [
+                self::PRE_INTERACT,
+                self::INTERACT,
+                self::POST_INTERACT
+            ],
+            $annotationData
+        );
     }
 
     protected function getValidators($names, AnnotationData $annotationData)
     {
-        return array_merge(
-            $this->getHooks($names, self::ARGUMENT_VALIDATOR, $annotationData),
-            $this->getHooks($names, self::COMMAND_HOOK, $annotationData, ['pre-', ''])
+        return $this->getHooks(
+            $names,
+            [
+                self::PRE_ARGUMENT_VALIDATOR,
+                self::ARGUMENT_VALIDATOR,
+                self::POST_ARGUMENT_VALIDATOR,
+                self::PRE_COMMAND_HOOK,
+                self::COMMAND_HOOK,
+            ],
+            $annotationData
         );
     }
 
     protected function getProcessResultHooks($names, AnnotationData $annotationData)
     {
-        return array_merge(
-            $this->getHooks($names, self::COMMAND_HOOK, $annotationData, ['post-']),
-            $this->getHooks($names, self::PROCESS_RESULT, $annotationData)
+        return $this->getHooks(
+            $names,
+            [
+                self::PRE_PROCESS_RESULT,
+                self::PROCESS_RESULT,
+                self::POST_PROCESS_RESULT
+            ],
+            $annotationData
         );
     }
 
     protected function getAlterResultHooks($names, AnnotationData $annotationData)
     {
-        return $this->getHooks($names, self::ALTER_RESULT, $annotationData);
+        return $this->getHooks(
+            $names,
+            [
+                self::PRE_ALTER_RESULT,
+                self::ALTER_RESULT,
+                self::POST_ALTER_RESULT,
+                self::POST_COMMAND_HOOK,
+            ],
+            $annotationData
+        );
     }
 
     protected function getStatusDeterminers($names)
     {
-        return $this->getHooks($names, self::STATUS_DETERMINER);
+        return $this->getHooks(
+            $names,
+            [
+                self::STATUS_DETERMINER,
+            ]
+        );
     }
 
     protected function getOutputExtractors($names)
     {
-        return $this->getHooks($names, self::EXTRACT_OUTPUT);
+        return $this->getHooks(
+            $names,
+            [
+                self::EXTRACT_OUTPUT,
+            ]
+        );
     }
-
 
     /**
      * Get a set of hooks with the provided name(s). Include the
@@ -460,14 +521,13 @@ class HookManager implements EventSubscriberInterface
      * in addition to the named hooks provided.
      *
      * @param string|array $names The name of the function being hooked.
-     * @param string $hook The specific hook name (e.g. alter)
-     * @param string[] $stages The stages to apply hooks at (e.g. pre, post)
+     * @param string[] $hooks A list of hooks (e.g. [HookManager::ALTER_RESULT])
      *
      * @return callable[]
      */
-    protected function getHooks($names, $hook, $annotationData = null, $stages = ['pre-', '', 'post-'])
+    public function getHooks($names, $hooks, $annotationData = null)
     {
-        return $this->get($this->addWildcardHooksToNames($names, $annotationData), $hook, $stages);
+        return $this->get($this->addWildcardHooksToNames($names, $annotationData), $hooks);
     }
 
     protected function addWildcardHooksToNames($names, $annotationData = null)
@@ -486,19 +546,19 @@ class HookManager implements EventSubscriberInterface
      * Get a set of hooks with the provided name(s).
      *
      * @param string|array $names The name of the function being hooked.
-     * @param string $hook The specific hook name (e.g. alter)
+     * @param string[] $hooks The list of hook names (e.g. [HookManager::ALTER_RESULT])
      *
      * @return callable[]
      */
-    public function get($names, $hook, $stages = [''])
+    public function get($names, $hooks)
     {
-        $hooks = [];
-        foreach ($stages as $stage) {
+        $result = [];
+        foreach ((array)$hooks as $hook) {
             foreach ((array)$names as $name) {
-                $hooks = array_merge($hooks, $this->getHook($name, $stage . $hook));
+                $result = array_merge($result, $this->getHook($name, $hook));
             }
         }
-        return $hooks;
+        return $result;
     }
 
     /**
