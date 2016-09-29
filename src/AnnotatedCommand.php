@@ -311,11 +311,11 @@ class AnnotatedCommand extends Command
         // Get passthrough args, and add the options on the end.
         $args = $this->getArgsAndOptions($input);
 
-        if ($this->usesInputInterface) {
-            array_unshift($args, $input);
-        }
         if ($this->usesOutputInterface) {
             array_unshift($args, $output);
+        }
+        if ($this->usesInputInterface) {
+            array_unshift($args, $input);
         }
 
         // Validate, run, process, alter, handle results.
