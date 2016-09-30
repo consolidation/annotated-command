@@ -536,7 +536,7 @@ class HookManager implements EventSubscriberInterface
             }, $annotationData->keys())
         );
         $names[] = '*';
-        return $names;
+        return array_unique($names);
     }
 
     /**
