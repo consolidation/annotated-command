@@ -14,12 +14,18 @@ Every pull request is run through:
 
   - phpcs -n --standard=PSR2 src
   - phpunit
-  - [Scrutinizer](https://scrutinizer-ci.com/g/consolidation-org/annotated-command/)
+  - [Scrutinizer](https://scrutinizer-ci.com/g/consolidation/annotated-command/)
   
-It is easy to run the unit tests and code sniffer locally; simply ensure that `./vendor/bin` is in your `$PATH`, cd to the root of the project directory, and run `phpcs` and `phpunit` as shown above.  To automatically fix coding standard errors, run:
+It is easy to run the unit tests and code sniffer locally; just run:
 
-  - phpcbf --standard=PSR2 src
+  - composer cs
 
-After submitting a pull request, please examine the Scrutinizer report. It is not required to fix all Scrutinizer issues; you may ignore recommendations that you disagree with. The spacing patches produced by Scrutinizer do not conform to PSR2 standards, and therefore should never be applied. DocBlock patches may be applied at your discression. Things that Scrutinizer identifies as a bug nearly always needs to be addressed.
+To run the code beautifier, which will fix many of the problems reported by phpcs:
+
+  - composer cbf
+
+These two commands (`composer cs` and `composer cbf`) are defined in the `scripts` section of [composer.json](composer.json).
+
+After submitting a pull request, please examine the Scrutinizer report. It is not required to fix all Scrutinizer issues; you may ignore recommendations that you disagree with. The spacing patches produced by Scrutinizer do not conform to PSR2 standards, and therefore should never be applied. DocBlock patches may be applied at your discression. Things that Scrutinizer identifies as a bug nearly always need to be addressed.
 
 Pull requests must pass phpcs and phpunit in order to be merged; ideally, new functionality will also include new unit tests.

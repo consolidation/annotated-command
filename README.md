@@ -86,60 +86,61 @@ There are ten types of hooks supported:
 
 Most of these also have "pre" and "post" varieties, to give more flexibility vis-a-vis hook ordering (and for consistency). Note that many validate, process and alter hooks may run, but the first status or extract hook that successfully returns a result will halt processing of further hooks of the same type.
 
+Each hook has an interface that defines its calling conventions; however, any callable may be used when registering a hook, which is convenient if versions of PHP prior to 7.0 (with no anonymous classes) need to be supported.
+
 ### Command Event Hook
 
-The command-event hook is called via the Symfony Console command event notification callback mechanism. This happens prior to event dispatching and command / option validation.  Note that Symfony does not allow the $input object to be altered in this hook; any change made here will be reset before the interact hook is called.
+The command-event hook is called via the Symfony Console command event notification callback mechanism. This happens prior to event dispatching and command / option validation.  Note that Symfony does not allow the $input object to be altered in this hook; any change made here will be reset, as Symfony re-parses the object. Changes to arguments and options should be done in the initialize hook (non-interactive alterations) or the interact hook (which is naturally for interactive alterations).
 
 ### Option Event Hook
 
-The option event hook is called for a specific command, whenever it is executed, or its help command is called. Any additional options for the command may be added here by instantiating and returnng an InputOption array.
+The option event hook ([OptionHookInterface](src/Hooks/OptionHookInterface.php)) is called for a specific command, whenever it is executed, or its help command is called. Any additional options for the command may be added here by instantiating and returnng an InputOption array.
 
 ### Initialize Hook
 
-The initialize hook runs prior to the interact hook.  It may supply command arguments and options from a configuration file or other sources. It should never do any user interaction.
+The initialize hook ([InitializeHookInterface](src/Hooks/InitializeHookInterface.php)) runs prior to the interact hook.  It may supply command arguments and options from a configuration file or other sources. It should never do any user interaction.
 
 ### Interact Hook
 
-The interact hook runs prior to argument and option validation. Required arguments and options not supplied on the command line may be provided during this phase by prompting the user.  Note that the interact hook is not called if the --no-interaction flag is supplied, whereas the command-event hook and the inject-configuration hook are.
+The interact hook ([InteractorInterface](src/Hooks/InteractorInterface.php)) runs prior to argument and option validation. Required arguments and options not supplied on the command line may be provided during this phase by prompting the user.  Note that the interact hook is not called if the --no-interaction flag is supplied, whereas the command-event hook and the inject-configuration hook are.
 
 ### Validate Hook
 
-The purpose of the validate hook is to ensure the state of the targets of the current command are usabe in the context required by that command. Symfony has already validated the arguments and options prior to this hook.  It is possible to alter the values of the arguments and options if necessary, although this is better done in the configure hook. A validation hook may take one of several actions:
+The purpose of the validate hook ([ValidatorInterface](src/Hooks/ValidatorInterface.php)) is to ensure the state of the targets of the current command are usabe in the context required by that command. Symfony has already validated the arguments and options prior to this hook.  It is possible to alter the values of the arguments and options if necessary, although this is better done in the configure hook. A validation hook may take one of several actions:
 
 - Do nothing. This indicates that validation succeeded.
-- Return an array. This alters the arguments that will be used during command execution.
 - Return a CommandError. Validation fails, and execution stops. The CommandError contains a status result code and a message, which is printed.
 - Throw an exception. The exception is converted into a CommandError.
 
-Any number of validation hooks may run, but if any fails, then execution of the command stops.
+The validate hook may change the arguments and options of the command by modifying the Input object in the provided CommandData parameter.  Any number of validation hooks may run, but if any fails, then execution of the command stops.
 
 ### Command Hook
 
-The command hook is provided for semantic purposes.  The pre-command and command hooks are equivalent to the post-validate hook, although all of the post-validate hooks will be called before the first pre-command hook is called.  Similarly, the post-command hook is equivalent to the pre-process hook.
+The command hook is provided for semantic purposes.  The pre-command and command hooks are equivalent to the post-validate hook, and should confirm to the ([ValidatorInterface](src/Hooks/ValidatorInterface.php)) interface.  All of the post-validate hooks will be called before the first pre-command hook is called.  Similarly, the post-command hook is equivalent to the pre-process hook, and should implement the .
 
 The command callback itself (the method annotated @command) is called after the last command hook, and prior to the first post-command hook.
 
 ### Process Hook
 
-Some commands will return an object that generates a result, rather than returning a result object directly. When this is supported, the operation should be executed during the process hook.
+The process hook ([ProcessResultInterface](src/Hooks/ProcessResultInterface.php)) is specifically designed to convert a series of processing instructions into a final result.  An example of this is implemented in Robo; if a Robo command returns a TaskInterface, then a Robo process hook will execute the task and return the result. This allows a pre-process hook to alter the task, e.g. by adding more operations to a task collection.
 
-An example of this is implemented in Robo; if a Robo command returns a TaskInterface, then a Robo process hook will execute the task and return the result. This allows a pre-process hook to alter the task, e.g. by adding more operations to a task collection.
+The process hook should not be used for other purposes.
 
 ### Alter Hook
 
-An alter hook changes the result object. Alter hooks should only operate on result objects of a type they explicitly recognize. They may return an object of the same type, or they may convert the object to some other type.
+An alter hook ([AlterResultInterface](src/Hooks/AlterResultInterface.php)) changes the result object. Alter hooks should only operate on result objects of a type they explicitly recognize. They may return an object of the same type, or they may convert the object to some other type.
 
 If something goes wrong, and the alter hooks wishes to force the command to fail, then it may either return a CommandError object, or throw an exception.
 
 ### Status Hook
 
-The result object returned by a command may be a compound object that contains multiple bits of information about the command result.  If the result object implements ExitCodeInterface, then the `getExitCode()` method of the result object is called to determine what the status result code for the command should be. If ExitCodeInterface is not implemented, then all of the status hooks attached to this command are executed; the first one that successfully returns a result will stop further execution of status hooks, and the result it returned will be used as the status result code for this operation.
+The status hook ([StatusDeterminerInterface](src/Hooks/StatusDeterminerInterface.php)) is responsible for determing whether a command succeeded (status code 0) or failed (status code > 0).  The result object returned by a command may be a compound object that contains multiple bits of information about the command result.  If the result object implements [ExitCodeInterface](ExitCodeInterface.php), then the `getExitCode()` method of the result object is called to determine what the status result code for the command should be. If ExitCodeInterface is not implemented, then all of the status hooks attached to this command are executed; the first one that successfully returns a result will stop further execution of status hooks, and the result it returned will be used as the status result code for this operation.
 
 If no status hook returns any result, then success is presumed.
 
 ### Extract Hook
 
-The result object returned by a command may be a compound object that contains multiple bits of information about the command result.  If the result object implements OutputDataInterface, then the `getOutputData()` method of the result object is called to determine what information should be displayed to the user as a result of the command's execution. If ExitCodeInterface is not implemented, then all of the extract hooks attached to this command are executed; the first one that successfully returns output data will stop further execution of extract hooks.
+The extract hook ([StatusDeterminerInterface](src/Hooks/StatusDeterminerInterface.php)) is responsible for determining what the actual rendered output for the command should be.  The result object returned by a command may be a compound object that contains multiple bits of information about the command result.  If the result object implements [OutputDataInterface](OutputDataInterface.php), then the `getOutputData()` method of the result object is called to determine what information should be displayed to the user as a result of the command's execution. If OutputDataInterface is not implemented, then all of the extract hooks attached to this command are executed; the first one that successfully returns output data will stop further execution of extract hooks.
 
 If no extract hook returns any data, then the result object itself is printed if it is a string; otherwise, no output is emitted (other than any produced by the command itself).
 
@@ -151,7 +152,7 @@ If the [Consolidation/OutputFormatters](https://github.com/consolidation/output-
 
 ## Logging
 
-The Annotated-Command project is completely agnostic to logging. If a command wishes to log progress, then the CommandFile class should implement LoggerAwareInterface, and the Commandline tool should inject a logger for its use via the LoggerAwareTrait `setLogger()` method.  Using [Robo](https://github.com/codegyre/robo) is recommended.
+The Annotated-Command project is completely agnostic to logging. If a command wishes to log progress, then the CommandFile class should implement LoggerAwareInterface, and the Commandline tool should inject a logger for its use via the LoggerAwareTrait `setLogger()` method.  Using [Robo](https://github.com/consolidation/robo) is recommended.
 
 ## Access to Symfony Objects
 
