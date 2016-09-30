@@ -320,12 +320,17 @@ class AnnotatedCommand extends Command
 
     protected function createCommandData(InputInterface $input, OutputInterface $output)
     {
-        return new CommandData(
+        $commandData = new CommandData(
             $this->annotationData,
             $input,
-            $output,
+            $output
+        );
+
+        $commandData->setUseIOInterfaces(
             $this->usesOutputInterface,
             $this->usesInputInterface
         );
+
+        return $commandData;
     }
 }
