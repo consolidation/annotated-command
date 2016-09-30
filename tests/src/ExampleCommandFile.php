@@ -1,12 +1,13 @@
 <?php
 namespace Consolidation\TestUtils;
 
+use Consolidation\AnnotatedCommand\CommandData;
+use Consolidation\AnnotatedCommand\AnnotationData;
+use Consolidation\AnnotatedCommand\CommandError;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Event\ConsoleCommandEvent;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Consolidation\AnnotatedCommand\CommandError;
-use Consolidation\AnnotatedCommand\AnnotationData;
-use Symfony\Component\Console\Event\ConsoleCommandEvent;
 
 /**
  * Test file used in the Annotation Factory tests.  It is also
@@ -204,10 +205,10 @@ class ExampleCommandFile
      *
      * @hook alter @hookme
      */
-    public function hookTestAnnotatedHook($result, $args, AnnotationData $annotationData)
+    public function hookTestAnnotatedHook($result, CommandData $commandData)
     {
-        $before = $annotationData->get('before', '-');
-        $after = $annotationData->get('after', '-');
+        $before = $commandData->annotationData()->get('before', '-');
+        $after = $commandData->annotationData()->get('after', '-');
         return "$before$result$after";
     }
 
@@ -216,8 +217,9 @@ class ExampleCommandFile
      *
      * @hook alter @addmycommandname
      */
-    public function hookAddCommandName($result, $args, AnnotationData $annotationData)
+    public function hookAddCommandName($result, CommandData $commandData)
     {
+        $annotationData = $commandData->annotationData();
         return "$result from " . $annotationData['command'];
     }
 
@@ -247,7 +249,7 @@ class ExampleCommandFile
     /**
      * @hook pre-command test:post-command
      */
-    public function hookTestPreCommandHook($args, AnnotationData $annotationData)
+    public function hookTestPreCommandHook(CommandData $commandData)
     {
         // Use 'writeln' to detect order that hooks are called
         $this->output->writeln("foo");
@@ -264,7 +266,7 @@ class ExampleCommandFile
     /**
      * @hook post-command test:post-command
      */
-    public function hookTestPostCommandHook($result, array $args, AnnotationData $annotationData)
+    public function hookTestPostCommandHook($result, CommandData $commandData)
     {
         // Use 'writeln' to detect order that hooks are called
         $this->output->writeln("baz");
@@ -318,8 +320,9 @@ class ExampleCommandFile
     /**
      * @hook validate test:hello
      */
-    public function validateTestHello($args)
+    public function validateTestHello($commandData)
     {
+        $args = $commandData->arguments();
         if ($args['who'] == 'Donald Duck') {
             return new CommandError("I won't say hello to Donald Duck.");
         }

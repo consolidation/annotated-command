@@ -12,6 +12,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Consolidation\AnnotatedCommand\ExitCodeInterface;
 use Consolidation\AnnotatedCommand\OutputDataInterface;
 use Consolidation\AnnotatedCommand\AnnotationData;
+use Consolidation\AnnotatedCommand\CommandData;
 
 /**
  * Manage named callback hooks
@@ -322,19 +323,15 @@ class HookManager implements EventSubscriberInterface
         }
     }
 
-    public function validateArguments($names, $args, AnnotationData $annotationData)
+    public function validateArguments($names, CommandData $commandData)
     {
-        $validators = $this->getValidators($names, $annotationData);
+        $validators = $this->getValidators($names, $commandData->annotationData());
         foreach ($validators as $validator) {
-            $validated = $this->callValidator($validator, $args, $annotationData);
+            $validated = $this->callValidator($validator, $commandData);
             if (is_object($validated)) {
                 return $validated;
             }
-            if (is_array($validated)) {
-                $args = $validated;
-            }
         }
-        return $args;
     }
 
     /**
@@ -342,15 +339,15 @@ class HookManager implements EventSubscriberInterface
      * Allow client to add transformation / interpretation
      * callbacks.
      */
-    public function alterResult($names, $result, $args, AnnotationData $annotationData)
+    public function alterResult($names, $result, CommandData $commandData)
     {
-        $processors = $this->getProcessResultHooks($names, $annotationData);
+        $processors = $this->getProcessResultHooks($names, $commandData->annotationData());
         foreach ($processors as $processor) {
-            $result = $this->callProcessor($processor, $result, $args, $annotationData);
+            $result = $this->callProcessor($processor, $result, $commandData);
         }
-        $alterers = $this->getAlterResultHooks($names, $annotationData);
+        $alterers = $this->getAlterResultHooks($names, $commandData->annotationData());
         foreach ($alterers as $alterer) {
-            $result = $this->callProcessor($alterer, $result, $args, $annotationData);
+            $result = $this->callProcessor($alterer, $result, $commandData);
         }
 
         return $result;
@@ -607,30 +604,30 @@ class HookManager implements EventSubscriberInterface
         }
     }
 
-    protected function callValidator($validator, $args, AnnotationData $annotationData)
+    protected function callValidator($validator, CommandData $commandData)
     {
         // TODO: Adding AnnotationData to ValidatorInterface would be
         // a breaking change. Either hold off until 2.x, or make
         // a new interface containing a method that takes the extra parameter.
         if ($validator instanceof ValidatorInterface) {
-            return $validator->validate($args, $annotationData);
+            return $validator->validate($commandData);
         }
         if (is_callable($validator)) {
-            return $validator($args, $annotationData);
+            return $validator($commandData);
         }
     }
 
-    protected function callProcessor($processor, $result, $args, AnnotationData $annotationData)
+    protected function callProcessor($processor, $result, CommandData $commandData)
     {
         $processed = null;
         // TODO: Adding AnnotationData to ProcessResultInterface would be
         // a breaking change. Either hold off until 2.x, or make
         // a new interface containing a method that takes the extra parameter.
         if ($processor instanceof ProcessResultInterface) {
-            $processed = $processor->process($result, $args, $annotationData);
+            $processed = $processor->process($result, $commandData);
         }
         if (is_callable($processor)) {
-            $processed = $processor($result, $args, $annotationData);
+            $processed = $processor($result, $commandData);
         }
         if (isset($processed)) {
             return $processed;

@@ -1,7 +1,7 @@
 <?php
 namespace Consolidation\AnnotatedCommand\Hooks;
 
-use Consolidation\AnnotatedCommand\AnnotationData;
+use Consolidation\AnnotatedCommand\CommandData;
 
 /**
  * A result processor takes a result object, processes it, and
@@ -23,5 +23,5 @@ interface ProcessResultInterface
      *
      * @return mixed $result
      */
-    public function process($result, array $args, AnnotationData $annotationData);
+    public function process($result, CommandData $commandData);
 }

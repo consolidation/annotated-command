@@ -225,29 +225,6 @@ class AnnotatedCommand extends Command
         return $inputOption;
     }
 
-    protected function getArgsWithoutAppName($input)
-    {
-        $args = $input->getArguments();
-
-        // When called via the Application, the first argument
-        // will be the command name. The Application alters the
-        // input definition to match, adding a 'command' argument
-        // to the beginning.
-        array_shift($args);
-        return $args;
-    }
-
-    protected function getArgsAndOptions($input)
-    {
-        if (!$input) {
-            return [];
-        }
-        // Get passthrough args, and add the options on the end.
-        $args = $this->getArgsWithoutAppName($input);
-        $args['options'] = $input->getOptions();
-        return $args;
-    }
-
     /**
      * Returns all of the hook names that may be called for this command.
      *
@@ -308,44 +285,47 @@ class AnnotatedCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        // Get passthrough args, and add the options on the end.
-        $args = $this->getArgsAndOptions($input);
-
-        if ($this->usesOutputInterface) {
-            array_unshift($args, $output);
-        }
-        if ($this->usesInputInterface) {
-            array_unshift($args, $input);
-        }
-
         // Validate, run, process, alter, handle results.
         return $this->commandProcessor()->process(
             $output,
             $this->getNames(),
             $this->commandCallback,
-            $this->annotationData,
-            $args
+            $this->createCommandData($input, $output)
         );
     }
 
+    /**
+     * This function is available for use by a class that may
+     * wish to extend this class rather than use annotations to
+     * define commands. Using this technique does allow for the
+     * use of annotations to define hooks.
+     */
     public function processResults(InputInterface $input, OutputInterface $output, $results)
     {
+        $commandData = $this->createCommandData($input, $output);
         $commandProcessor = $this->commandProcessor();
         $names = $this->getNames();
-        $args = $this->getArgsAndOptions($input);
         $results = $commandProcessor->processResults(
             $names,
             $results,
-            $args,
-            $this->annotationData
+            $commandData
         );
-        $options = end($args);
         return $commandProcessor->handleResults(
             $output,
             $names,
             $results,
+            $commandData
+        );
+    }
+
+    protected function createCommandData(InputInterface $input, OutputInterface $output)
+    {
+        return new CommandData(
             $this->annotationData,
-            $options
+            $input,
+            $output,
+            $this->usesOutputInterface,
+            $this->usesInputInterface
         );
     }
 }

@@ -2,6 +2,7 @@
 namespace Consolidation\TestUtils\beta;
 
 use Consolidation\AnnotatedCommand\AnnotationData;
+use Consolidation\AnnotatedCommand\CommandData;
 
 /**
  * Test file used in the testCommandDiscovery() test.
@@ -24,9 +25,9 @@ class BetaCommandFile
      * @option chinese Add a row with Chinese numbers.
      * @usage example:table --chinese
      */
-    public function alterFormattersChinese($result, array $args, AnnotationData $annotationData)
+    public function alterFormattersChinese($result, CommandData $commandData)
     {
-        if ($args['options']['chinese']) {
+        if ($commandData->input()->getOption('chinese')) {
             $result[] = [ 'first' => '壹',  'second' => '貳',  'third' => '叁'  ];
         }
 
@@ -40,9 +41,9 @@ class BetaCommandFile
      * @option kanji Add a row with Kanji numbers.
      * @usage example:table --kanji
      */
-    public function alterFormattersKanji($result, array $args, AnnotationData $annotationData)
+    public function alterFormattersKanji($result, CommandData $commandData)
     {
-        if ($args['options']['kanji']) {
+        if ($commandData->input()->getOption('kanji')) {
             $result[] = [ 'first' => '一',  'second' => '二',  'third' => '三'  ];
         }
 

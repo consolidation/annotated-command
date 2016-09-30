@@ -1,6 +1,9 @@
 <?php
 namespace Consolidation\AnnotatedCommand\Hooks;
 
+use Consolidation\AnnotatedCommand\AnnotationData;
+use Symfony\Component\Console\Input\InputInterface;
+
 /**
  * Non-interactively (e.g. via configuration files) apply configuration values to the Input object.
  *
@@ -8,5 +11,5 @@ namespace Consolidation\AnnotatedCommand\Hooks;
  */
 interface InitializeHookInterface
 {
-    public function injectConfiguration($input, $annotationData);
+    public function injectConfiguration(InputInterface $input, Annotation $annotationData);
 }

@@ -2,6 +2,7 @@
 namespace Consolidation\AnnotatedCommand;
 
 use Consolidation\AnnotatedCommand\AnnotationData;
+use Consolidation\AnnotatedCommand\CommandData;
 use Consolidation\AnnotatedCommand\CommandProcessor;
 use Consolidation\AnnotatedCommand\Hooks\AlterResultInterface;
 use Consolidation\AnnotatedCommand\Hooks\ExtractOutputInterface;
@@ -134,7 +135,7 @@ class FullStackTests extends \PHPUnit_Framework_TestCase
         // are different now that the hooks are in place.
         $this->assertRunCommandViaApplicationEquals('simulated:status', '', 42);
         $this->assertRunCommandViaApplicationEquals('example:output', 'Hello, World!');
-        $this->assertRunCommandViaApplicationEquals('example:cat bet alpha --flip', 'alphabeta');
+        $this->assertRunCommandViaApplicationEquals('example:cat bet alpha --flip', 'alphareplaced');
         $this->assertRunCommandViaApplicationEquals('example:echo a b c', 'a,b,c');
         $this->assertRunCommandViaApplicationEquals('example:message', 'Shipwrecked; send bananas.');
 
@@ -417,10 +418,11 @@ EOT;
 
 class ExampleValidator implements ValidatorInterface
 {
-    public function validate($args, AnnotationData $annotationData)
+    public function validate(CommandData $commandData)
     {
+        $args = $commandData->arguments();
         if (isset($args['one']) && ($args['one'] == 'bet')) {
-            $args['one'] = 'beta';
+            $commandData->input()->setArgument('one', 'replaced');
             return $args;
         }
     }
@@ -428,7 +430,7 @@ class ExampleValidator implements ValidatorInterface
 
 class ExampleResultProcessor implements ProcessResultInterface
 {
-    public function process($result, array $args, AnnotationData $annotationData)
+    public function process($result, CommandData $commandData)
     {
         if (is_array($result) && array_key_exists('item-list', $result)) {
             return implode(',', $result['item-list']);
@@ -438,7 +440,7 @@ class ExampleResultProcessor implements ProcessResultInterface
 
 class ExampleResultAlterer implements AlterResultInterface
 {
-    public function process($result, array $args, AnnotationData $annotationData)
+    public function process($result, CommandData $commandData)
     {
         if (is_string($result) && ($result == 'Hello, World.')) {
             return 'Hello, World!';

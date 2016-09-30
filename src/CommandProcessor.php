@@ -87,56 +87,48 @@ class CommandProcessor
         OutputInterface $output,
         $names,
         $commandCallback,
-        AnnotationData $annotationData,
-        $args
+        CommandData $commandData
     ) {
         $result = [];
-        // Recover options from the end of the args
-        $options = end($args);
         try {
             $result = $this->validateRunAndAlter(
                 $names,
                 $commandCallback,
-                $args,
-                $annotationData
+                $commandData
             );
-            return $this->handleResults($output, $names, $result, $annotationData, $options);
+            return $this->handleResults($output, $names, $result, $commandData);
         } catch (\Exception $e) {
             $result = new CommandError($e->getMessage(), $e->getCode());
-            return $this->handleResults($output, $names, $result, $annotationData, $options);
+            return $this->handleResults($output, $names, $result, $commandData);
         }
     }
 
     public function validateRunAndAlter(
         $names,
         $commandCallback,
-        $args,
-        AnnotationData $annotationData
+        CommandData $commandData
     ) {
         // Validators return any object to signal a validation error;
         // if the return an array, it replaces the arguments.
-        $validated = $this->hookManager()->validateArguments($names, $args, $annotationData);
+        $validated = $this->hookManager()->validateArguments($names, $commandData);
         if (is_object($validated)) {
             return $validated;
         }
-        if (is_array($validated)) {
-            $args = $validated;
-        }
 
         // Run the command, alter the results, and then handle output and status
-        $result = $this->runCommandCallback($commandCallback, $args);
-        return $this->processResults($names, $result, $args, $annotationData);
+        $result = $this->runCommandCallback($commandCallback, $commandData);
+        return $this->processResults($names, $result, $commandData);
     }
 
-    public function processResults($names, $result, $args, $annotationData)
+    public function processResults($names, $result, CommandData $commandData)
     {
-        return $this->hookManager()->alterResult($names, $result, $args, $annotationData);
+        return $this->hookManager()->alterResult($names, $result, $commandData);
     }
 
     /**
      * Handle the result output and status code calculation.
      */
-    public function handleResults(OutputInterface $output, $names, $result, AnnotationData $annotationData, $options = [])
+    public function handleResults(OutputInterface $output, $names, $result, CommandData $commandData)
     {
         $status = $this->hookManager()->determineStatusCode($names, $result);
         // If the result is an integer and no separate status code was provided, then use the result as the status and do no output.
@@ -152,7 +144,7 @@ class CommandProcessor
             return $this->writeErrorMessage($output, $status, $structuredOutput, $result);
         }
         if ($this->dataCanBeFormatted($structuredOutput) && isset($this->formatterManager)) {
-            return $this->writeUsingFormatter($output, $structuredOutput, $annotationData, $options);
+            return $this->writeUsingFormatter($output, $structuredOutput, $commandData);
         }
         return $this->writeCommandOutput($output, $structuredOutput);
     }
@@ -170,10 +162,11 @@ class CommandProcessor
     /**
      * Run the main command callback
      */
-    protected function runCommandCallback($commandCallback, $args)
+    protected function runCommandCallback($commandCallback, CommandData $commandData)
     {
         $result = false;
         try {
+            $args = $commandData->getArgsAndOptions();
             $result = call_user_func_array($commandCallback, $args);
         } catch (\Exception $e) {
             $result = new CommandError($e->getMessage(), $e->getCode());
@@ -239,10 +232,11 @@ class CommandProcessor
     /**
      * Call the formatter to output the provided data.
      */
-    protected function writeUsingFormatter(OutputInterface $output, $structuredOutput, AnnotationData $annotationData, $options)
+    protected function writeUsingFormatter(OutputInterface $output, $structuredOutput, CommandData $commandData)
     {
+        $options = $commandData->input()->getOptions();
         $format = $this->getFormat($options);
-        $formatterOptions = new FormatterOptions($annotationData->getArrayCopy(), $options);
+        $formatterOptions = new FormatterOptions($commandData->annotationData()->getArrayCopy(), $options);
         $this->formatterManager->write(
             $output,
             $format,
