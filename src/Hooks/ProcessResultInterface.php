@@ -1,7 +1,7 @@
 <?php
 namespace Consolidation\AnnotatedCommand\Hooks;
 
-use Consolidation\AnnotatedCommand\AnnotationData;
+use Consolidation\AnnotatedCommand\CommandData;
 
 /**
  * A result processor takes a result object, processes it, and
@@ -19,9 +19,9 @@ interface ProcessResultInterface
      * run, then execute it and return the new result.
      *
      * @param  mixed $result Result to (potentially) be processed
-     * @param  array $args Reference to commandline arguments and options
+     * @param  CommandData $commandData Reference to commandline arguments and options
      *
      * @return mixed $result
      */
-    public function process($result, array $args, AnnotationData $annotationData);
+    public function process($result, CommandData $commandData);
 }

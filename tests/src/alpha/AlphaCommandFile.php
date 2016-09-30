@@ -6,6 +6,7 @@ use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Consolidation\OutputFormatters\StructuredData\AssociativeList;
 use Consolidation\AnnotatedCommand\AnnotationData;
 use Symfony\Component\Console\Input\InputOption;
+use Consolidation\AnnotatedCommand\CommandData;
 
 /**
  * Test file used in the testCommandDiscovery() test.
@@ -112,9 +113,9 @@ class AlphaCommandFile
      * @option french Add a row with French numbers.
      * @usage example:table --french
      */
-    public function alterFormatters($result, array $args, AnnotationData $annotationData)
+    public function alterFormatters($result, CommandData $commandData)
     {
-        if ($args['options']['french']) {
+        if ($commandData->input()->getOption('french')) {
             $result[] = [ 'first' => 'Un',  'second' => 'Deux',  'third' => 'Trois'  ];
         }
 

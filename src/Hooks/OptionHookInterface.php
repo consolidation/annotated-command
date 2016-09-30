@@ -1,6 +1,9 @@
 <?php
 namespace Consolidation\AnnotatedCommand\Hooks;
 
+use Consolidation\AnnotatedCommand\AnnotationData;
+use Symfony\Component\Console\Command\Command;
+
 /**
  * Add options to a command.
  *
@@ -9,5 +12,5 @@ namespace Consolidation\AnnotatedCommand\Hooks;
  */
 interface OptionHookInterface
 {
-    public function getOptions($command, $annotationData);
+    public function getOptions(Command $command, AnnotationData $annotationData);
 }
