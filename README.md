@@ -116,7 +116,7 @@ The validate hook may change the arguments and options of the command by modifyi
 
 ### Command Hook
 
-The command hook is provided for semantic purposes.  The pre-command and command hooks are equivalent to the post-validate hook, and should confirm to the ([ValidatorInterface](src/Hooks/ValidatorInterface.php)) interface.  All of the post-validate hooks will be called before the first pre-command hook is called.  Similarly, the post-command hook is equivalent to the pre-process hook, and should implement the .
+The command hook is provided for semantic purposes.  The pre-command and command hooks are equivalent to the post-validate hook, and should confirm to the interface ([ValidatorInterface](src/Hooks/ValidatorInterface.php)).  All of the post-validate hooks will be called before the first pre-command hook is called.  Similarly, the post-command hook is equivalent to the pre-process hook, and should implement the interface ([ProcessResultInterface](src/Hooks/ProcessResultInterface.php)).
 
 The command callback itself (the method annotated @command) is called after the last command hook, and prior to the first post-command hook.
 
@@ -140,7 +140,7 @@ If no status hook returns any result, then success is presumed.
 
 ### Extract Hook
 
-The extract hook ([StatusDeterminerInterface](src/Hooks/StatusDeterminerInterface.php)) is responsible for determining what the actual rendered output for the command should be.  The result object returned by a command may be a compound object that contains multiple bits of information about the command result.  If the result object implements [OutputDataInterface](OutputDataInterface.php), then the `getOutputData()` method of the result object is called to determine what information should be displayed to the user as a result of the command's execution. If OutputDataInterface is not implemented, then all of the extract hooks attached to this command are executed; the first one that successfully returns output data will stop further execution of extract hooks.
+The extract hook ([ExtractOutputInterface](src/Hooks/ExtractOutputInterface.php)) is responsible for determining what the actual rendered output for the command should be.  The result object returned by a command may be a compound object that contains multiple bits of information about the command result.  If the result object implements [OutputDataInterface](OutputDataInterface.php), then the `getOutputData()` method of the result object is called to determine what information should be displayed to the user as a result of the command's execution. If OutputDataInterface is not implemented, then all of the extract hooks attached to this command are executed; the first one that successfully returns output data will stop further execution of extract hooks.
 
 If no extract hook returns any data, then the result object itself is printed if it is a string; otherwise, no output is emitted (other than any produced by the command itself).
 
