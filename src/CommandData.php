@@ -7,7 +7,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class CommandData
 {
     /** var AnnotationData */
-    protected $annotatedData;
+    protected $annotationData;
     /** var InputInterface */
     protected $input;
     /** var OutputInterface */
