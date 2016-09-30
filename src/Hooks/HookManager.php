@@ -73,11 +73,13 @@ class HookManager implements EventSubscriberInterface
             $name = static::getClassNameFromCallback($callback);
         }
         $this->hooks[$name][$hook][] = $callback;
+        return $this;
     }
 
     public function recordHookOptions($commandInfo, $name)
     {
         $this->hookOptions[$name][] = $commandInfo;
+        return $this;
     }
 
     public static function getNames($command, $callback)
@@ -124,6 +126,7 @@ class HookManager implements EventSubscriberInterface
     public function addInitializeHook(InitializeHookInterface $initializeHook, $name = '*')
     {
         $this->hooks[$name][self::INITIALIZE][] = $initializeHook;
+        return $this;
     }
 
     /**
@@ -136,6 +139,7 @@ class HookManager implements EventSubscriberInterface
     public function addOptionHook(OptionHookInterface $interactor, $name = '*')
     {
         $this->hooks[$name][self::INTERACT][] = $interactor;
+        return $this;
     }
 
     /**
@@ -148,6 +152,7 @@ class HookManager implements EventSubscriberInterface
     public function addInteractor(InteractorInterface $interactor, $name = '*')
     {
         $this->hooks[$name][self::INTERACT][] = $interactor;
+        return $this;
     }
 
     /**
@@ -160,6 +165,7 @@ class HookManager implements EventSubscriberInterface
     public function addPreValidator(ValidatorInterface $validator, $name = '*')
     {
         $this->hooks[$name][self::PRE_ARGUMENT_VALIDATOR][] = $validator;
+        return $this;
     }
 
     /**
@@ -172,6 +178,7 @@ class HookManager implements EventSubscriberInterface
     public function addValidator(ValidatorInterface $validator, $name = '*')
     {
         $this->hooks[$name][self::ARGUMENT_VALIDATOR][] = $validator;
+        return $this;
     }
 
     /**
@@ -185,6 +192,7 @@ class HookManager implements EventSubscriberInterface
     public function addPreCommandHook(ValidatorInterface $preCommand, $name = '*')
     {
         $this->hooks[$name][self::PRE_COMMAND_HOOK][] = $preCommand;
+        return $this;
     }
 
     /**
@@ -198,6 +206,7 @@ class HookManager implements EventSubscriberInterface
     public function addPostCommandHook(ProcessResultInterface $postCommand, $name = '*')
     {
         $this->hooks[$name][self::POST_COMMAND_HOOK][] = $postCommand;
+        return $this;
     }
 
     /**
@@ -210,6 +219,7 @@ class HookManager implements EventSubscriberInterface
     public function addResultProcessor(ProcessResultInterface $resultProcessor, $name = '*')
     {
         $this->hooks[$name][self::PROCESS_RESULT][] = $resultProcessor;
+        return $this;
     }
 
     /**
@@ -224,6 +234,7 @@ class HookManager implements EventSubscriberInterface
     public function addAlterResult(AlterResultInterface $resultAlterer, $name = '*')
     {
         $this->hooks[$name][self::ALTER_RESULT][] = $resultAlterer;
+        return $this;
     }
 
     /**
@@ -245,6 +256,7 @@ class HookManager implements EventSubscriberInterface
     public function addStatusDeterminer(StatusDeterminerInterface $statusDeterminer, $name = '*')
     {
         $this->hooks[$name][self::STATUS_DETERMINER][] = $statusDeterminer;
+        return $this;
     }
 
     /**
@@ -265,6 +277,7 @@ class HookManager implements EventSubscriberInterface
     public function addOutputExtractor(ExtractOutputInterface $outputExtractor, $name = '*')
     {
         $this->hooks[$name][self::EXTRACT_OUTPUT][] = $outputExtractor;
+        return $this;
     }
 
     public function initializeHook(

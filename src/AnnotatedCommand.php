@@ -61,11 +61,13 @@ class AnnotatedCommand extends Command
     public function setCommandCallback($commandCallback)
     {
         $this->commandCallback = $commandCallback;
+        return $this;
     }
 
     public function setCommandProcessor($commandProcessor)
     {
         $this->commandProcessor = $commandProcessor;
+        return $this;
     }
 
     public function commandProcessor()
@@ -90,6 +92,7 @@ class AnnotatedCommand extends Command
     public function setReturnType($returnType)
     {
         $this->returnType = $returnType;
+        return $this;
     }
 
     public function getAnnotationData()
@@ -100,6 +103,7 @@ class AnnotatedCommand extends Command
     public function setAnnotationData($annotationData)
     {
         $this->annotationData = $annotationData;
+        return $this;
     }
 
     public function setCommandInfo($commandInfo)
@@ -114,6 +118,7 @@ class AnnotatedCommand extends Command
         }
         $this->setCommandArguments($commandInfo);
         $this->setReturnType($commandInfo->getReturnType());
+        return $this;
     }
 
     protected function setCommandArguments($commandInfo)
@@ -121,6 +126,7 @@ class AnnotatedCommand extends Command
         $this->setUsesInputInterface($commandInfo);
         $this->setUsesOutputInterface($commandInfo);
         $this->setCommandArgumentsFromParameters($commandInfo);
+        return $this;
     }
 
     /**
@@ -140,6 +146,7 @@ class AnnotatedCommand extends Command
     {
         $params = $commandInfo->getParameters();
         $this->usesInputInterface = $this->checkUsesInputInterface($params);
+        return $this;
     }
 
     /**
@@ -154,6 +161,7 @@ class AnnotatedCommand extends Command
         $this->usesOutputInterface =
             (count($params) > $index) &&
             ($params[$index] instanceof OutputInterface);
+        return $this;
     }
 
     protected function setCommandArgumentsFromParameters($commandInfo)
@@ -165,6 +173,7 @@ class AnnotatedCommand extends Command
             $parameterMode = $this->getCommandArgumentMode($hasDefault, $defaultValue);
             $this->addArgument($name, $parameterMode, $description, $defaultValue);
         }
+        return $this;
     }
 
     protected function getCommandArgumentMode($hasDefault, $defaultValue)
@@ -183,6 +192,7 @@ class AnnotatedCommand extends Command
         $inputOptions = $commandInfo->inputOptions();
 
         $this->addOptions($inputOptions + $automaticOptions, $automaticOptions);
+        return $this;
     }
 
     public function addOptions($inputOptions, $automaticOptions = [])

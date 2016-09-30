@@ -166,6 +166,7 @@ To use annotated commands in an application, pass an instance of your command cl
 ```php
 $myCommandClassInstance = new MyCommandClass();
 $commandFactory = new AnnotatedCommandFactory();
+$commandFactory->setIncludeAllPublicMethods(true);
 $commandFactory->commandProcessor()->setFormatterManager(new FormatterManager());
 $commandList = $commandFactory->createCommandsFromClass($myCommandClassInstance);
 foreach ($commandList as $command) {
@@ -174,7 +175,11 @@ foreach ($commandList as $command) {
 ```
 You may have more than one command class, if you wish. If so, simply call AnnotatedCommandFactory::createCommandsFromClass() multiple times.
 
+If you do not wish every public method in your classes to be added as commands, use `AnnotatedCommandFactory::setIncludeAllPublicMethods(false)`, and only methods annotated with @command will become commands.
+
 Note that the `setFormatterManager()` operation is optional; omit this if not using [Consolidation/OutputFormatters](https://github.com/consolidation/output-formatters).
+
+A CommandInfoAltererInterface can be added via AnnotatedCommandFactory::addCommandInfoAlterer(); it will be given the opportunity to adjust every CommandInfo object parsed from a command file prior to the creation of commands.
 
 A discovery class, CommandFileDiscovery, is also provided to help find command files on the filesystem. Usage is as follows:
 ```php

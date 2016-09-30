@@ -45,7 +45,6 @@ class CommandData
     {
         $this->usesInputInterface = $usesInputInterface;
         $this->usesOutputInterface = $usesOutputInterface;
-
         return $this;
     }
 
@@ -56,6 +55,7 @@ class CommandData
     public function setIncludeOptionsInArgs($includeOptionsInArgs)
     {
         $this->includeOptionsInArgs = $includeOptionsInArgs;
+        return $this;
     }
 
     public function annotationData()

@@ -124,6 +124,7 @@ class DefaultsWithDescriptions
     {
         $this->values[$key] = $defaultValue;
         $this->hasDefault[$key] = true;
+        return $this;
     }
 
     /**

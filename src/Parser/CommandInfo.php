@@ -136,6 +136,7 @@ class CommandInfo
     public function setName($name)
     {
         $this->name = $name;
+        return $this;
     }
 
     public function getReturnType()
@@ -147,6 +148,7 @@ class CommandInfo
     public function setReturnType($returnType)
     {
         $this->returnType = $returnType;
+        return $this;
     }
 
     /**
@@ -245,6 +247,7 @@ class CommandInfo
     public function setDescription($description)
     {
         $this->description = $description;
+        return $this;
     }
 
     /**
@@ -263,6 +266,7 @@ class CommandInfo
     public function setHelp($help)
     {
         $this->help = $help;
+        return $this;
     }
 
     /**
@@ -286,6 +290,7 @@ class CommandInfo
             $aliases = explode(',', static::convertListToCommaSeparated($aliases));
         }
         $this->aliases = array_filter($aliases);
+        return $this;
     }
 
     /**
@@ -311,6 +316,7 @@ class CommandInfo
     public function setExampleUsage($usage, $description)
     {
         $this->exampleUsage[$usage] = $description;
+        return $this;
     }
 
     /**

@@ -45,6 +45,7 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
     public function setCommandProcessor(CommandProcessor $commandProcessor)
     {
         $this->commandProcessor = $commandProcessor;
+        return $this;
     }
 
     /**
@@ -64,6 +65,7 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
     public function setIncludeAllPublicMethods($includeAllPublicMethods)
     {
         $this->includeAllPublicMethods = $includeAllPublicMethods;
+        return $this;
     }
 
     public function getIncludeAllPublicMethods()

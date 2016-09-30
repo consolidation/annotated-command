@@ -1,7 +1,7 @@
 # Change Log
 
 
-### 2.0.0 - 26 September 2016
+### 2.0.0 - 30 September 2016
 
 - **Breaking** Hooks with no command name now apply to all commands defined in the same class. This is a change of behavior from the 1.x branch, where hooks with no command name applied to a command with the same method name in a *different* class.
 - **Breaking** The interfaces ValidatorInterface, ProcessResultInterface and AlterResultInterface have been updated to be passed a CommandData object, which contains an Input and Output object, plus the AnnotationData.
@@ -9,8 +9,11 @@
 - Add an accessor function AnnotatedCommandFactory::setIncludeAllPublicMethods() to control whether all public methods of a command class, or only those with a @command annotation will be treated as commands. Default remains to treat all public methods as commands. The parameters to AnnotatedCommandFactory::createCommandsFromClass() and AnnotatedCommandFactory::createCommandsFromClassInfo() still behave the same way, but are deprecated. If omitted, the value set by the accessor will be used.
 - @option and @usage annotations provided with @hook methods will be added to the help text of the command they hook.  This should be done if a hook needs to add a new option, e.g. to control the behavior of the hook.
 - @option annotations can now be either `@option type $name description`, or just `@option name description`.
-- @hook option can be used to programatically add options to a command.
+- `@hook option` can be used to programatically add options to a command.
+- A CommandInfoAltererInterface can be added via AnnotatedCommandFactory::addCommandInfoAlterer(); it will be given the opportunity to adjust every CommandInfo object parsed from a command file prior to the creation of commands.
+- AnnotatedCommandFactory::setIncludeAllPublicMethods(false) may be used to require methods to be annotated with @commnad in order to be considered commands. This is in preference to the existing parameters of various command-creation methods of AnnotatedCommandFactory, which are now all deprecated in favor of this setter function.
 - If a --field option is given, it will also force the output format to 'string'.
+- Setter methods more consistently return $this.
 - Removed PassThroughArgsInput. This class was unnecessary.
 
 

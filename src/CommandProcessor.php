@@ -42,11 +42,13 @@ class CommandProcessor
     public function setFormatterManager(FormatterManager $formatterManager)
     {
         $this->formatterManager = $formatterManager;
+        return $this;
     }
 
     public function setDisplayErrorFunction(callable $fn)
     {
         $this->displayErrorFunction = $fn;
+        return $this;
     }
 
     /**
