@@ -7,10 +7,10 @@ branches:
     - /^[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+.*$/
 
 php:
-  - 5.4
-  - 5.5
-  - 5.6
   - 7.0
+  - 5.6
+  - 5.5
+  - 5.4
 
 sudo: false
 
@@ -23,8 +23,8 @@ before_script:
   - composer install
 
 script:
-  - vendor/bin/phpcs --standard=PSR2 -n src
   - vendor/bin/phpunit
+  - vendor/bin/phpcs --standard=PSR2 -n src
 
 after_success:
   - travis_retry php vendor/bin/coveralls -v
