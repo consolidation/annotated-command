@@ -111,6 +111,7 @@ The purpose of the validate hook ([ValidatorInterface](src/Hooks/ValidatorInterf
 - Do nothing. This indicates that validation succeeded.
 - Return a CommandError. Validation fails, and execution stops. The CommandError contains a status result code and a message, which is printed.
 - Throw an exception. The exception is converted into a CommandError.
+- Return false. Message is empty, and status is 1. Deprecated.
 
 The validate hook may change the arguments and options of the command by modifying the Input object in the provided CommandData parameter.  Any number of validation hooks may run, but if any fails, then execution of the command stops.
 

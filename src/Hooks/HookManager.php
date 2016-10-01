@@ -13,6 +13,7 @@ use Consolidation\AnnotatedCommand\ExitCodeInterface;
 use Consolidation\AnnotatedCommand\OutputDataInterface;
 use Consolidation\AnnotatedCommand\AnnotationData;
 use Consolidation\AnnotatedCommand\CommandData;
+use Consolidation\AnnotatedCommand\CommandError;
 
 /**
  * Manage named callback hooks
@@ -341,6 +342,9 @@ class HookManager implements EventSubscriberInterface
         $validators = $this->getValidators($names, $commandData->annotationData());
         foreach ($validators as $validator) {
             $validated = $this->callValidator($validator, $commandData);
+            if ($validated === false) {
+                return new CommandError();
+            }
             if (is_object($validated)) {
                 return $validated;
             }
