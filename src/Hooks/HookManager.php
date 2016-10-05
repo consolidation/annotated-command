@@ -623,9 +623,6 @@ class HookManager implements EventSubscriberInterface
 
     protected function callValidator($validator, CommandData $commandData)
     {
-        // TODO: Adding AnnotationData to ValidatorInterface would be
-        // a breaking change. Either hold off until 2.x, or make
-        // a new interface containing a method that takes the extra parameter.
         if ($validator instanceof ValidatorInterface) {
             return $validator->validate($commandData);
         }
@@ -637,9 +634,6 @@ class HookManager implements EventSubscriberInterface
     protected function callProcessor($processor, $result, CommandData $commandData)
     {
         $processed = null;
-        // TODO: Adding AnnotationData to ProcessResultInterface would be
-        // a breaking change. Either hold off until 2.x, or make
-        // a new interface containing a method that takes the extra parameter.
         if ($processor instanceof ProcessResultInterface) {
             $processed = $processor->process($result, $commandData);
         }
