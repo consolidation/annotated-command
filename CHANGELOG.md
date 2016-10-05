@@ -1,6 +1,11 @@
 # Change Log
 
 
+### 2.0.1 - 4 October 2016
+
+- Fix version requirement for output-formatters in composer.json
+
+
 ### 2.0.0 - 30 September 2016
 
 - **Breaking** Hooks with no command name now apply to all commands defined in the same class. This is a change of behavior from the 1.x branch, where hooks with no command name applied to a command with the same method name in a *different* class.
