@@ -10,7 +10,6 @@ php:
   - 7.0
   - 5.6
   - 5.5
-  - 5.4
 
 matrix:
   include:
@@ -26,9 +25,9 @@ cache:
     - $HOME/.composer/cache
 
 before_script:
-  - if [ -z "$dependencies" ]; then composer install; fi;
-  - if [ "$dependencies" = "lowest" ]; then composer update --prefer-lowest -n; fi;
-  - if [ "$dependencies" = "highest" ]; then composer update -n; fi;
+  - if [ -z "$dependencies" ]; then composer install --prefer-dist; fi;
+  - if [ "$dependencies" = "lowest" ]; then composer update --prefer-dist --prefer-lowest -n; fi;
+  - if [ "$dependencies" = "highest" ]; then composer update --prefer-dist -n; fi;
 
 script:
   - vendor/bin/phpunit
