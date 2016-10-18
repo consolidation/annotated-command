@@ -20,7 +20,7 @@ cache:
     - $HOME/.composer/cache
 
 before_script:
-  - composer install
+  - composer install --prefer-dist
 
 script:
   - vendor/bin/phpunit
