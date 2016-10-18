@@ -12,15 +12,23 @@ php:
   - 5.5
   - 5.4
 
+matrix:
+  include:
+    - php: 5.4
+      env: dependencies=lowest
+    - php: 7.0
+      env: dependencies=highest
+
 sudo: false
 
 cache:
   directories:
-    - vendor
     - $HOME/.composer/cache
 
 before_script:
-  - composer install --prefer-dist
+  - if [ -z "$dependencies" ]; then composer install; fi;
+  - if [ "$dependencies" = "lowest" ]; then composer update --prefer-lowest -n; fi;
+  - if [ "$dependencies" = "highest" ]; then composer update -n; fi;
 
 script:
   - vendor/bin/phpunit
