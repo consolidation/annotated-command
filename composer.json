@@ -35,7 +35,11 @@
     "scripts": {
         "cs": "phpcs --standard=PSR2 -n src",
         "cbf": "phpcbf --standard=PSR2 -n src",
-        "test": "SHELL_INTERACTIVE=true phpunit --colors=always"
+        "unit": "SHELL_INTERACTIVE=true phpunit --colors=always",
+        "test": [
+            "@unit",
+            "@cs"
+        ]
     },
     "extra": {
         "branch-alias": {
