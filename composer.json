@@ -25,12 +25,12 @@
         "symfony/console": "^2.8|~3",
         "symfony/event-dispatcher": "^2.5|~3",
         "symfony/finder": "^2.5|~3",
-        "phpdocumentor/reflection-docblock": "^2.0|^3.0.2"
+        "phpdocumentor/reflection-docblock": "^2.0|^3.0.2",
+        "squizlabs/php_codesniffer": "^2.7"
     },
     "require-dev": {
         "phpunit/phpunit": "4.*",
-        "satooshi/php-coveralls": "^1.0",
-        "squizlabs/php_codesniffer": "2.*"
+        "satooshi/php-coveralls": "^1.0"
     },
     "scripts": {
         "cs": "phpcs --standard=PSR2 -n src",
