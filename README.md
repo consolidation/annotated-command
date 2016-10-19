@@ -6,7 +6,7 @@ Initialize Symfony Console commands from annotated command class methods.
 
 ## Component Status
 
-Currently in use in [Robo](https://github.com/consolidation/Robo).
+Currently in use in [Robo](https://github.com/consolidation/Robo) (1.x+), [Drush](https://github.com/drush-ops/drush) (9.x+) and [Terminus](https://github.com/pantheon-systems/terminus) (1.x+).
 
 ## Motivation
 
