@@ -1,9 +1,11 @@
 # Change Log
 
 
-### 2.0.1 - 4 October 2016
+### 2.0.1 ~ 2.0.3 - 14 November 2016
 
 - Fix version requirement for output-formatters in composer.json
+- Use output-formatters ~3
+- Move php_codesniffer back to require-dev (moved to require by mistake)
 
 
 ### 2.0.0 - 30 September 2016
