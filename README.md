@@ -163,6 +163,10 @@ It is also possible to add InputInterface or OutputInterface parameters to any a
 
 ## API Usage
 
+If you would like to use Annotated Commands to build a commandline tool, it is recommended that you use [Robo as a framework](http://robo.li/framework.md), as it will set up all of the various command classes for you. If you would like to integrate Annotated Commands into some other framework, see the sections below.
+
+### Set up Command Factory and Instantiate Commands
+
 To use annotated commands in an application, pass an instance of your command class in to AnnotatedCommandFactory::createCommandsFromClass(). The result will be a list of Commands that may be added to your application.
 ```php
 $myCommandClassInstance = new MyCommandClass();
@@ -182,6 +186,8 @@ Note that the `setFormatterManager()` operation is optional; omit this if not us
 
 A CommandInfoAltererInterface can be added via AnnotatedCommandFactory::addCommandInfoAlterer(); it will be given the opportunity to adjust every CommandInfo object parsed from a command file prior to the creation of commands.
 
+### Command File Discovery
+
 A discovery class, CommandFileDiscovery, is also provided to help find command files on the filesystem. Usage is as follows:
 ```php
 $discovery = new CommandFileDiscovery();
@@ -198,6 +204,20 @@ If different namespaces are used at different command file paths, change the cal
 $myCommandFiles = $discovery->discover(['\Ns1' => $path1, '\Ns2' => $path2]);
 ```
 As a shortcut for the above, the method `discoverNamespaced()` will take the last directory name of each path, and append it to the base namespace provided. This matches the conventions used by Drupal modules, for example.
+
+### Configuring Output Formatts (e.g. to enable wordwrap)
+
+The Output Formatters project supports automatic formatting of tabular output. In order for wordwrapping to work correctly, the terminal width must be passed in to the Output Formatters handlers via `FormatterOptions::setWidth()`.
+
+In the Annotated Commands project, this is done via dependency injection. If a `PrepareFormatter` object is passed to `CommandProcessor::addPrepareFormatter()`, then it will be given an opportunity to set properties on the `FormatterOptions` when it is created.
+
+A `PrepareTerminalWidthOption` class is provided to use the Symfony Application class to fetch the terminal width, and provide it to the FormatterOptions. It is injected as follows:
+```php
+$terminalWidthOption = new PrepareTerminalWidthOption();
+$terminalWidthOption->setApplication($application);
+$commandFactory->commandProcessor()->addPrepareFormatter($terminalWidthOption);
+```
+To provide greater control over the width used, create your own `PrepareTerminalWidthOption` subclass, and adjust the width as needed.
 
 ## Other Callbacks
 
