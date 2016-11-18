@@ -9,6 +9,7 @@ use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Consolidation\OutputFormatters\FormatterManager;
 use Consolidation\OutputFormatters\Options\FormatterOptions;
 use Consolidation\AnnotatedCommand\Hooks\HookManager;
+use Consolidation\AnnotatedCommand\Options\PrepareFormatter;
 
 /**
  * Process a command, including hooks and other callbacks.
@@ -24,6 +25,8 @@ class CommandProcessor
     protected $formatterManager;
     /** var callable */
     protected $displayErrorFunction;
+    /** var PrepareFormatterOptions[] */
+    protected $prepareOptionsList = [];
 
     public function __construct(HookManager $hookManager)
     {
@@ -37,6 +40,11 @@ class CommandProcessor
     public function hookManager()
     {
         return $this->hookManager;
+    }
+
+    public function addPrepareFormatter(PrepareFormatter $preparer)
+    {
+        $this->prepareOptionsList[] = $preparer;
     }
 
     public function setFormatterManager(FormatterManager $formatterManager)
@@ -203,8 +211,8 @@ class CommandProcessor
             return 'string';
         }
         $options += [
-            'default-format' => false,
-            'pipe' => false,
+            'default-format' => '',
+            'pipe' => '',
         ];
         $options += [
             'format' => $options['default-format'],
@@ -236,9 +244,8 @@ class CommandProcessor
      */
     protected function writeUsingFormatter(OutputInterface $output, $structuredOutput, CommandData $commandData)
     {
-        $options = $commandData->input()->getOptions();
-        $format = $this->getFormat($options);
-        $formatterOptions = new FormatterOptions($commandData->annotationData()->getArrayCopy(), $options);
+        $format = $this->getFormat($commandData->input()->getOptions());
+        $formatterOptions = $this->createFormatterOptions($commandData);
         $this->formatterManager->write(
             $output,
             $format,
@@ -246,6 +253,21 @@ class CommandProcessor
             $formatterOptions
         );
         return 0;
+    }
+
+    /**
+     * Create a FormatterOptions object for use in writing the formatted output.
+     * @param CommandData $commandData
+     * @return FormatterOptions
+     */
+    protected function createFormatterOptions($commandData)
+    {
+        $options = $commandData->input()->getOptions();
+        $formatterOptions = new FormatterOptions($commandData->annotationData()->getArrayCopy(), $options);
+        foreach ($this->prepareOptionsList as $preparer) {
+            $preparer->prepare($commandData, $formatterOptions);
+        }
+        return $formatterOptions;
     }
 
     /**

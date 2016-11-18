@@ -19,6 +19,8 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\OutputInterface;
+use Consolidation\TestUtils\ApplicationWithTerminalWidth;
+use Consolidation\AnnotatedCommand\Options\PrepareTerminalWidthOption;
 
 /**
  * Do a test of all of the classes in this project, top-to-bottom.
@@ -29,7 +31,7 @@ class FullStackTests extends \PHPUnit_Framework_TestCase
     protected $commandFactory;
 
     function setup() {
-        $this->application = new Application('TestApplication', '0.0.0');
+        $this->application = new ApplicationWithTerminalWidth('TestApplication', '0.0.0');
         $this->commandFactory = new AnnotatedCommandFactory();
         $alterOptionsEventManager = new AlterOptionsCommandEvent($this->application);
         $eventDispatcher = new \Symfony\Component\EventDispatcher\EventDispatcher();
@@ -89,8 +91,11 @@ class FullStackTests extends \PHPUnit_Framework_TestCase
         $formatter->addDefaultFormatters();
         $formatter->addDefaultSimplifiers();
         $hookManager = new HookManager();
+        $terminalWidthOption = new PrepareTerminalWidthOption();
+        $terminalWidthOption->setApplication($this->application);
         $commandProcessor = new CommandProcessor($hookManager);
         $commandProcessor->setFormatterManager($formatter);
+        $commandProcessor->addPrepareFormatter($terminalWidthOption);
 
         // Create a new factory, and load all of the files
         // discovered above.  The command factory class is
@@ -214,6 +219,40 @@ EOT;
 
         $this->assertRunCommandViaApplicationEquals('get:serious', 'very serious');
         $this->assertRunCommandViaApplicationContains('get:lost', 'Command "get:lost" is not defined.', [], 1);
+
+        $this->assertRunCommandViaApplicationContains('help example:wrap',
+            [
+                'Test word wrapping',
+                '[default: "table"]',
+            ]
+        );
+
+        $expectedUnwrappedOutput = <<<EOT
+-------------------------------------------------------------------------------------------------------------------------- ---------------------------------------------------------------------------------------------------------------------------------------------
+  First                                                                                                                      Second
+ -------------------------------------------------------------------------------------------------------------------------- ---------------------------------------------------------------------------------------------------------------------------------------------
+  This is a really long cell that contains a lot of data. When it is rendered, it should be wrapped across multiple lines.   This is the second column of the same table. It is also very long, and should be wrapped across multiple lines, just like the first column.
+ -------------------------------------------------------------------------------------------------------------------------- ---------------------------------------------------------------------------------------------------------------------------------------------
+EOT;
+        $this->application->setWidthAndHeight(0, 0);
+        $this->assertRunCommandViaApplicationEquals('example:wrap', $expectedUnwrappedOutput);
+
+        $expectedWrappedOutput = <<<EOT
+ ------------------- --------------------
+  First               Second
+ ------------------- --------------------
+  This is a really    This is the second
+  long cell that      column of the same
+  contains a lot of   table. It is also
+  data. When it is    very long, and
+  rendered, it        should be wrapped
+  should be wrapped   across multiple
+  across multiple     lines, just like
+  lines.              the first column.
+ ------------------- --------------------
+EOT;
+        $this->application->setWidthAndHeight(40, 24);
+        $this->assertRunCommandViaApplicationEquals('example:wrap', $expectedWrappedOutput);
     }
 
     function testCommandsAndHooksIncludeAllPublicMethods()

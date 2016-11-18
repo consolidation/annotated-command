@@ -94,6 +94,27 @@ class AlphaCommandFile
     }
 
     /**
+     * Test word wrapping
+     *
+     * @command example:wrap
+     * @field-labels
+     *   first: First
+     *   second: Second
+     *
+     * @return \Consolidation\OutputFormatters\StructuredData\RowsOfFields
+     */
+    public function exampleWrap()
+    {
+        $data = [
+            [
+                'first' => 'This is a really long cell that contains a lot of data. When it is rendered, it should be wrapped across multiple lines.',
+                'second' => 'This is the second column of the same table. It is also very long, and should be wrapped across multiple lines, just like the first column.',
+            ]
+        ];
+        return new RowsOfFields($data);
+    }
+
+    /**
      * @hook option example:table
      */
     public function additionalOptionForExampleTable($command, $annotationData)
