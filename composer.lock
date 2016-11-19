@@ -4,21 +4,21 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "04748d0ec38556e6528cf09857407164",
-    "content-hash": "45e07d492ec9a6d4a644fd03903f7da9",
+    "hash": "3022aec17694795060ac3d71280fbc23",
+    "content-hash": "3053742fe70568ac2d3264b50fad5a41",
     "packages": [
         {
             "name": "consolidation/output-formatters",
-            "version": "3.1.0",
+            "version": "3.1.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/consolidation/output-formatters.git",
-                "reference": "11b57c6e465d782e47ff216a0bbda6e7d073c5e6"
+                "reference": "1e6c6ab49904a31c310940ec4efccf5f36e386e4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/consolidation/output-formatters/zipball/11b57c6e465d782e47ff216a0bbda6e7d073c5e6",
-                "reference": "11b57c6e465d782e47ff216a0bbda6e7d073c5e6",
+                "url": "https://api.github.com/repos/consolidation/output-formatters/zipball/1e6c6ab49904a31c310940ec4efccf5f36e386e4",
+                "reference": "1e6c6ab49904a31c310940ec4efccf5f36e386e4",
                 "shasum": ""
             },
             "require": {
@@ -54,7 +54,7 @@
                 }
             ],
             "description": "Format text by applying transformations provided by plug-in formatters.",
-            "time": "2016-11-18 03:37:26"
+            "time": "2016-11-18 23:04:31"
         },
         {
             "name": "phpdocumentor/reflection-common",

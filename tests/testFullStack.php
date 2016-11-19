@@ -251,7 +251,7 @@ EOT;
   lines.              the first column.
  ------------------- --------------------
 EOT;
-        $this->application->setWidthAndHeight(40, 24);
+        $this->application->setWidthAndHeight(42, 24);
         $this->assertRunCommandViaApplicationEquals('example:wrap', $expectedWrappedOutput);
     }
 
