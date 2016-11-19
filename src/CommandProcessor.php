@@ -200,30 +200,21 @@ class CommandProcessor
      *
      * @return string
      */
-    protected function getFormat($options)
+    protected function getFormat(FormatterOptions $options)
     {
         // In Symfony Console, there is no way for us to differentiate
         // between the user specifying '--format=table', and the user
         // not specifying --format when the default value is 'table'.
         // Therefore, we must make --field always override --format; it
         // cannot become the default value for --format.
-        if (!empty($options['field'])) {
+        if ($options->get('field')) {
             return 'string';
         }
-        $options += [
-            'default-format' => '',
-            'pipe' => '',
-        ];
-        $options += [
-            'format' => $options['default-format'],
-            'format-pipe' => $options['default-format'],
-        ];
-
-        $format = $options['format'];
-        if ($options['pipe']) {
-            $format = $options['format-pipe'];
+        $defaults = [];
+        if ($options->get('pipe')) {
+            $defaults[FormatterOptions::DEFAULT_FORMAT] = $options->get('pipe-format');
         }
-        return $format;
+        return $options->getFormat($defaults);
     }
 
     /**
@@ -244,8 +235,8 @@ class CommandProcessor
      */
     protected function writeUsingFormatter(OutputInterface $output, $structuredOutput, CommandData $commandData)
     {
-        $format = $this->getFormat($commandData->input()->getOptions());
         $formatterOptions = $this->createFormatterOptions($commandData);
+        $format = $this->getFormat($formatterOptions);
         $this->formatterManager->write(
             $output,
             $format,
