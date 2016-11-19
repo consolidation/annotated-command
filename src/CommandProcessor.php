@@ -212,7 +212,7 @@ class CommandProcessor
         }
         $defaults = [];
         if ($options->get('pipe')) {
-            $defaults[FormatterOptions::DEFAULT_FORMAT] = $options->get('pipe-format');
+            return $options->get('pipe-format', 'tsv');
         }
         return $options->getFormat($defaults);
     }
