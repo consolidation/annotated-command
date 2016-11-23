@@ -5,6 +5,7 @@ use Consolidation\AnnotatedCommand\Hooks\HookManager;
 use Consolidation\AnnotatedCommand\Parser\CommandInfo;
 use Consolidation\OutputFormatters\FormatterManager;
 use Consolidation\OutputFormatters\Options\FormatterOptions;
+use Consolidation\AnnotatedCommand\Help\HelpDocumentAlter;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -26,11 +27,13 @@ use Symfony\Component\Console\Output\OutputInterface;
  *
  * @package Consolidation\AnnotatedCommand
  */
-class AnnotatedCommand extends Command
+class AnnotatedCommand extends Command implements HelpDocumentAlter
 {
     protected $commandCallback;
     protected $commandProcessor;
     protected $annotationData;
+    protected $examples = [];
+    protected $topics = [];
     protected $usesInputInterface;
     protected $usesOutputInterface;
     protected $returnType;
@@ -106,19 +109,104 @@ class AnnotatedCommand extends Command
         return $this;
     }
 
+    public function getTopics()
+    {
+        return $this->topics;
+    }
+
+    public function setTopics($topics)
+    {
+        $this->topics = $topics;
+        return $this;
+    }
+
     public function setCommandInfo($commandInfo)
     {
         $this->setDescription($commandInfo->getDescription());
         $this->setHelp($commandInfo->getHelp());
         $this->setAliases($commandInfo->getAliases());
         $this->setAnnotationData($commandInfo->getAnnotations());
+        $this->setTopics($commandInfo->getTopics());
         foreach ($commandInfo->getExampleUsages() as $usage => $description) {
-            // Symfony Console does not support attaching a description to a usage
-            $this->addUsage($usage);
+            $this->addUsageOrExample($usage, $description);
         }
         $this->setCommandArguments($commandInfo);
         $this->setReturnType($commandInfo->getReturnType());
         return $this;
+    }
+
+    protected function addUsageOrExample($usage, $description)
+    {
+        $this->addUsage($usage);
+        if (!empty($description)) {
+            $this->examples[$usage] = $description;
+        }
+    }
+
+    public function helpDocumentAlter(\DomDocument $originalDom)
+    {
+        $dom = new \DOMDocument('1.0', 'UTF-8');
+        $dom->appendChild($commandXML = $dom->createElement('command'));
+        $commandXML->setAttribute('id', $this->getName());
+        $commandXML->setAttribute('name', $this->getName());
+
+        // Get the original <command> element and its top-level elements.
+        $originalCommandXML = $this->getSingleElementByTagName($dom, $originalDom, 'command');
+        $originalUsagesXML = $this->getSingleElementByTagName($dom, $originalCommandXML, 'usages');
+        $originalDescriptionXML = $this->getSingleElementByTagName($dom, $originalCommandXML, 'description');
+        $originalHelpXML = $this->getSingleElementByTagName($dom, $originalCommandXML, 'help');
+        $originalArgumentsXML = $this->getSingleElementByTagName($dom, $originalCommandXML, 'arguments');
+        $originalOptionsXML = $this->getSingleElementByTagName($dom, $originalCommandXML, 'options');
+
+        // Keep only the first of the <usage> elements
+        $newUsagesXML = $dom->createElement('usages');
+        $firstUsageXML = $this->getSingleElementByTagName($dom, $originalUsagesXML, 'usage');
+        $newUsagesXML->appendChild($firstUsageXML);
+
+        // Create our own <example> elements
+        $newExamplesXML = $dom->createElement('examples');
+        foreach ($this->examples as $usage => $description) {
+            $newExamplesXML->appendChild($exampleXML = $dom->createElement('example'));
+            $exampleXML->appendChild($usageXML = $dom->createElement('usage', $usage));
+            $exampleXML->appendChild($descriptionXML = $dom->createElement('description', $description));
+        }
+
+        // Create our own <alias> elements
+        $newAliasesXML = $dom->createElement('aliases');
+        foreach ($this->getAliases() as $alias) {
+            $newAliasesXML->appendChild($dom->createElement('alias', $alias));
+        }
+
+        // Create our own <topic> elements
+        $newTopicsXML = $dom->createElement('topics');
+        foreach ($this->getTopics() as $topic => $description) {
+            $newTopicsXML->appendChild($topicXML = $dom->createElement('topic'));
+            $topicXML->appendChild($nameXML = $dom->createElement('name', $topic));
+            $topicXML->appendChild($descriptionXML = $dom->createElement('description', $description));
+        }
+
+        // Place the different elements into the <command> element in the desired order
+        $commandXML->appendChild($newUsagesXML);
+        $commandXML->appendChild($newExamplesXML);
+        $commandXML->appendChild($originalDescriptionXML);
+        $commandXML->appendChild($originalArgumentsXML);
+        $commandXML->appendChild($originalOptionsXML);
+        $commandXML->appendChild($originalHelpXML);
+        $commandXML->appendChild($newAliasesXML);
+        $commandXML->appendChild($newTopicsXML);
+
+        return $dom;
+    }
+
+    protected function getSingleElementByTagName($dom, $parent, $tagName)
+    {
+        // There should always be exactly one '<command>' element.
+        $elements = $parent->getElementsByTagName($tagName);
+        $result = $elements->item(0);
+
+        $result = $dom->importNode($result, true);
+
+        return $result;
     }
 
     protected function setCommandArguments($commandInfo)
@@ -264,7 +352,7 @@ class AnnotatedCommand extends Command
             $this->addOptions($inputOptions);
             foreach ($commandInfo->getExampleUsages() as $usage => $description) {
                 if (!in_array($usage, $this->getUsages())) {
-                    $this->addUsage($usage);
+                    $this->addUsageOrExample($usage, $description);
                 }
             }
         }

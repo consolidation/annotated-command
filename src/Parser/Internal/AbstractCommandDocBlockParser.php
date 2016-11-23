@@ -34,6 +34,7 @@ abstract class AbstractCommandDocBlockParser
         'default' => 'processDefaultTag',
         'aliases' => 'processAliases',
         'usage' => 'processUsageTag',
+        'topic' => 'processTopicTag',
         'description' => 'processAlternateDescriptionTag',
         'desc' => 'processAlternateDescriptionTag',
     ];
@@ -158,6 +159,18 @@ abstract class AbstractCommandDocBlockParser
         $description = static::removeLineBreaks(implode("\n", $lines));
 
         $this->commandInfo->setExampleUsage($usage, $description);
+    }
+
+    /**
+     * Store the data from a @@topic annotation in our topics list.
+     */
+    protected function processTopicTag($tag)
+    {
+        $lines = explode("\n", $this->getTagContents($tag));
+        $topic = array_shift($lines);
+        $description = static::removeLineBreaks(implode("\n", $lines));
+
+        $this->commandInfo->setTopic($topic, $description);
     }
 
     /**

@@ -72,17 +72,23 @@ class AlphaCommandFile
      * Test command with formatters
      *
      * @command example:table
+     * @param $unused An unused argument
      * @field-labels
      *   first: I
      *   second: II
      *   third: III
-     * @usage example:table --format=yaml
-     * @usage example:table --format=csv
+     * @usage example:table --format=yml
+     *   Show the example table in yml format.
      * @usage example:table --fields=first,third
-     * @usage example:table --fields=III,II
+     *   Show only the first and third fields in the table.
+     * @usage example:table --fields=II,III
+     *   Note that either the field ID or the visible field label may be used.
+     * @aliases extab
+     * @topic docs-tables
+     *   Hypothetical documentation on tables
      * @return \Consolidation\OutputFormatters\StructuredData\RowsOfFields
      */
-    public function exampleTable($options = ['format' => 'table', 'fields' => ''])
+    public function exampleTable($unused = '', $options = ['format' => 'table', 'fields' => ''])
     {
         $outputData = [
             [ 'first' => 'One',  'second' => 'Two',  'third' => 'Three' ],
