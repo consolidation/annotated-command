@@ -21,6 +21,8 @@ use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Consolidation\TestUtils\ApplicationWithTerminalWidth;
 use Consolidation\AnnotatedCommand\Options\PrepareTerminalWidthOption;
+use Consolidation\AnnotatedCommand\Events\CustomEventAwareInterface;
+use Consolidation\AnnotatedCommand\Events\CustomEventAwareTrait;
 
 /**
  * Do a test of all of the classes in this project, top-to-bottom.
@@ -98,12 +100,15 @@ class FullStackTests extends \PHPUnit_Framework_TestCase
         $commandProcessor->addPrepareFormatter($terminalWidthOption);
 
         // Create a new factory, and load all of the files
-        // discovered above.  The command factory class is
-        // tested in isolation in testAnnotatedCommandFactory.php,
-        // but this is the only place where
+        // discovered above.
         $factory = new AnnotatedCommandFactory();
         $factory->setCommandProcessor($commandProcessor);
-        // $factory->addListener(...);
+        // Add a listener to configure our command handler object
+        $factory->addListernerCallback(function($command) use($hookManager) {
+            if ($command instanceof CustomEventAwareInterface) {
+                $command->setHookManager($hookManager);
+            }
+        } );
         $factory->setIncludeAllPublicMethods(false);
         $this->addDiscoveredCommands($factory, $commandFiles);
 
@@ -111,6 +116,12 @@ class FullStackTests extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue($this->application->has('example:table'));
         $this->assertFalse($this->application->has('without:annotations'));
+
+        // Run the use:event command that defines a custom event, my-event.
+        $this->assertRunCommandViaApplicationEquals('use:event', 'one,two');
+        // Watch as we dynamically add a custom event to the hook manager to change the command results:
+        $hookManager->add(function () { return 'three'; }, HookManager::ON_EVENT, 'my-event');
+        $this->assertRunCommandViaApplicationEquals('use:event', 'one,three,two');
 
         // Fetch a reference to the 'example:table' command and test its valid format types
         $exampleTableCommand = $this->application->find('example:table');
@@ -333,7 +344,7 @@ EOT;
         $allRegisteredHooks = $hookManager->getAllHooks();
         $registeredHookNames = array_keys($allRegisteredHooks);
         sort($registeredHookNames);
-        $this->assertEquals('*,example:table', implode(',', $registeredHookNames));
+        $this->assertEquals('*,example:table,my-event', implode(',', $registeredHookNames));
         $allHooksForExampleTable = $allRegisteredHooks['example:table'];
         $allHookPhasesForExampleTable = array_keys($allHooksForExampleTable);
         sort($allHookPhasesForExampleTable);

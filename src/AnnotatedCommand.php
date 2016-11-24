@@ -143,7 +143,7 @@ class AnnotatedCommand extends Command implements HelpDocumentAlter
         }
     }
 
-    public function helpDocumentAlter(\DomDocument $originalDom)
+    public function helpAlter(\DomDocument $originalDom)
     {
         $dom = new \DOMDocument('1.0', 'UTF-8');
         $dom->appendChild($commandXML = $dom->createElement('command'));
