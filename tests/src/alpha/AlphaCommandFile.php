@@ -7,6 +7,8 @@ use Consolidation\OutputFormatters\StructuredData\AssociativeList;
 use Consolidation\AnnotatedCommand\AnnotationData;
 use Symfony\Component\Console\Input\InputOption;
 use Consolidation\AnnotatedCommand\CommandData;
+use Consolidation\AnnotatedCommand\Events\CustomEventAwareInterface;
+use Consolidation\AnnotatedCommand\Events\CustomEventAwareTrait;
 
 /**
  * Test file used in the testCommandDiscovery() test.
@@ -15,8 +17,10 @@ use Consolidation\AnnotatedCommand\CommandData;
  * 'src' directory, and 'alpha' is one of the search directories available
  * for searching.
  */
-class AlphaCommandFile
+class AlphaCommandFile implements CustomEventAwareInterface
 {
+    use CustomEventAwareTrait;
+
     /**
      * @command always:fail
      */
@@ -245,5 +249,40 @@ class AlphaCommandFile
     public function getLost()
     {
         return 'very lost';
+    }
+
+    /**
+     * This command uses a custom event 'my-event' to collect data.  Note that
+     * the event handlers will not be found unless the hook manager is
+     * injected into this command handler object via `setHookManager()`
+     * (defined in CustomEventAwareTrait).
+     *
+     * @command use:event
+     */
+    public function useEvent()
+    {
+        $myEventHandlers = $this->getCustomEventHandlers('my-event');
+        $result = [];
+        foreach ($myEventHandlers as $handler) {
+            $result[] = $handler();
+        }
+        sort($result);
+        return implode(',', $result);
+    }
+
+    /**
+     * @hook on-event my-event
+     */
+    public function hookOne()
+    {
+        return 'one';
+    }
+
+    /**
+     * @hook on-event my-event
+     */
+    public function hookTwo()
+    {
+        return 'two';
     }
 }

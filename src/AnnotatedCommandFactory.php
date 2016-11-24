@@ -92,6 +92,17 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
     public function addListener(CommandCreationListenerInterface $listener)
     {
         $this->listeners[] = $listener;
+        return $this;
+    }
+
+    /**
+     * Add a listener that's just a simple 'callable'.
+     * @param callable $listener
+     */
+    public function addListernerCallback(callable $listener)
+    {
+        $this->addListener(new CommandCreationListener($listener));
+        return $this;
     }
 
     /**

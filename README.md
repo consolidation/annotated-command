@@ -83,6 +83,7 @@ There are ten types of hooks supported:
 - Alter
 - Status
 - Extract
+- On-event
 
 Most of these also have "pre" and "post" varieties, to give more flexibility vis-a-vis hook ordering (and for consistency). Note that many validate, process and alter hooks may run, but the first status or extract hook that successfully returns a result will halt processing of further hooks of the same type.
 
@@ -144,6 +145,38 @@ If no status hook returns any result, then success is presumed.
 The extract hook ([ExtractOutputInterface](src/Hooks/ExtractOutputInterface.php)) is responsible for determining what the actual rendered output for the command should be.  The result object returned by a command may be a compound object that contains multiple bits of information about the command result.  If the result object implements [OutputDataInterface](OutputDataInterface.php), then the `getOutputData()` method of the result object is called to determine what information should be displayed to the user as a result of the command's execution. If OutputDataInterface is not implemented, then all of the extract hooks attached to this command are executed; the first one that successfully returns output data will stop further execution of extract hooks.
 
 If no extract hook returns any data, then the result object itself is printed if it is a string; otherwise, no output is emitted (other than any produced by the command itself).
+
+### On-Event hook
+
+Commands can define their own custom events; to do so, they need only implement the CustomEventAwareInterface, and use the CustomEventAwareTrait. Event handlers for each custom event can then be defined using the on-event hook.
+
+A handler using an on-event hook looks something like the following:
+```
+/**
+ * @hook on-event custom-event
+ */
+public function handlerForCustomEvent(/* arbitrary parameters, as defined by custom-event */)
+{
+    // do the needful, return what custom-event expects
+}
+```
+Then, to utilize this in a command:
+```
+class MyCommands implements CustomEventAwareInterface
+{
+    use CustomEventAwareTrait;
+
+    /**
+     * @command my-command
+     */
+    public myCommand($options = [])
+    {
+        $handlers = $this->getCustomEventHandlers('custom-event');
+        // iterate and call $handlers
+    }
+}
+```
+It is up to the command that defines the custom event to declare what the expected parameters for the callback function should be, and what the return value is and how it should be used.
 
 ## Output
 
