@@ -19,8 +19,8 @@ class HelpDocument implements DomDataInterface
      */
     public function __construct(Command $command)
     {
-        $dom = static::generateBaseHelpDom($command);
-        $dom = static::alterHelpDocument($command, $dom);
+        $dom = self::generateBaseHelpDom($command);
+        $dom = self::alterHelpDocument($command, $dom);
 
         $this->command = $command;
         $this->dom = $dom;
@@ -58,7 +58,7 @@ class HelpDocument implements DomDataInterface
     private static function alterHelpDocument(Command $command, \DomDocument $dom)
     {
         if ($command instanceof HelpDocumentAlter) {
-            $dom = $command->helpDocumentAlter($dom);
+            $dom = $command->helpAlter($dom);
         }
         return $dom;
     }
