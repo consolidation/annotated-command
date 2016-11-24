@@ -59,6 +59,11 @@ class CommandInfo
     protected $exampleUsage = [];
 
     /**
+     * @var array
+     */
+    protected $topics = [];
+
+    /**
      * @var AnnotationData
      */
     protected $otherAnnotations;
@@ -316,6 +321,29 @@ class CommandInfo
     public function setExampleUsage($usage, $description)
     {
         $this->exampleUsage[$usage] = $description;
+        return $this;
+    }
+
+    /**
+     * Return the topics for this command.
+     *
+     * @return string[]
+     */
+    public function getTopics()
+    {
+        $this->parseDocBlock();
+        return $this->topics;
+    }
+
+    /**
+     * Add a topic
+     *
+     * @param string $topic The topic command
+     * @param string $description An explanation of what the topic is about.
+     */
+    public function setTopic($topic, $description)
+    {
+        $this->topics[$topic] = $description;
         return $this;
     }
 
