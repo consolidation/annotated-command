@@ -88,8 +88,7 @@ class AlphaCommandFile implements CustomEventAwareInterface
      * @usage example:table --fields=II,III
      *   Note that either the field ID or the visible field label may be used.
      * @aliases extab
-     * @topic docs-tables
-     *   Hypothetical documentation on tables
+     * @topics docs-tables
      * @return \Consolidation\OutputFormatters\StructuredData\RowsOfFields
      */
     public function exampleTable($unused = '', $options = ['format' => 'table', 'fields' => ''])

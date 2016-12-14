@@ -176,10 +176,7 @@ class HelpTests extends \PHPUnit_Framework_TestCase
     <alias>extab</alias>
   </aliases>
   <topics>
-    <topic>
-      <name>docs-tables</name>
-      <description>Hypothetical documentation on tables</description>
-    </topic>
+    <topic>docs-tables</topic>
   </topics>
 </command>
 EOT;
@@ -304,12 +301,9 @@ EOT;
     },
     "help": "Test command with formatters",
     "alias": "extab",
-    "topics": {
-        "docs-tables": {
-            "name": "docs-tables",
-            "description": "Hypothetical documentation on tables"
-        }
-    }
+    "topics": [
+        "docs-tables"
+    ]
 }
 EOT;
         $this->assertRunCommandViaApplicationEquals('my-help --format=json example:table', $expectedJSON);
