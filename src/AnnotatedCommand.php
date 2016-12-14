@@ -179,10 +179,8 @@ class AnnotatedCommand extends Command implements HelpDocumentAlter
 
         // Create our own <topic> elements
         $newTopicsXML = $dom->createElement('topics');
-        foreach ($this->getTopics() as $topic => $description) {
-            $newTopicsXML->appendChild($topicXML = $dom->createElement('topic'));
-            $topicXML->appendChild($nameXML = $dom->createElement('name', $topic));
-            $topicXML->appendChild($descriptionXML = $dom->createElement('description', $description));
+        foreach ($this->getTopics() as $topic) {
+            $newTopicsXML->appendChild($topicXML = $dom->createElement('topic', $topic));
         }
 
         // Place the different elements into the <command> element in the desired order
