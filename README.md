@@ -196,7 +196,7 @@ It is also possible to add InputInterface or OutputInterface parameters to any a
 
 ## API Usage
 
-If you would like to use Annotated Commands to build a commandline tool, it is recommended that you use [Robo as a framework](http://robo.li/framework.md), as it will set up all of the various command classes for you. If you would like to integrate Annotated Commands into some other framework, see the sections below.
+If you would like to use Annotated Commands to build a commandline tool, it is recommended that you use [Robo as a framework](http://robo.li/framework), as it will set up all of the various command classes for you. If you would like to integrate Annotated Commands into some other framework, see the sections below.
 
 ### Set up Command Factory and Instantiate Commands
 
