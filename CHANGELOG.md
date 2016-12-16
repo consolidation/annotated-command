@@ -1,8 +1,18 @@
 # Change Log
 
+### 2.2.1 ~ 2.2.2 - 15 Dec 2016
 
-### 2.0.1 ~ 2.0.3 - 14 November 2016
+- Bugfix: Allow trailing backslashes in namespaces in CommandFileDiscovery
+- Bugfix: Rename @topic to @topics
 
+### 2.2.0 - 23 November 2016
+
+- Support custom events
+- Add xml and json output for replacement help command. Text / html format for replacement help command not available yet.
+
+### 2.1.0 - 14 November 2016
+
+- Add support for output formatter wordwrapping 
 - Fix version requirement for output-formatters in composer.json
 - Use output-formatters ~3
 - Move php_codesniffer back to require-dev (moved to require by mistake)
