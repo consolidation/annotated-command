@@ -375,6 +375,12 @@ class CommandFileDiscovery
      */
     protected function joinParts($delimiter, $parts, $filterFunction)
     {
+        $parts = array_map(
+            function ($item) use ($delimiter) {
+                return rtrim($item, $delimiter);
+            },
+            $parts
+        );
         return implode(
             $delimiter,
             array_filter($parts, $filterFunction)
