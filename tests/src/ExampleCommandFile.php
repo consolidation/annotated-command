@@ -63,7 +63,15 @@ class ExampleCommandFile
     }
 
     /**
+     * This is the my:join command
+     *
+     * This command will join its parameters together. It can also reverse and repeat its arguments.
+     *
      * @command my:join
+     * @usage a b
+     *   Join a and b to produce "a,b"
+     * @usage
+     *   Example with no parameters or options
      */
     public function myJoin(array $args, $options = ['flip' => false, 'repeat' => 1])
     {

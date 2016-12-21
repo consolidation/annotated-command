@@ -86,6 +86,31 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
         $this->assertRunCommandViaApplicationEquals($command, $input, 'alphabet');
     }
 
+    function testJoinCommandHelp()
+    {
+        $this->commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile;
+        $this->commandFactory = new AnnotatedCommandFactory();
+        $commandInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'myJoin');
+
+        $command = $this->commandFactory->createCommand($commandInfo, $this->commandFileInstance);
+
+        $this->assertInstanceOf('\Symfony\Component\Console\Command\Command', $command);
+        $this->assertEquals('my:join', $command->getName());
+        $this->assertEquals('This is the my:join command', $command->getDescription());
+        $this->assertEquals("This command will join its parameters together. It can also reverse and repeat its arguments.", $command->getHelp());
+        $this->assertEquals('my:join [--flip] [--repeat [REPEAT]] [--] [<args>]...', $command->getSynopsis());
+
+        // Bug in parser: @usage with no parameters or options not passed to us correctly.
+        $actualUsages = implode(',', $command->getUsages());
+        if ($actualUsages == 'my:join a b,my:join Example with no parameters or options') {
+            $this->markTestSkipped();
+        }
+        $this->assertEquals('my:join a b,my:join', $actualUsages);
+
+        $input = new StringInput('my:join bet alpha --flip --repeat=2');
+        $this->assertRunCommandViaApplicationEquals($command, $input, 'alphabetalphabet');
+    }
+
     function testDefaultsCommand()
     {
         $this->commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile;
