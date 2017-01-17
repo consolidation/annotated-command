@@ -29,6 +29,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class AnnotatedCommand extends Command implements HelpDocumentAlter
 {
+    protected $calls = [];
     protected $commandCallback;
     protected $commandProcessor;
     protected $annotationData;
@@ -120,8 +121,20 @@ class AnnotatedCommand extends Command implements HelpDocumentAlter
         return $this;
     }
 
+    public function getCalls()
+    {
+        return $this->calls;
+    }
+
+    public function setCalls($calls)
+    {
+        $this->calls = $calls;
+        return $this;
+    }
+
     public function setCommandInfo($commandInfo)
     {
+        $this->setCalls($commandInfo->getCalls());
         $this->setDescription($commandInfo->getDescription());
         $this->setHelp($commandInfo->getHelp());
         $this->setAliases($commandInfo->getAliases());
@@ -376,11 +389,23 @@ class AnnotatedCommand extends Command implements HelpDocumentAlter
         $this->commandProcessor()->initializeHook($input, $this->getNames(), $this->annotationData);
     }
 
+    protected function executeCallsCommands() {
+        if ($this->getCalls()) {
+            foreach ($this->getCalls as $command_name) {
+                // @todo validate that $command_name exists in this application.
+                // @todo Execute command.
+                // @todo On failure, return exit code of called command.
+            }
+        }
+    }
+
     /**
      * {@inheritdoc}
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        // @todo Call $this->executeCallsCommands();
+
         // Validate, run, process, alter, handle results.
         return $this->commandProcessor()->process(
             $output,

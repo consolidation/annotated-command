@@ -36,6 +36,7 @@ abstract class AbstractCommandDocBlockParser
         'usage' => 'processUsageTag',
         'description' => 'processAlternateDescriptionTag',
         'desc' => 'processAlternateDescriptionTag',
+        'calls' => 'processCalls',
     ];
 
     public function __construct(CommandInfo $commandInfo, \ReflectionMethod $reflection)
@@ -166,6 +167,14 @@ abstract class AbstractCommandDocBlockParser
     protected function processAliases($tag)
     {
         $this->commandInfo->setAliases((string)$tag->getDescription());
+    }
+
+    /**
+     * Process the comma-separated list of commands to call.
+     */
+    protected function processCalls($tag)
+    {
+        $this->commandInfo->setCalls((string)$tag->getDescription());
     }
 
     /**
