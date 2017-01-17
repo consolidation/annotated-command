@@ -6,6 +6,7 @@ use Consolidation\AnnotatedCommand\Parser\CommandInfo;
 use Consolidation\OutputFormatters\FormatterManager;
 use Consolidation\OutputFormatters\Options\FormatterOptions;
 use Consolidation\AnnotatedCommand\Help\HelpDocumentAlter;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -389,14 +390,39 @@ class AnnotatedCommand extends Command implements HelpDocumentAlter
         $this->commandProcessor()->initializeHook($input, $this->getNames(), $this->annotationData);
     }
 
-    protected function executeCallsCommands() {
+    protected function executeCallsCommands(InputInterface $input, OutputInterface $output) {
         if ($this->getCalls()) {
-            foreach ($this->getCalls as $command_name) {
-                // @todo validate that $command_name exists in this application.
-                // @todo Execute command.
-                // @todo On failure, return exit code of called command.
+            //$logger = $this->getApplication()->get('logger');
+            foreach ($this->getCalls() as $command_name) {
+                $command = $this->getApplication()->find($command_name);
+                if (!$command) {
+                    /** @var LoggerInterface $logger */
+                    //$logger->warning("Command $command_name does not exist. Skipping.");
+                    continue;
+                }
+
+                // @see http://symfony.com/doc/current/console/calling_commands.html
+                try {
+                    $exit_code = $command->run($input, $output);
+                    // If command was not successful, return early.
+                    if ($exit_code !== 0) {
+                        return $exit_code;
+                    }
+                }
+                catch (\Exception $e) {
+                    //$logger->error("Exception was caught while executing $command_name.");
+                    // Return non-zero exit code.
+                    return 1;
+                }
             }
         }
+
+        // Return 0 exit code for success.
+        return 0;
+    }
+
+    protected function executeCommand() {
+
     }
 
     /**
@@ -404,7 +430,12 @@ class AnnotatedCommand extends Command implements HelpDocumentAlter
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        // @todo Call $this->executeCallsCommands();
+        $calls_exit_code = $this->executeCallsCommands($input, $output);
+        // If one of the "@calls" commands returned a non-zero exit code,
+        // return early.
+        if ($calls_exit_code !== 0) {
+            return $calls_exit_code;;
+        }
 
         // Validate, run, process, alter, handle results.
         return $this->commandProcessor()->process(
