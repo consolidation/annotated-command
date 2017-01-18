@@ -22,6 +22,11 @@ abstract class AbstractCommandDocBlockParser
     protected $reflection;
 
     /**
+     * @var string
+     */
+    protected $optionParamName;
+
+    /**
      * @var array
      */
     protected $tagProcessors = [
@@ -168,6 +173,34 @@ abstract class AbstractCommandDocBlockParser
         $this->commandInfo->setAliases((string)$tag->getDescription());
     }
 
+    protected function lastParameterName()
+    {
+        $params = $this->commandInfo->getParameters();
+        $param = end($params);
+        if (!$param) {
+            return '';
+        }
+        return $param->name;
+    }
+
+    /**
+     * Return the name of the last parameter if it holds the options.
+     */
+    public function optionParamName()
+    {
+        // Remember the name of the last parameter, if it holds the options.
+        // We will use this information to ignore @param annotations for the options.
+        if (!isset($this->optionParamName)) {
+            $this->optionParamName = '';
+            $options = $this->commandInfo->options();
+            if (!empty($options)) {
+                $this->optionParamName = $this->lastParameterName();
+            }
+        }
+
+        return $this->optionParamName;
+    }
+
     /**
      * Store the data from a @param annotation in our argument descriptions.
      */
@@ -176,7 +209,7 @@ abstract class AbstractCommandDocBlockParser
         $variableName = $tag->getVariableName();
         $variableName = str_replace('$', '', $variableName);
         $description = static::removeLineBreaks((string)$tag->getDescription());
-        if ($variableName == $this->commandInfo->optionParamName()) {
+        if ($variableName == $this->optionParamName()) {
             return;
         }
         $this->commandInfo->arguments()->add($variableName, $description);

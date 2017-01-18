@@ -156,7 +156,7 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
         );
 
         foreach ($commandMethodNames as $commandMethodName) {
-            $commandInfoList[] = new CommandInfo($classNameOrInstance, $commandMethodName);
+            $commandInfoList[] = CommandInfo::create($classNameOrInstance, $commandMethodName);
         }
 
         return $commandInfoList;
@@ -164,7 +164,7 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
 
     public function createCommandInfo($classNameOrInstance, $commandMethodName)
     {
-        return new CommandInfo($classNameOrInstance, $commandMethodName);
+        return CommandInfo::create($classNameOrInstance, $commandMethodName);
     }
 
     public function createCommandsFromClassInfo($commandInfoList, $commandFileInstance, $includeAllPublicMethods = null)

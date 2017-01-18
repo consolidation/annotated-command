@@ -22,8 +22,17 @@ class CommandInfoTests extends \PHPUnit_Framework_TestCase
      */
     function testParsing()
     {
-        $commandInfo = new CommandInfo('\Consolidation\TestUtils\ExampleCommandFile', 'testArithmatic');
+        $commandInfo = CommandInfo::create('\Consolidation\TestUtils\ExampleCommandFile', 'testArithmatic');
+        $this->assertCommandInfoIsAsExpected($commandInfo);
 
+        $serialized = $commandInfo->serialize();
+
+        $deserializedCommandInfo = CommandInfo::deserialize($serialized);
+        $this->assertCommandInfoIsAsExpected($deserializedCommandInfo);
+    }
+
+    function assertCommandInfoIsAsExpected($commandInfo)
+    {
         $this->assertEquals('test:arithmatic', $commandInfo->getName());
         $this->assertEquals(
             'This is the test:arithmatic command',
@@ -54,7 +63,7 @@ class CommandInfoTests extends \PHPUnit_Framework_TestCase
 
     function testReturnValue()
     {
-        $commandInfo = new CommandInfo('\Consolidation\TestUtils\alpha\AlphaCommandFile', 'exampleTable');
+        $commandInfo = CommandInfo::create('\Consolidation\TestUtils\alpha\AlphaCommandFile', 'exampleTable');
         $this->assertEquals('example:table', $commandInfo->getName());
         $this->assertEquals('\Consolidation\OutputFormatters\StructuredData\RowsOfFields', $commandInfo->getReturnType());
     }
