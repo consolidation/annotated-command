@@ -18,6 +18,11 @@ use Consolidation\AnnotatedCommand\AnnotationData;
 class CommandInfo
 {
     /**
+     * Serialization schema version. Incremented every time the serialization schema changes.
+     */
+    const SERIALIZATION_SCHEMA_VERSION = 1;
+
+    /**
      * @var \ReflectionMethod
      */
     protected $reflection;
@@ -26,7 +31,7 @@ class CommandInfo
      * @var boolean
      * @var string
     */
-    protected $docBlockIsParsed;
+    protected $docBlockIsParsed = false;
 
     /**
      * @var string
@@ -69,6 +74,11 @@ class CommandInfo
     protected $aliases = [];
 
     /**
+     * @var InputOption[]
+     */
+    protected $inputOptions;
+
+    /**
      * @var string
      */
     protected $methodName;
@@ -79,32 +89,193 @@ class CommandInfo
     protected $returnType;
 
     /**
-     * @var string
-     */
-    protected $optionParamName;
-
-    /**
      * Create a new CommandInfo class for a particular method of a class.
      *
      * @param string|mixed $classNameOrInstance The name of a class, or an
-     *   instance of it.
+     *   instance of it, or an array of cached data.
      * @param string $methodName The name of the method to get info about.
+     * @param array $cache Cached data
+     * @deprecated Use CommandInfo::create() or CommandInfo::deserialize()
+     *   instead. In the future, this constructor will be protected.
      */
-    public function __construct($classNameOrInstance, $methodName)
+    public function __construct($classNameOrInstance, $methodName, $cache = [])
     {
         $this->reflection = new \ReflectionMethod($classNameOrInstance, $methodName);
         $this->methodName = $methodName;
+
+        if (!empty($cache)) {
+            $this->constructFromCache($cache);
+            $this->docBlockIsParsed = true;
+        } else {
+            $this->constructFromClassAndMethod($classNameOrInstance, $methodName);
+        }
+    }
+
+    public static function create($classNameOrInstance, $methodName)
+    {
+        return new self($classNameOrInstance, $methodName);
+    }
+
+    public static function deserialize($cache)
+    {
+        $cache = (array)$cache;
+
+        $classNameOrInstance = $cache['class'];
+        $methodName = $cache['method_name'];
+
+        // If the cache came from a newer version, ignore it and
+        // regenerate the cached information.
+        if (!static::isValidSerializedData($cache)) {
+            return self::create($classNameOrInstance, $methodName);
+        }
+        return new self($classNameOrInstance, $methodName, $cache);
+    }
+
+    public static function isValidSerializedData($cache)
+    {
+        return
+            isset($cache['schema']) &&
+            ($cache['schema'] > 0) &&
+            ($cache['schema'] <= self::SERIALIZATION_SCHEMA_VERSION);
+    }
+
+    protected function constructFromClassAndMethod($classNameOrInstance, $methodName)
+    {
         $this->otherAnnotations = new AnnotationData();
         // Set up a default name for the command from the method name.
         // This can be overridden via @command or @name annotations.
-        $this->name = $this->convertName($this->reflection->name);
+        $this->name = $this->convertName($methodName);
         $this->options = new DefaultsWithDescriptions($this->determineOptionsFromParameters(), false);
         $this->arguments = $this->determineAgumentClassifications();
-        // Remember the name of the last parameter, if it holds the options.
-        // We will use this information to ignore @param annotations for the options.
-        if (!empty($this->options)) {
-            $this->optionParamName = $this->lastParameterName();
+    }
+
+    protected function constructFromCache($info_array)
+    {
+        $info_array += $this->defaultSerializationData();
+
+        $this->name = $info_array['name'];
+        $this->methodName = $info_array['method_name'];
+        $this->otherAnnotations = new AnnotationData((array) $info_array['annotations']);
+        $this->arguments = new DefaultsWithDescriptions();
+        $this->options = new DefaultsWithDescriptions();
+        $this->aliases = $info_array['aliases'];
+        $this->help = $info_array['help'];
+        $this->description = $info_array['description'];
+        $this->exampleUsage = $info_array['example_usages'];
+        $this->returnType = $info_array['return_type'];
+
+        foreach ((array)$info_array['arguments'] as $key => $info) {
+            $info = (array)$info;
+            $this->arguments->add($key, $info['description']);
+            if (array_key_exists('default', $info)) {
+                $this->arguments->setDefaultValue($key, $info['default']);
+            }
         }
+        foreach ((array)$info_array['options'] as $key => $info) {
+            $info = (array)$info;
+            $this->options->add($key, $info['description']);
+            if (array_key_exists('default', $info)) {
+                $this->options->setDefaultValue($key, $info['default']);
+            }
+        }
+
+        $this->input_options = [];
+        foreach ((array)$info_array['input_options'] as $i => $option) {
+            $option = (array) $option;
+            $this->inputOptions[$i] = new InputOption(
+                $option['name'],
+                $option['shortcut'],
+                $option['mode'],
+                $option['description'],
+                $option['default']
+            );
+        }
+    }
+
+    public function serialize()
+    {
+        $info = [
+            'schema' => self::SERIALIZATION_SCHEMA_VERSION,
+            'class' => $this->reflection->getDeclaringClass()->getName(),
+            'method_name' => $this->getMethodName(),
+            'name' => $this->getName(),
+            'description' => $this->getDescription(),
+            'help' => $this->getHelp(),
+            'aliases' => $this->getAliases(),
+            'annotations' => $this->getAnnotations()->getArrayCopy(),
+            // Todo: Test This.
+            'topics' => $this->getTopics(),
+            'example_usages' => $this->getExampleUsages(),
+            'return_type' => $this->getReturnType(),
+        ] + $this->defaultSerializationData();
+        foreach ($this->arguments()->getValues() as $key => $val) {
+            $info['arguments'][$key] = [
+                'description' => $this->arguments()->getDescription($key),
+            ];
+            if ($this->arguments()->hasDefault($key)) {
+                $info['arguments'][$key]['default'] = $val;
+            }
+        }
+        foreach ($this->options()->getValues() as $key => $val) {
+            $info['options'][$key] = [
+                'description' => $this->options()->getDescription($key),
+            ];
+            if ($this->options()->hasDefault($key)) {
+                $info['options'][$key]['default'] = $val;
+            }
+        }
+        foreach ($this->getParameters() as $i => $parameter) {
+            // TODO: Also cache input/output params
+        }
+        foreach ($this->inputOptions() as $i => $option) {
+            $mode = 0;
+            if ($option->isValueRequired()) {
+                $mode |= InputOption::VALUE_REQUIRED;
+            }
+            if ($option->isValueOptional()) {
+                $mode |= InputOption::VALUE_OPTIONAL;
+            }
+            if ($option->isArray()) {
+                $mode |= InputOption::VALUE_IS_ARRAY;
+            }
+            if (!$mode) {
+                $mode = InputOption::VALUE_NONE;
+            }
+
+            $info['input_options'][$i] = [
+                'name' => $option->getName(),
+                'shortcut' => $option->getShortcut(),
+                'mode' => $mode,
+                'description' => $option->getDescription(),
+                'default' => null,
+            ];
+            if ($option->isValueOptional()) {
+                $info['input_options'][$i]['default'] = $option->getDefault();
+            }
+        }
+        return $info;
+    }
+
+    /**
+     * Default data for serialization.
+     * @return array
+     */
+    protected function defaultSerializationData()
+    {
+        return [
+            'description' => '',
+            'help' => '',
+            'aliases' => [],
+            'annotations' => [],
+            'topics' => [],
+            'example_usages' => [],
+            'return_type' => [],
+            'parameters' => [],
+            'arguments' => [],
+            'arguments' => [],
+            'options' => [],
+            'input_options' => [],
+        ];
     }
 
     /**
@@ -364,14 +535,6 @@ class CommandInfo
     }
 
     /**
-     * Return the name of the last parameter if it holds the options.
-     */
-    public function optionParamName()
-    {
-        return $this->optionParamName;
-    }
-
-    /**
      * Get the inputOptions for the options associated with this CommandInfo
      * object, e.g. via @option annotations, or from
      * $options = ['someoption' => 'defaultvalue'] in the command method
@@ -380,6 +543,14 @@ class CommandInfo
      * @return InputOption[]
      */
     public function inputOptions()
+    {
+        if (!isset($this->inputOptions)) {
+            $this->inputOptions = $this->createInputOptions();
+        }
+        return $this->inputOptions;
+    }
+
+    protected function createInputOptions()
     {
         $explicitOptions = [];
 
@@ -526,16 +697,6 @@ class CommandInfo
             return [];
         }
         return $param->getDefaultValue();
-    }
-
-    protected function lastParameterName()
-    {
-        $params = $this->reflection->getParameters();
-        $param = end($params);
-        if (!$param) {
-            return '';
-        }
-        return $param->name;
     }
 
     /**

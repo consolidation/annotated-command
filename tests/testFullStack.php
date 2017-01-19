@@ -48,7 +48,7 @@ class FullStackTests extends \PHPUnit_Framework_TestCase
         $formatter = new FormatterManager();
         $formatter->addDefaultFormatters();
         $formatter->addDefaultSimplifiers();
-        $commandInfo = new CommandInfo('\Consolidation\TestUtils\alpha\AlphaCommandFile', 'exampleTable');
+        $commandInfo = CommandInfo::create('\Consolidation\TestUtils\alpha\AlphaCommandFile', 'exampleTable');
         $this->assertEquals('example:table', $commandInfo->getName());
         $this->assertEquals('\Consolidation\OutputFormatters\StructuredData\RowsOfFields', $commandInfo->getReturnType());
     }

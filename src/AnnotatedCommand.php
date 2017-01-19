@@ -49,7 +49,7 @@ class AnnotatedCommand extends Command implements HelpDocumentAlter
         // AnnotatedCommand.  Alternately, we break out a new subclass.
         // The command factory instantiates the subclass.
         if (get_class($this) != 'Consolidation\AnnotatedCommand\AnnotatedCommand') {
-            $commandInfo = new CommandInfo($this, 'execute');
+            $commandInfo = CommandInfo::create($this, 'execute');
             if (!isset($name)) {
                 $name = $commandInfo->getName();
             }
