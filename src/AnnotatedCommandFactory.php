@@ -151,8 +151,25 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
             return $commandInfoList;
         }
         $commandInfoList = $this->createCommandInfoListFromClass($commandFileInstance);
+        $this->storeCommandInfoListInCache($commandFileInstance, $commandInfoList);
 
         return $commandInfoList;
+    }
+
+    protected function storeCommandInfoListInCache($commandFileInstance, $commandInfoList)
+    {
+        if (!$this->hasDataStore()) {
+            return;
+        }
+        $cache_data = [];
+        $includeAllPublicMethods = $this->getIncludeAllPublicMethods();
+        foreach ($commandInfoList as $i => $commandInfo) {
+            if (static::isCommandMethod($commandInfo, $includeAllPublicMethods)) {
+                $cache_data[$i] = $commandInfo->serialize();
+            }
+        }
+        $className = get_class($commandFileInstance);
+        $this->getDataStore()->set($className, $cache_data);
     }
 
     protected function getCommandInfoListFromCache($commandFileInstance)
@@ -161,12 +178,12 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
             return [];
         }
         $className = get_class($commandFileInstance);
-        $cache_data = $this->getDataStore()->get($className);
+        $cache_data = (array) $this->getDataStore()->get($className);
         if (!$cache_data) {
             return [];
         }
         foreach ($cache_data as $i => $data) {
-            if (!CommandInfo::isValidSerializedData($data)) {
+            if (!CommandInfo::isValidSerializedData((array)$data)) {
                 return [];
             }
         }

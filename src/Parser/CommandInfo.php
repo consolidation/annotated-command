@@ -118,6 +118,8 @@ class CommandInfo
 
     public static function deserialize($cache)
     {
+        $cache = (array)$cache;
+
         $classNameOrInstance = $cache['class'];
         $methodName = $cache['method_name'];
 
