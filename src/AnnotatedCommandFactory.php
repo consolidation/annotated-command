@@ -36,6 +36,8 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
     /** var CommandInfoAltererInterface */
     protected $commandInfoAlterers = [];
 
+    protected $dataStore;
+
     public function __construct()
     {
         $this->commandProcessor = new CommandProcessor(new HookManager());
@@ -142,7 +144,70 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
         return $this->createCommandsFromClassInfo($commandInfoList, $commandFileInstance, $includeAllPublicMethods);
     }
 
-    public function getCommandInfoListFromClass($classNameOrInstance)
+    public function getCommandInfoListFromClass($commandFileInstance)
+    {
+        $commandInfoList = $this->getCommandInfoListFromCache($commandFileInstance);
+        if (!empty($commandInfoList)) {
+            return $commandInfoList;
+        }
+        $commandInfoList = $this->createCommandInfoListFromClass($commandFileInstance);
+
+        return $commandInfoList;
+    }
+
+    protected function getCommandInfoListFromCache($commandFileInstance)
+    {
+        if (!$this->hasDataStore()) {
+            return [];
+        }
+        $className = get_class($commandFileInstance);
+        $cache_data = $this->getDataStore()->get($className);
+        if (!$cache_data) {
+            return [];
+        }
+        foreach ($cache_data as $i => $data) {
+            if (!CommandInfo::isValidSerializedData($data)) {
+                return [];
+            }
+        }
+        $commandInfoList = [];
+        foreach ($cache_data as $i => $data) {
+            $commandInfoList[$i] = CommandInfo::deserialize((array)$data);
+        }
+        return $commandInfoList;
+    }
+
+    /**
+     * Check to see if this factory has a cache datastore.
+     * @return boolean
+     */
+    public function hasDataStore()
+    {
+        return isset($this->dataStore);
+    }
+
+    /**
+     * Set a cache datastore for this factory. Any object with 'set' and
+     * 'get' methods is acceptable. The key is the classname being cached,
+     * and the value is a nested associative array of strings.
+     *
+     * @param type $dataStore
+     * @return type
+     */
+    public function setDataStore($dataStore)
+    {
+        $this->dataStore = $dataStore;
+    }
+
+    /**
+     * Get the data store attached to this factory.
+     */
+    public function getDataStore()
+    {
+        return $this->dataStore;
+    }
+
+    protected function createCommandInfoListFromClass($classNameOrInstance)
     {
         $commandInfoList = [];
 

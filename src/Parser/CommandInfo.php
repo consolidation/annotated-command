@@ -123,10 +123,18 @@ class CommandInfo
 
         // If the cache came from a newer version, ignore it and
         // regenerate the cached information.
-        if (!isset($cache['schema']) || ($cache['schema'] > self::SERIALIZATION_SCHEMA_VERSION)) {
+        if (!static::isValidSerializedData($cache)) {
             return self::create($classNameOrInstance, $methodName);
         }
         return new self($classNameOrInstance, $methodName, $cache);
+    }
+
+    public static function isValidSerializedData($cache)
+    {
+        return
+            isset($cache['schema']) &&
+            ($cache['schema'] > 0) &&
+            ($cache['schema'] <= self::SERIALIZATION_SCHEMA_VERSION);
     }
 
     protected function constructFromClassAndMethod($classNameOrInstance, $methodName)
