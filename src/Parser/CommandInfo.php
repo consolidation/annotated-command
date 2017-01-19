@@ -123,7 +123,7 @@ class CommandInfo
 
         // If the cache came from a newer version, ignore it and
         // regenerate the cached information.
-        if ($cache['schema'] > self::SERIALIZATION_SCHEMA_VERSION) {
+        if (!isset($cache['schema']) || ($cache['schema'] > self::SERIALIZATION_SCHEMA_VERSION)) {
             return self::create($classNameOrInstance, $methodName);
         }
         return new self($classNameOrInstance, $methodName, $cache);
@@ -141,6 +141,8 @@ class CommandInfo
 
     protected function constructFromCache($info_array)
     {
+        $info_array += $this->defaultSerializationData();
+
         $this->name = $info_array['name'];
         $this->methodName = $info_array['method_name'];
         $this->otherAnnotations = new AnnotationData((array) $info_array['annotations']);
@@ -195,11 +197,7 @@ class CommandInfo
             'topics' => $this->getTopics(),
             'example_usages' => $this->getExampleUsages(),
             'return_type' => $this->getReturnType(),
-            'parameters' => [],
-            'arguments' => [],
-            'arguments' => [],
-            'options' => [],
-        ];
+        ] + $this->defaultSerializationData();
         foreach ($this->arguments()->getValues() as $key => $val) {
             $info['arguments'][$key] = [
                 'description' => $this->arguments()->getDescription($key),
@@ -246,6 +244,28 @@ class CommandInfo
             }
         }
         return $info;
+    }
+
+    /**
+     * Default data for serialization.
+     * @return array
+     */
+    protected function defaultSerializationData()
+    {
+        return [
+            'description' => '',
+            'help' => '',
+            'aliases' => [],
+            'annotations' => [],
+            'topics' => [],
+            'example_usages' => [],
+            'return_type' => [],
+            'parameters' => [],
+            'arguments' => [],
+            'arguments' => [],
+            'options' => [],
+            'input_options' => [],
+        ];
     }
 
     /**
