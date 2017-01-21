@@ -1,7 +1,7 @@
 build: false
 shallow_clone: true
 platform: 'x86'
-clone_folder: C:\projects\terminus
+clone_folder: C:\projects\annotated-commands
 branches:
   only:
     - master
@@ -48,11 +48,11 @@ install:
   - cd %APPVEYOR_BUILD_FOLDER%
   #- appveyor DownloadFile https://getcomposer.org/composer.phar
   - php -r "readfile('http://getcomposer.org/installer');" | php
-  #Install Terminus' dependencies via Composer
+  #Install dependencies via Composer
   - php composer.phar -q install --prefer-dist -n
   - SET PATH=%APPVEYOR_BUILD_FOLDER%;%APPVEYOR_BUILD_FOLDER%/vendor/bin;%PATH%
   #Create a sandbox for testing. Don't think we need this.
-  - mkdir c:\terminus_temp
+  - mkdir c:\test_temp
 
 test_script:
   - phpunit
