@@ -151,6 +151,16 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
 
         $input = new StringInput('command:with-no-options something');
         $this->assertRunCommandViaApplicationEquals($command, $input, 'somethingdefault');
+
+        $input = new StringInput('help command:with-no-options something');
+        $this->assertRunCommandViaApplicationContains(
+            $command,
+            $input,
+            [
+                'The first parameter.',
+                'The other parameter.',
+            ]
+        );
     }
 
     function testCommandWithNoArguments()
@@ -637,7 +647,25 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
         return $r->invokeArgs($object, $args);
     }
 
+    function assertRunCommandViaApplicationContains($command, $input, $containsList, $expectedStatusCode = 0)
+    {
+        list($statusCode, $commandOutput) = $this->runCommandViaApplication($command, $input);
+
+        foreach ($containsList as $contains) {
+            $this->assertContains($contains, $commandOutput);
+        }
+        $this->assertEquals($expectedStatusCode, $statusCode);
+    }
+
     function assertRunCommandViaApplicationEquals($command, $input, $expectedOutput, $expectedStatusCode = 0)
+    {
+        list($statusCode, $commandOutput) = $this->runCommandViaApplication($command, $input);
+
+        $this->assertEquals($expectedOutput, $commandOutput);
+        $this->assertEquals($expectedStatusCode, $statusCode);
+    }
+
+    function runCommandViaApplication($command, $input)
     {
         $output = new BufferedOutput();
         if ($this->commandFileInstance && method_exists($this->commandFileInstance, 'setOutput')) {
@@ -658,7 +686,6 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
         $statusCode = $application->run($input, $output);
         $commandOutput = trim($output->fetch());
 
-        $this->assertEquals($expectedOutput, $commandOutput);
-        $this->assertEquals($expectedStatusCode, $statusCode);
+        return [$statusCode, $commandOutput];
     }
 }
