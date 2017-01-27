@@ -103,7 +103,9 @@ class CommandInfo
         $this->reflection = new \ReflectionMethod($classNameOrInstance, $methodName);
         $this->methodName = $methodName;
 
-        if (!empty($cache)) {
+        // If the cache came from a newer version, ignore it and
+        // regenerate the cached information.
+        if (!empty($cache) && static::isValidSerializedData($cache) && !$this->cachedFileIsModified($cache)) {
             $this->constructFromCache($cache);
             $this->docBlockIsParsed = true;
         } else {
@@ -123,11 +125,6 @@ class CommandInfo
         $classNameOrInstance = $cache['class'];
         $methodName = $cache['method_name'];
 
-        // If the cache came from a newer version, ignore it and
-        // regenerate the cached information.
-        if (!static::isValidSerializedData($cache)) {
-            return self::create($classNameOrInstance, $methodName);
-        }
         return new self($classNameOrInstance, $methodName, $cache);
     }
 
@@ -135,8 +132,16 @@ class CommandInfo
     {
         return
             isset($cache['schema']) &&
+            isset($cache['method_name']) &&
+            isset($cache['mtime']) &&
             ($cache['schema'] > 0) &&
             ($cache['schema'] <= self::SERIALIZATION_SCHEMA_VERSION);
+    }
+
+    public function cachedFileIsModified($cache)
+    {
+        $path = $this->reflection->getFileName();
+        return filemtime($path) != $cache['mtime'];
     }
 
     protected function constructFromClassAndMethod($classNameOrInstance, $methodName)
@@ -194,6 +199,8 @@ class CommandInfo
 
     public function serialize()
     {
+        $path = $this->reflection->getFileName();
+
         $info = [
             'schema' => self::SERIALIZATION_SCHEMA_VERSION,
             'class' => $this->reflection->getDeclaringClass()->getName(),
@@ -207,6 +214,7 @@ class CommandInfo
             'topics' => $this->getTopics(),
             'example_usages' => $this->getExampleUsages(),
             'return_type' => $this->getReturnType(),
+            'mtime' => filemtime($path),
         ] + $this->defaultSerializationData();
         foreach ($this->arguments()->getValues() as $key => $val) {
             $info['arguments'][$key] = [
@@ -275,6 +283,7 @@ class CommandInfo
             'arguments' => [],
             'options' => [],
             'input_options' => [],
+            'mtime' => 0,
         ];
     }
 
