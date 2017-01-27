@@ -193,7 +193,7 @@ abstract class AbstractCommandDocBlockParser
         if (!isset($this->optionParamName)) {
             $this->optionParamName = '';
             $options = $this->commandInfo->options();
-            if (!empty($options)) {
+            if (!$options->isEmpty()) {
                 $this->optionParamName = $this->lastParameterName();
             }
         }
