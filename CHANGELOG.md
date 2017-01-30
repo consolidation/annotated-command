@@ -1,9 +1,16 @@
 # Change Log
 
-### 2.3.1 ~ 2.3.2 - 26 Jan 2017
+### 2.3.3 - 30 Jan 2017
+
+- Automatically rebuild cached commandfile data when commandfile changes.
+
+### 2.3.2 - 26 Jan 2017
+
+- Bugfix: Include description of last parameter in help (was omitted if no options present)
+
+### 2.3.1 - 20 Jan 2017
 
 - Add Windows testing with Appveyor
-- Bugfix: Include description of last parameter in help (was omitted if no options present)
 
 ### 2.3.0 - 19 Jan 2017
 
