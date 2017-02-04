@@ -289,7 +289,7 @@ class HookManager implements EventSubscriberInterface
     ) {
         $providers = $this->getInitializeHooks($names, $annotationData);
         foreach ($providers as $provider) {
-            $this->callInjectConfigurationHook($provider, $input, $annotationData);
+            $this->callInitializeHook($provider, $input, $annotationData);
         }
     }
 
@@ -592,10 +592,10 @@ class HookManager implements EventSubscriberInterface
         return [];
     }
 
-    protected function callInjectConfigurationHook($provider, $input, AnnotationData $annotationData)
+    protected function callInitializeHook($provider, $input, AnnotationData $annotationData)
     {
         if ($provider instanceof InitializeHookInterface) {
-            return $provider->applyConfiguration($input, $annotationData);
+            return $provider->initialize($input, $annotationData);
         }
         if (is_callable($provider)) {
             return $provider($input, $annotationData);
