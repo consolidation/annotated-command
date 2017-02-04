@@ -356,10 +356,14 @@ class CommandInfo
      */
     public function getAnnotations()
     {
+        // Also provide the path to the commandfile that
+        // these annotations were pulled from.
+        $path = $this->reflection->getFileName();
         return new AnnotationData(
             $this->getRawAnnotations()->getArrayCopy() +
             [
                 'command' => $this->getName(),
+                '_path' => $path,
             ]
         );
     }

@@ -439,7 +439,7 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
         $annotationData = $commandInfo->getRawAnnotations();
         $this->assertEquals('addmycommandname', implode(',', $annotationData->keys()));
         $annotationData = $commandInfo->getAnnotations();
-        $this->assertEquals('addmycommandname,command', implode(',', $annotationData->keys()));
+        $this->assertEquals('addmycommandname,command,_path', implode(',', $annotationData->keys()));
 
         $command = $this->commandFactory->createCommand($commandInfo, $this->commandFileInstance);
 
