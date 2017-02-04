@@ -1,16 +1,13 @@
 # Change Log
 
-### 2.3.3 - 30 Jan 2017
+### 2.4.0 - 3 Feb 2017
 
 - Automatically rebuild cached commandfile data when commandfile changes.
-
-### 2.3.2 - 26 Jan 2017
-
+- Provide path to command file in AnnotationData objects.
+- Bugfix: Add dynamic options when user runs '--help my:command' (previously, only 'help my:command' worked).
 - Bugfix: Include description of last parameter in help (was omitted if no options present)
-
-### 2.3.1 - 20 Jan 2017
-
 - Add Windows testing with Appveyor
+
 
 ### 2.3.0 - 19 Jan 2017
 
@@ -18,10 +15,12 @@
 - Bugfix: Allow trailing backslashes in namespaces in CommandFileDiscovery
 - Bugfix: Rename @topic to @topics
 
+
 ### 2.2.0 - 23 November 2016
 
 - Support custom events
 - Add xml and json output for replacement help command. Text / html format for replacement help command not available yet.
+
 
 ### 2.1.0 - 14 November 2016
 
