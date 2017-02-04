@@ -13,6 +13,7 @@ use Consolidation\AnnotatedCommand\Hooks\ValidatorInterface;
 use Consolidation\AnnotatedCommand\Options\AlterOptionsCommandEvent;
 use Consolidation\AnnotatedCommand\Parser\CommandInfo;
 use Consolidation\OutputFormatters\FormatterManager;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -27,7 +28,7 @@ use Consolidation\AnnotatedCommand\Events\CustomEventAwareTrait;
 /**
  * Do a test of all of the classes in this project, top-to-bottom.
  */
-class FullStackTests extends \PHPUnit_Framework_TestCase
+class FullStackTests extends TestCase
 {
     protected $application;
     protected $commandFactory;

@@ -2,8 +2,9 @@
 namespace Consolidation\AnnotatedCommand;
 
 use Consolidation\AnnotatedCommand\Parser\CommandInfo;
+use PHPUnit\Framework\TestCase;
 
-class CommandInfoTests extends \PHPUnit_Framework_TestCase
+class CommandInfoTests extends TestCase
 {
     function flattenArray($actualValue)
     {

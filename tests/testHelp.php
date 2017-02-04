@@ -15,6 +15,7 @@ use Consolidation\AnnotatedCommand\Hooks\ValidatorInterface;
 use Consolidation\AnnotatedCommand\Options\AlterOptionsCommandEvent;
 use Consolidation\AnnotatedCommand\Parser\CommandInfo;
 use Consolidation\OutputFormatters\FormatterManager;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -27,7 +28,7 @@ use Consolidation\AnnotatedCommand\Options\PrepareTerminalWidthOption;
 /**
  * Test our 'help' command.
  */
-class HelpTests extends \PHPUnit_Framework_TestCase
+class HelpTests extends TestCase
 {
     protected $application;
     protected $commandFactory;
