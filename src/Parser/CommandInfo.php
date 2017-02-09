@@ -280,7 +280,6 @@ class CommandInfo
             'return_type' => [],
             'parameters' => [],
             'arguments' => [],
-            'arguments' => [],
             'options' => [],
             'input_options' => [],
             'mtime' => 0,
