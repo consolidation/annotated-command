@@ -717,7 +717,7 @@ class CommandInfo
      * is not associative if its keys are numeric, and numbered sequentially
      * from zero. All other arrays are considered to be associative.
      *
-     * @param arrau $arr The array
+     * @param array $arr The array
      * @return boolean
      */
     protected function isAssoc($arr)
