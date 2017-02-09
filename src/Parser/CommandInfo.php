@@ -581,11 +581,13 @@ class CommandInfo
             } elseif ($defaultValue === InputOption::VALUE_REQUIRED) {
                 $explicitOptions[$fullName] = new InputOption($fullName, $shortcut, InputOption::VALUE_REQUIRED, $description);
             } elseif (is_array($defaultValue)) {
+                $optionality = count($defaultValue) ? InputOption::VALUE_OPTIONAL : InputOption::VALUE_REQUIRED;
                 $explicitOptions[$fullName] = new InputOption(
                     $fullName,
                     $shortcut,
-                    InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
-                    $description
+                    InputOption::VALUE_IS_ARRAY | $optionality,
+                    $description,
+                    count($defaultValue) ? $defaultValue : null
                 );
             } else {
                 $explicitOptions[$fullName] = new InputOption($fullName, $shortcut, InputOption::VALUE_OPTIONAL, $description, $defaultValue);
