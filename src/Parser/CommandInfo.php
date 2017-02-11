@@ -280,7 +280,6 @@ class CommandInfo
             'return_type' => [],
             'parameters' => [],
             'arguments' => [],
-            'arguments' => [],
             'options' => [],
             'input_options' => [],
             'mtime' => 0,
@@ -581,6 +580,15 @@ class CommandInfo
                 $explicitOptions[$fullName] = new InputOption($fullName, $shortcut, InputOption::VALUE_NONE, $description);
             } elseif ($defaultValue === InputOption::VALUE_REQUIRED) {
                 $explicitOptions[$fullName] = new InputOption($fullName, $shortcut, InputOption::VALUE_REQUIRED, $description);
+            } elseif (is_array($defaultValue)) {
+                $optionality = count($defaultValue) ? InputOption::VALUE_OPTIONAL : InputOption::VALUE_REQUIRED;
+                $explicitOptions[$fullName] = new InputOption(
+                    $fullName,
+                    $shortcut,
+                    InputOption::VALUE_IS_ARRAY | $optionality,
+                    $description,
+                    count($defaultValue) ? $defaultValue : null
+                );
             } else {
                 $explicitOptions[$fullName] = new InputOption($fullName, $shortcut, InputOption::VALUE_OPTIONAL, $description, $defaultValue);
             }
@@ -717,7 +725,7 @@ class CommandInfo
      * is not associative if its keys are numeric, and numbered sequentially
      * from zero. All other arrays are considered to be associative.
      *
-     * @param arrau $arr The array
+     * @param array $arr The array
      * @return boolean
      */
     protected function isAssoc($arr)

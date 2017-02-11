@@ -272,6 +272,41 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
         $this->assertRunCommandViaApplicationEquals($command, $input, 'betxyzbetxyz');
     }
 
+    function testRequiredArrayOption()
+    {
+        $this->commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile;
+        $this->commandFactory = new AnnotatedCommandFactory();
+        $commandInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'testRequiredArrayOption');
+
+        $command = $this->commandFactory->createCommand($commandInfo, $this->commandFileInstance);
+        $this->assertEquals('test:required-array-option [-a|--arr ARR]', $command->getSynopsis());
+
+        $input = new StringInput('test:required-array-option --arr=1 --arr=2 --arr=3');
+        $this->assertRunCommandViaApplicationEquals($command, $input, '1 2 3');
+
+        $input = new StringInput('test:required-array-option -a 1 -a 2 -a 3');
+        $this->assertRunCommandViaApplicationEquals($command, $input, '1 2 3');
+    }
+
+    function testArrayOption()
+    {
+        $this->commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile;
+        $this->commandFactory = new AnnotatedCommandFactory();
+        $commandInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'testArrayOption');
+
+        $command = $this->commandFactory->createCommand($commandInfo, $this->commandFileInstance);
+        $this->assertEquals('test:array-option [-a|--arr [ARR]]', $command->getSynopsis());
+
+        $input = new StringInput('test:array-option');
+        $this->assertRunCommandViaApplicationEquals($command, $input, '1 2 3');
+
+        $input = new StringInput('test:array-option --arr=a --arr=b --arr=c');
+        $this->assertRunCommandViaApplicationEquals($command, $input, 'a b c');
+
+        $input = new StringInput('test:array-option -a a');
+        $this->assertRunCommandViaApplicationEquals($command, $input, 'a');
+    }
+
     function testHookedCommand()
     {
         $this->commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile();
