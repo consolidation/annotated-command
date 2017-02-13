@@ -57,7 +57,7 @@ class MyCommandClass
      * @usage bet alpha --flip
      *   Concatenate "alpha" and "bet".
      */
-    public function myCat($one, $two, $options = ['arr' => ['three'], 'flip' => false])
+    public function myCat($one, $two, $options = ['flip' => false])
     {
         if ($options['flip']) {
             return "{$two}{$one}";
@@ -66,7 +66,14 @@ class MyCommandClass
     }
 }
 ``` 
-Note that the `$options` array must be an associative array whose key is the name of the option, and whose value is either a **string** containing the default value for the option, or the boolean value `false`, which indicates that the option takes no value. The only other valid value for an option is InputOption::VALUE_REQUIRED, which indicates that the user must provide a value for the option whenever it is used.
+Note that the `$options` array must be an associative array whose key is the name of the option, and whose value is one of:
+
+- A **string** containing the default value for the option.
+- The boolean value `false`, which indicates that the option takes no value.
+- The special value InputOption::VALUE_REQUIRED, which indicates that the user must provide a value for the option whenever it is used.
+- An empty array, which indicates that the option may be used multiple times.
+
+No other values should be used for the default value. For example, `$options = ['a' => 1]` is **incorrect**; instead, use `$options = ['a' => '1']`.
 
 ## Hooks
 
