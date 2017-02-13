@@ -381,4 +381,30 @@ class ExampleCommandFile
     {
         return "Foo is " . $options['foo'];
     }
+
+    /**
+     * This is the test:required-array-option command
+     *
+     * This command will print all the valused of passed option
+     *
+     * @param array $opts
+     * @return string
+     */
+    public function testRequiredArrayOption($opts = ['arr|a' => []])
+    {
+        return implode(' ', $opts['arr']);
+    }
+
+    /**
+     * This is the test:array-option command
+     *
+     * This command will print all the valused of passed option
+     *
+     * @param array $opts
+     * @return string
+     */
+    public function testArrayOption($opts = ['arr|a' => ['1', '2', '3']])
+    {
+        return implode(' ', $opts['arr']);
+    }
 }

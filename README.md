@@ -51,12 +51,13 @@ class MyCommandClass
      * @command my:cat
      * @param integer $one The first parameter.
      * @param integer $two The other parameter.
+     * @option arr An option that takes multiple values.
      * @option flip Whether or not the second parameter should come first in the result.
      * @aliases c
      * @usage bet alpha --flip
      *   Concatenate "alpha" and "bet".
      */
-    public function myCat($one, $two, $options = ['flip' => false])
+    public function myCat($one, $two, $options = ['arr' => ['three'], 'flip' => false])
     {
         if ($options['flip']) {
             return "{$two}{$one}";
