@@ -7,6 +7,7 @@ use Consolidation\AnnotatedCommand\CommandError;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Event\ConsoleCommandEvent;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -355,5 +356,29 @@ class ExampleCommandFile
             return "only $one";
         }
         return "nothing provided";
+    }
+
+    /**
+     * @return string
+     */
+    public function defaultOptionOne($options = ['foo' => '1'])
+    {
+        return "Foo is " . $options['foo'];
+    }
+
+    /**
+     * @return string
+     */
+    public function defaultOptionTwo($options = ['foo' => '2'])
+    {
+        return "Foo is " . $options['foo'];
+    }
+
+    /**
+     * @return string
+     */
+    public function defaultOptionNone($options = ['foo' => InputOption::VALUE_REQUIRED])
+    {
+        return "Foo is " . $options['foo'];
     }
 }

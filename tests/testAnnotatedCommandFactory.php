@@ -19,6 +19,44 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
     protected $commandFileInstance;
     protected $commandFactory;
 
+    function testOptionDefaultValue()
+    {
+        $this->commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile;
+        $this->commandFactory = new AnnotatedCommandFactory();
+        $commandInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'defaultOptionOne');
+
+        $command = $this->commandFactory->createCommand($commandInfo, $this->commandFileInstance);
+        $this->assertEquals('default:option-one', $command->getName());
+        $this->assertEquals('default:option-one [--foo [FOO]]', $command->getSynopsis());
+
+        $this->assertInstanceOf('\Symfony\Component\Console\Command\Command', $command);
+
+        $input = new StringInput('default:option-one');
+        $this->assertRunCommandViaApplicationEquals($command, $input, 'Foo is 1');
+
+        $commandInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'defaultOptionTwo');
+
+        $command = $this->commandFactory->createCommand($commandInfo, $this->commandFileInstance);
+
+        $command = $this->commandFactory->createCommand($commandInfo, $this->commandFileInstance);
+        $this->assertEquals('default:option-two', $command->getName());
+        $this->assertEquals('default:option-two [--foo [FOO]]', $command->getSynopsis());
+
+        $input = new StringInput('default:option-two');
+        $this->assertRunCommandViaApplicationEquals($command, $input, 'Foo is 2');
+
+        $commandInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'defaultOptionNone');
+
+        $command = $this->commandFactory->createCommand($commandInfo, $this->commandFileInstance);
+
+        $command = $this->commandFactory->createCommand($commandInfo, $this->commandFileInstance);
+        $this->assertEquals('default:option-none', $command->getName());
+        $this->assertEquals('default:option-none [--foo FOO]', $command->getSynopsis());
+
+        $input = new StringInput('default:option-none --foo');
+        $this->assertRunCommandViaApplicationContains($command, $input, ['The "--foo" option requires a value.'], 1);
+    }
+
     /**
      * Test CommandInfo command annotation parsing.
      */

@@ -65,6 +65,8 @@ class MyCommandClass
     }
 }
 ``` 
+Note that the `$options` array must be an associative array whose key is the name of the option, and whose value is either a **string** containing the default value for the option, or the boolean value `false`, which indicates that the option takes no value. The only other valid value for an option is InputOption::VALUE_REQUIRED, which indicates that the user must provide a value for the option whenever it is used.
+
 ## Hooks
 
 Commandfiles may provide hooks in addition to commands. A commandfile method that contains a @hook annotation is registered as a hook instead of a command.  The format of the hook annotation is:
