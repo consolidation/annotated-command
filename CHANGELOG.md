@@ -1,5 +1,10 @@
 # Change Log
 
+### 2.4.1 - 20 Feb 2017
+
+- Support array options: multiple options on the commandline may be passed in to options array as an array of values.
+- Add php 7.1 to the test matrix.
+
 ### 2.4.0 - 3 Feb 2017
 
 - Automatically rebuild cached commandfile data when commandfile changes.
