@@ -10,6 +10,7 @@ use Consolidation\TestUtils\ExampleCommandInfoAlterer;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -444,6 +445,17 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
 
         $input = new StringInput('do:cat bar');
         $this->assertRunCommandViaApplicationEquals($command, $input, '*** bar ***');
+    }
+
+    function testDoubleDashWithVersion()
+    {
+        $this->commandFileInstance = new \Consolidation\TestUtils\ExampleHookAllCommandFile();
+        $this->commandFactory = new AnnotatedCommandFactory();
+        $commandInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'doCat');
+        $command = $this->commandFactory->createCommand($commandInfo, $this->commandFileInstance);
+
+        $input = new ArgvInput(['placeholder', 'do:cat', 'one', '--', '--version']);
+        $this->assertRunCommandViaApplicationEquals($command, $input, 'one--version');
     }
 
     function testAnnotatedHookedCommand()

@@ -164,7 +164,7 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
         $cache_data = [];
         $includeAllPublicMethods = $this->getIncludeAllPublicMethods();
         foreach ($commandInfoList as $i => $commandInfo) {
-            if (static::isCommandMethod($commandInfo, $includeAllPublicMethods)) {
+            if (!$commandInfo->fromCache() && static::isCommandMethod($commandInfo, $includeAllPublicMethods)) {
                 $cache_data[$i] = $commandInfo->serialize();
             }
         }

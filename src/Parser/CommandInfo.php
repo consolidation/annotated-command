@@ -29,9 +29,13 @@ class CommandInfo
 
     /**
      * @var boolean
-     * @var string
-    */
+     */
     protected $docBlockIsParsed = false;
+
+    /**
+     * @var boolean
+     */
+    protected $fromCache = false;
 
     /**
      * @var string
@@ -128,6 +132,15 @@ class CommandInfo
         return new self($classNameOrInstance, $methodName, $cache);
     }
 
+    /**
+     * Return 'true' if this object was read from the cache rather than
+     * constructed through reflection.
+     */
+    public function fromCache()
+    {
+        return $this->fromCache;
+    }
+
     public static function isValidSerializedData($cache)
     {
         return
@@ -157,6 +170,9 @@ class CommandInfo
     protected function constructFromCache($info_array)
     {
         $info_array += $this->defaultSerializationData();
+
+        // Make note that this data was fetched from the cache.
+        $this->fromCache = true;
 
         $this->name = $info_array['name'];
         $this->methodName = $info_array['method_name'];
