@@ -20,7 +20,7 @@ class CommandInfo
     /**
      * Serialization schema version. Incremented every time the serialization schema changes.
      */
-    const SERIALIZATION_SCHEMA_VERSION = 1;
+    const SERIALIZATION_SCHEMA_VERSION = 2;
 
     /**
      * @var \ReflectionMethod
@@ -180,31 +180,18 @@ class CommandInfo
         $this->exampleUsage = $info_array['example_usages'];
         $this->returnType = $info_array['return_type'];
 
-        foreach ((array)$info_array['arguments'] as $key => $info) {
-            $info = (array)$info;
-            $this->arguments->add($key, $info['description']);
-            if (array_key_exists('default', $info)) {
-                $this->arguments->setDefaultValue($key, $info['default']);
-            }
-        }
-        foreach ((array)$info_array['options'] as $key => $info) {
-            $info = (array)$info;
-            $this->options->add($key, $info['description']);
-            if (array_key_exists('default', $info)) {
-                $this->options->setDefaultValue($key, $info['default']);
-            }
-        }
+        $this->constructDefaultsWithDescriptions($this->arguments, (array)$info_array['arguments']);
+        $this->constructDefaultsWithDescriptions($this->options, (array)$info_array['options']);
+    }
 
-        $this->input_options = [];
-        foreach ((array)$info_array['input_options'] as $i => $option) {
-            $option = (array) $option;
-            $this->inputOptions[$i] = new InputOption(
-                $option['name'],
-                $option['shortcut'],
-                $option['mode'],
-                $option['description'],
-                $option['default']
-            );
+    protected function constructDefaultsWithDescriptions(DefaultsWithDescriptions $defaults, $data)
+    {
+        foreach ($data as $key => $info) {
+            $info = (array)$info;
+            $defaults->add($key, $info['description']);
+            if (array_key_exists('default', $info)) {
+                $defaults->setDefaultValue($key, $info['default']);
+            }
         }
     }
 
@@ -227,52 +214,24 @@ class CommandInfo
             'return_type' => $this->getReturnType(),
             'mtime' => filemtime($path),
         ] + $this->defaultSerializationData();
-        foreach ($this->arguments()->getValues() as $key => $val) {
-            $info['arguments'][$key] = [
-                'description' => $this->arguments()->getDescription($key),
-            ];
-            if ($this->arguments()->hasDefault($key)) {
-                $info['arguments'][$key]['default'] = $val;
-            }
-        }
-        foreach ($this->options()->getValues() as $key => $val) {
-            $info['options'][$key] = [
-                'description' => $this->options()->getDescription($key),
-            ];
-            if ($this->options()->hasDefault($key)) {
-                $info['options'][$key]['default'] = $val;
-            }
-        }
-        foreach ($this->getParameters() as $i => $parameter) {
-            // TODO: Also cache input/output params
-        }
-        foreach ($this->inputOptions() as $i => $option) {
-            $mode = 0;
-            if ($option->isValueRequired()) {
-                $mode |= InputOption::VALUE_REQUIRED;
-            }
-            if ($option->isValueOptional()) {
-                $mode |= InputOption::VALUE_OPTIONAL;
-            }
-            if ($option->isArray()) {
-                $mode |= InputOption::VALUE_IS_ARRAY;
-            }
-            if (!$mode) {
-                $mode = InputOption::VALUE_NONE;
-            }
+        $info['arguments'] = $this->serializeDefaultsWithDescriptions($this->arguments());
+        $info['options'] = $this->serializeDefaultsWithDescriptions($this->options());
 
-            $info['input_options'][$i] = [
-                'name' => $option->getName(),
-                'shortcut' => $option->getShortcut(),
-                'mode' => $mode,
-                'description' => $option->getDescription(),
-                'default' => null,
+        return $info;
+    }
+
+    protected function serializeDefaultsWithDescriptions(DefaultsWithDescriptions $defaults)
+    {
+        $result = [];
+        foreach ($defaults->getValues() as $key => $val) {
+            $result[$key] = [
+                'description' => $defaults->getDescription($key),
             ];
-            if ($option->isValueOptional()) {
-                $info['input_options'][$i]['default'] = $option->getDefault();
+            if ($defaults->hasDefault($key)) {
+                $result[$key]['default'] = $val;
             }
         }
-        return $info;
+        return $result;
     }
 
     /**
