@@ -59,6 +59,55 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Test CommandInfo command caching.
+     *
+     * Sequence:
+     *  - Create all of the command info objects from one class, caching them.
+     *  - Change the method name of one of the items in the cache to a non-existent method
+     *  - Restore all of the cached commandinfo objects
+     *  - Ensure that the non-existent method cached commandinfo was not created
+     *  - Ensure that the now-missing cached commandinfo was still created
+     *
+     * This tests both save/restore, plus adding a new command method to
+     * a class, and removing a command method from a class.
+     */
+    function testAnnotatedCommandCache()
+    {
+        $testCacheStore = new \Consolidation\TestUtils\InMemoryCacheStore();
+
+        $this->commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile;
+        $this->commandFactory = new AnnotatedCommandFactory();
+        $this->commandFactory->setDataStore($testCacheStore);
+
+        // Make commandInfo objects for every command in the test commandfile.
+        // These will also be stored in our cache.
+        $commandInfoList = $this->commandFactory->getCommandInfoListFromClass($this->commandFileInstance);
+
+        $cachedClassName = get_class($this->commandFileInstance);
+
+        $this->assertTrue($testCacheStore->has($cachedClassName));
+
+        $cachedData = $testCacheStore->get($cachedClassName);
+        $this->assertFalse(empty($cachedData));
+        $this->assertTrue(array_key_exists('testArithmatic', $cachedData));
+
+        $alterCommandInfoCache = $cachedData['testArithmatic'];
+        unset($cachedData['testArithmatic']);
+        $alterCommandInfoCache['method_name'] = 'nonExistentMethod';
+        $cachedData[$alterCommandInfoCache['method_name']] = $alterCommandInfoCache;
+
+        $testCacheStore->set($cachedClassName, $cachedData);
+
+        $restoredCommandInfoList = $this->commandFactory->getCommandInfoListFromClass($this->commandFileInstance);
+
+        $rebuiltCachedData = $testCacheStore->get($cachedClassName);
+
+        $this->assertFalse(empty($rebuiltCachedData));
+        $this->assertTrue(array_key_exists('testArithmatic', $rebuiltCachedData));
+        $this->assertFalse(array_key_exists('nonExistentMethod', $rebuiltCachedData));
+    }
+
+    /**
      * Test CommandInfo command annotation parsing.
      */
     function testAnnotatedCommandCreation()

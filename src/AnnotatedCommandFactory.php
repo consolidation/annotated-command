@@ -1,6 +1,9 @@
 <?php
 namespace Consolidation\AnnotatedCommand;
 
+use Consolidation\AnnotatedCommand\Cache\NullCache;
+use Consolidation\AnnotatedCommand\Cache\CacheWrapper;
+use Consolidation\AnnotatedCommand\Cache\SimpleCacheInterface;
 use Consolidation\AnnotatedCommand\Hooks\HookManager;
 use Consolidation\AnnotatedCommand\Options\AutomaticOptionsProviderInterface;
 use Consolidation\AnnotatedCommand\Parser\CommandInfo;
@@ -27,7 +30,6 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
     protected $listeners = [];
 
     /** var AutomaticOptionsProvider[] */
-
     protected $automaticOptionsProviderList = [];
 
     /** var boolean */
@@ -36,10 +38,12 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
     /** var CommandInfoAltererInterface */
     protected $commandInfoAlterers = [];
 
+    /** var SimpleCacheInterface */
     protected $dataStore;
 
     public function __construct()
     {
+        $this->dataStore = new NullCache();
         $this->commandProcessor = new CommandProcessor(new HookManager());
         $this->addAutomaticOptionProvider($this);
     }
@@ -146,14 +150,13 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
 
     public function getCommandInfoListFromClass($commandFileInstance)
     {
-        $commandInfoList = $this->getCommandInfoListFromCache($commandFileInstance);
+        $cachedCommandInfoList = $this->getCommandInfoListFromCache($commandFileInstance);
+        $commandInfoList = $this->createCommandInfoListFromClass($commandFileInstance, $cachedCommandInfoList);
         if (!empty($commandInfoList)) {
-            return $commandInfoList;
+            $cachedCommandInfoList = array_merge($commandInfoList, $cachedCommandInfoList);
+            $this->storeCommandInfoListInCache($commandFileInstance, $cachedCommandInfoList);
         }
-        $commandInfoList = $this->createCommandInfoListFromClass($commandFileInstance);
-        $this->storeCommandInfoListInCache($commandFileInstance, $commandInfoList);
-
-        return $commandInfoList;
+        return $cachedCommandInfoList;
     }
 
     protected function storeCommandInfoListInCache($commandFileInstance, $commandInfoList)
@@ -172,24 +175,24 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
         $this->getDataStore()->set($className, $cache_data);
     }
 
+    /**
+     * Get the command info list from the cache
+     *
+     * @param mixed $commandFileInstance
+     * @return array
+     */
     protected function getCommandInfoListFromCache($commandFileInstance)
     {
-        if (!$this->hasDataStore()) {
-            return [];
-        }
-        $className = get_class($commandFileInstance);
-        $cache_data = (array) $this->getDataStore()->get($className);
-        if (!$cache_data) {
-            return [];
-        }
-        foreach ($cache_data as $i => $data) {
-            if (!CommandInfo::isValidSerializedData((array)$data)) {
-                return [];
-            }
-        }
         $commandInfoList = [];
+        $className = get_class($commandFileInstance);
+        if (!$this->getDataStore()->has($className)) {
+            return [];
+        }
+        $cache_data = $this->getDataStore()->get($className);
         foreach ($cache_data as $i => $data) {
-            $commandInfoList[$i] = CommandInfo::deserialize((array)$data);
+            if (CommandInfo::isValidSerializedData((array)$data)) {
+                $commandInfoList[$i] = CommandInfo::deserialize((array)$data);
+            }
         }
         return $commandInfoList;
     }
@@ -200,7 +203,7 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
      */
     public function hasDataStore()
     {
-        return isset($this->dataStore);
+        return !($this->dataStore instanceof NullCache);
     }
 
     /**
@@ -208,12 +211,21 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
      * 'get' methods is acceptable. The key is the classname being cached,
      * and the value is a nested associative array of strings.
      *
-     * @param type $dataStore
+     * TODO: Typehint this to SimpleCacheInterface
+     *
+     * This is not done currently to allow clients to use a generic cache
+     * store that does not itself depend on the annotated-command library.
+     *
+     * @param Mixed $dataStore
      * @return type
      */
     public function setDataStore($dataStore)
     {
+        if (!($dataStore instanceof SimpleCacheInterface)) {
+            $dataStore = new CacheWrapper($dataStore);
+        }
         $this->dataStore = $dataStore;
+        return $this;
     }
 
     /**
@@ -224,7 +236,7 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
         return $this->dataStore;
     }
 
-    protected function createCommandInfoListFromClass($classNameOrInstance)
+    protected function createCommandInfoListFromClass($classNameOrInstance, $cachedCommandInfoList)
     {
         $commandInfoList = [];
 
@@ -238,7 +250,10 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
         );
 
         foreach ($commandMethodNames as $commandMethodName) {
-            $commandInfoList[] = CommandInfo::create($classNameOrInstance, $commandMethodName);
+            if (!array_key_exists($commandMethodName, $cachedCommandInfoList)) {
+                $commandInfo = CommandInfo::create($classNameOrInstance, $commandMethodName);
+                $commandInfoList[$commandInfo->getMethodName()] =  $commandInfo;
+            }
         }
 
         return $commandInfoList;

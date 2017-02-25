@@ -122,10 +122,20 @@ class CommandInfo
     {
         $cache = (array)$cache;
 
-        $classNameOrInstance = $cache['class'];
+        $className = $cache['class'];
         $methodName = $cache['method_name'];
 
-        return new self($classNameOrInstance, $methodName, $cache);
+        return new self($className, $methodName, $cache);
+    }
+
+    protected static function cachedMethodExists($cache)
+    {
+        $cache = (array)$cache;
+
+        $className = $cache['class'];
+        $methodName = $cache['method_name'];
+
+        return method_exists($className, $methodName);
     }
 
     public static function isValidSerializedData($cache)
@@ -135,7 +145,8 @@ class CommandInfo
             isset($cache['method_name']) &&
             isset($cache['mtime']) &&
             ($cache['schema'] > 0) &&
-            ($cache['schema'] <= self::SERIALIZATION_SCHEMA_VERSION);
+            ($cache['schema'] <= self::SERIALIZATION_SCHEMA_VERSION) &&
+            self::cachedMethodExists($cache);
     }
 
     public function cachedFileIsModified($cache)
