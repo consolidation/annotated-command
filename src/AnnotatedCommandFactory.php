@@ -150,14 +150,13 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
 
     public function getCommandInfoListFromClass($commandFileInstance)
     {
-        $commandInfoList = $this->getCommandInfoListFromCache($commandFileInstance);
+        $cachedCommandInfoList = $this->getCommandInfoListFromCache($commandFileInstance);
+        $commandInfoList = $this->createCommandInfoListFromClass($commandFileInstance, $cachedCommandInfoList);
         if (!empty($commandInfoList)) {
-            return $commandInfoList;
+            $cachedCommandInfoList = array_merge($commandInfoList, $cachedCommandInfoList);
+            $this->storeCommandInfoListInCache($commandFileInstance, $cachedCommandInfoList);
         }
-        $commandInfoList = $this->createCommandInfoListFromClass($commandFileInstance);
-        $this->storeCommandInfoListInCache($commandFileInstance, $commandInfoList);
-
-        return $commandInfoList;
+        return $cachedCommandInfoList;
     }
 
     protected function storeCommandInfoListInCache($commandFileInstance, $commandInfoList)
@@ -237,7 +236,7 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
         return $this->dataStore;
     }
 
-    protected function createCommandInfoListFromClass($classNameOrInstance)
+    protected function createCommandInfoListFromClass($classNameOrInstance, $cachedCommandInfoList)
     {
         $commandInfoList = [];
 
@@ -251,7 +250,10 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
         );
 
         foreach ($commandMethodNames as $commandMethodName) {
-            $commandInfoList[] = CommandInfo::create($classNameOrInstance, $commandMethodName);
+            if (!array_key_exists($commandMethodName, $cachedCommandInfoList)) {
+                $commandInfo = CommandInfo::create($classNameOrInstance, $commandMethodName);
+                $commandInfoList[$commandInfo->getMethodName()] =  $commandInfo;
+            }
         }
 
         return $commandInfoList;
