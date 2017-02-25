@@ -178,6 +178,14 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
             return [];
         }
         $className = get_class($commandFileInstance);
+        // TODO: Once we typehint our data store as a SimpleCacheInterface,
+        // then we will not need to use 'method_exists' here.
+        // If the data store has a 'has' method, then we will use it.
+        // This allows the data store to throw on get if they key does not
+        // exist, if desired.
+        if (method_exists($this->getDataStore(), 'has') && !$this->getDataStore()->has($className)) {
+            return [];
+        }
         $cache_data = (array) $this->getDataStore()->get($className);
         if (!$cache_data) {
             return [];
@@ -208,12 +216,18 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
      * 'get' methods is acceptable. The key is the classname being cached,
      * and the value is a nested associative array of strings.
      *
-     * @param type $dataStore
+     * TODO: Typehint this to SimpleCacheInterface
+     *
+     * This is not done currently to allow clients to use a generic cache
+     * store that does not itself depend on the annotated-command library.
+     *
+     * @param Mixed $dataStore
      * @return type
      */
     public function setDataStore($dataStore)
     {
         $this->dataStore = $dataStore;
+        return $this;
     }
 
     /**
