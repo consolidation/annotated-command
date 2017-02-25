@@ -1,5 +1,9 @@
 # Change Log
 
+### 2.4.2 - 24 Feb 2017
+
+- Add SimpleCacheInterface as a documentation interface (not enforced).
+
 ### 2.4.1 - 20 Feb 2017
 
 - Support array options: multiple options on the commandline may be passed in to options array as an array of values.
