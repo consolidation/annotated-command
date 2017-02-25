@@ -18,7 +18,12 @@ class InteractHookDispatcher extends HookDispatcher
         OutputInterface $output,
         AnnotationData $annotationData
     ) {
-        $interactors = $this->getInteractors($annotationData);
+        $hooks = [
+            HookManager::PRE_INTERACT,
+            HookManager::INTERACT,
+            HookManager::POST_INTERACT
+        ];
+        $interactors = $this->getHooks($hooks, $annotationData);
         foreach ($interactors as $interactor) {
             $this->callInteractor($interactor, $input, $output, $annotationData);
         }
@@ -32,17 +37,5 @@ class InteractHookDispatcher extends HookDispatcher
         if (is_callable($interactor)) {
             return $interactor($input, $output, $annotationData);
         }
-    }
-
-    protected function getInteractors(AnnotationData $annotationData)
-    {
-        return $this->getHooks(
-            [
-                HookManager::PRE_INTERACT,
-                HookManager::INTERACT,
-                HookManager::POST_INTERACT
-            ],
-            $annotationData
-        );
     }
 }

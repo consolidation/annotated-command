@@ -15,7 +15,14 @@ class ValidateHookDispatcher extends HookDispatcher implements ValidatorInterfac
 {
     public function validate(CommandData $commandData)
     {
-        $validators = $this->getValidators($commandData->annotationData());
+        $hooks = [
+            HookManager::PRE_ARGUMENT_VALIDATOR,
+            HookManager::ARGUMENT_VALIDATOR,
+            HookManager::POST_ARGUMENT_VALIDATOR,
+            HookManager::PRE_COMMAND_HOOK,
+            HookManager::COMMAND_HOOK,
+        ];
+        $validators = $this->getHooks($hooks, $commandData->annotationData());
         foreach ($validators as $validator) {
             $validated = $this->callValidator($validator, $commandData);
             if ($validated === false) {
@@ -35,19 +42,5 @@ class ValidateHookDispatcher extends HookDispatcher implements ValidatorInterfac
         if (is_callable($validator)) {
             return $validator($commandData);
         }
-    }
-
-    protected function getValidators(AnnotationData $annotationData)
-    {
-        return $this->getHooks(
-            [
-                HookManager::PRE_ARGUMENT_VALIDATOR,
-                HookManager::ARGUMENT_VALIDATOR,
-                HookManager::POST_ARGUMENT_VALIDATOR,
-                HookManager::PRE_COMMAND_HOOK,
-                HookManager::COMMAND_HOOK,
-            ],
-            $annotationData
-        );
     }
 }

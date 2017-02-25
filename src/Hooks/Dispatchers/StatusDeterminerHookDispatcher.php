@@ -24,10 +24,13 @@ class StatusDeterminerHookDispatcher extends HookDispatcher implements StatusDet
             return $result->getExitCode();
         }
 
+        $hooks = [
+            HookManager::STATUS_DETERMINER,
+        ];
         // If the result does not implement ExitCodeInterface,
         // then we'll see if there is a determiner that can
         // extract a status code from the result.
-        $determiners = $this->getStatusDeterminers();
+        $determiners = $this->getHooks($hooks);
         foreach ($determiners as $determiner) {
             $status = $this->callDeterminer($determiner, $result);
             if (isset($status)) {
@@ -44,14 +47,5 @@ class StatusDeterminerHookDispatcher extends HookDispatcher implements StatusDet
         if (is_callable($determiner)) {
             return $determiner($result);
         }
-    }
-
-    protected function getStatusDeterminers()
-    {
-        return $this->getHooks(
-            [
-                HookManager::STATUS_DETERMINER,
-            ]
-        );
     }
 }

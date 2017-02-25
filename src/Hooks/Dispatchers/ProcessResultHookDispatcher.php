@@ -19,13 +19,18 @@ class ProcessResultHookDispatcher extends HookDispatcher implements ProcessResul
      */
     public function process($result, CommandData $commandData)
     {
-        $processors = $this->getProcessResultHooks($commandData->annotationData());
+        $hooks = [
+            HookManager::PRE_PROCESS_RESULT,
+            HookManager::PROCESS_RESULT,
+            HookManager::POST_PROCESS_RESULT,
+            HookManager::PRE_ALTER_RESULT,
+            HookManager::ALTER_RESULT,
+            HookManager::POST_ALTER_RESULT,
+            HookManager::POST_COMMAND_HOOK,
+        ];
+        $processors = $this->getHooks($hooks, $commandData->annotationData());
         foreach ($processors as $processor) {
             $result = $this->callProcessor($processor, $result, $commandData);
-        }
-        $alterers = $this->getAlterResultHooks($commandData->annotationData());
-        foreach ($alterers as $alterer) {
-            $result = $this->callProcessor($alterer, $result, $commandData);
         }
 
         return $result;
@@ -44,30 +49,5 @@ class ProcessResultHookDispatcher extends HookDispatcher implements ProcessResul
             return $processed;
         }
         return $result;
-    }
-
-    protected function getProcessResultHooks(AnnotationData $annotationData)
-    {
-        return $this->getHooks(
-            [
-                HookManager::PRE_PROCESS_RESULT,
-                HookManager::PROCESS_RESULT,
-                HookManager::POST_PROCESS_RESULT
-            ],
-            $annotationData
-        );
-    }
-
-    protected function getAlterResultHooks(AnnotationData $annotationData)
-    {
-        return $this->getHooks(
-            [
-                HookManager::PRE_ALTER_RESULT,
-                HookManager::ALTER_RESULT,
-                HookManager::POST_ALTER_RESULT,
-                HookManager::POST_COMMAND_HOOK,
-            ],
-            $annotationData
-        );
     }
 }

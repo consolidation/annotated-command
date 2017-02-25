@@ -21,7 +21,10 @@ class ExtracterHookDispatcher extends HookDispatcher implements ExtractOutputInt
             return $result->getOutputData();
         }
 
-        $extractors = $this->getOutputExtractors();
+        $hooks = [
+            HookManager::EXTRACT_OUTPUT,
+        ];
+        $extractors = $this->getHooks($hooks);
         foreach ($extractors as $extractor) {
             $structuredOutput = $this->callExtractor($extractor, $result);
             if (isset($structuredOutput)) {
@@ -40,14 +43,5 @@ class ExtracterHookDispatcher extends HookDispatcher implements ExtractOutputInt
         if (is_callable($extractor)) {
             return $extractor($result);
         }
-    }
-
-    protected function getOutputExtractors()
-    {
-        return $this->getHooks(
-            [
-                HookManager::EXTRACT_OUTPUT,
-            ]
-        );
     }
 }

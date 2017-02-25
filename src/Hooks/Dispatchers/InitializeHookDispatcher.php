@@ -17,7 +17,12 @@ class InitializeHookDispatcher extends HookDispatcher implements InitializeHookI
         InputInterface $input,
         AnnotationData $annotationData
     ) {
-        $providers = $this->getInitializeHooks($annotationData);
+        $hooks = [
+            HookManager::PRE_INITIALIZE,
+            HookManager::INITIALIZE,
+            HookManager::POST_INITIALIZE
+        ];
+        $providers = $this->getHooks($hooks, $annotationData);
         foreach ($providers as $provider) {
             $this->callInitializeHook($provider, $input, $annotationData);
         }
@@ -31,17 +36,5 @@ class InitializeHookDispatcher extends HookDispatcher implements InitializeHookI
         if (is_callable($provider)) {
             return $provider($input, $annotationData);
         }
-    }
-
-    protected function getInitializeHooks(AnnotationData $annotationData)
-    {
-        return $this->getHooks(
-            [
-                HookManager::PRE_INITIALIZE,
-                HookManager::INITIALIZE,
-                HookManager::POST_INITIALIZE
-            ],
-            $annotationData
-        );
     }
 }
