@@ -1,5 +1,5 @@
 <?php
-namespace Consolidation\AnnotatedCommand;
+namespace Consolidation\AnnotatedCommand\Cache;
 
 /**
  * Documentation interface.

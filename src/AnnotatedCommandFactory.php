@@ -1,6 +1,9 @@
 <?php
 namespace Consolidation\AnnotatedCommand;
 
+use Consolidation\AnnotatedCommand\Cache\NullCache;
+use Consolidation\AnnotatedCommand\Cache\CacheWrapper;
+use Consolidation\AnnotatedCommand\Cache\SimpleCacheInterface;
 use Consolidation\AnnotatedCommand\Hooks\HookManager;
 use Consolidation\AnnotatedCommand\Options\AutomaticOptionsProviderInterface;
 use Consolidation\AnnotatedCommand\Parser\CommandInfo;
@@ -27,7 +30,6 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
     protected $listeners = [];
 
     /** var AutomaticOptionsProvider[] */
-
     protected $automaticOptionsProviderList = [];
 
     /** var boolean */
@@ -36,10 +38,12 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
     /** var CommandInfoAltererInterface */
     protected $commandInfoAlterers = [];
 
+    /** var SimpleCacheInterface */
     protected $dataStore;
 
     public function __construct()
     {
+        $this->dataStore = new NullCache();
         $this->commandProcessor = new CommandProcessor(new HookManager());
         $this->addAutomaticOptionProvider($this);
     }
@@ -172,32 +176,24 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
         $this->getDataStore()->set($className, $cache_data);
     }
 
+    /**
+     * Get the command info list from the cache
+     *
+     * @param mixed $commandFileInstance
+     * @return array
+     */
     protected function getCommandInfoListFromCache($commandFileInstance)
     {
-        if (!$this->hasDataStore()) {
-            return [];
-        }
-        $className = get_class($commandFileInstance);
-        // TODO: Once we typehint our data store as a SimpleCacheInterface,
-        // then we will not need to use 'method_exists' here.
-        // If the data store has a 'has' method, then we will use it.
-        // This allows the data store to throw on get if they key does not
-        // exist, if desired.
-        if (method_exists($this->getDataStore(), 'has') && !$this->getDataStore()->has($className)) {
-            return [];
-        }
-        $cache_data = (array) $this->getDataStore()->get($className);
-        if (!$cache_data) {
-            return [];
-        }
-        foreach ($cache_data as $i => $data) {
-            if (!CommandInfo::isValidSerializedData((array)$data)) {
-                return [];
-            }
-        }
         $commandInfoList = [];
+        $className = get_class($commandFileInstance);
+        if (!$this->getDataStore()->has($className)) {
+            return [];
+        }
+        $cache_data = $this->getDataStore()->get($className);
         foreach ($cache_data as $i => $data) {
-            $commandInfoList[$i] = CommandInfo::deserialize((array)$data);
+            if (CommandInfo::isValidSerializedData((array)$data)) {
+                $commandInfoList[$i] = CommandInfo::deserialize((array)$data);
+            }
         }
         return $commandInfoList;
     }
@@ -208,7 +204,7 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
      */
     public function hasDataStore()
     {
-        return isset($this->dataStore);
+        return !($this->dataStore instanceof NullCache);
     }
 
     /**
@@ -226,6 +222,9 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
      */
     public function setDataStore($dataStore)
     {
+        if (!($dataStore instanceof SimpleCacheInterface)) {
+            $dataStore = new CacheWrapper($dataStore);
+        }
         $this->dataStore = $dataStore;
         return $this;
     }
