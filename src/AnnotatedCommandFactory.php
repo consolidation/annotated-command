@@ -167,7 +167,7 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
         $cache_data = [];
         $includeAllPublicMethods = $this->getIncludeAllPublicMethods();
         foreach ($commandInfoList as $i => $commandInfo) {
-            if (static::isCommandMethod($commandInfo, $includeAllPublicMethods)) {
+            if (static::isCommandOrHookMethod($commandInfo, $includeAllPublicMethods)) {
                 $cache_data[$i] = $commandInfo->serialize();
             }
         }
@@ -252,7 +252,9 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
         foreach ($commandMethodNames as $commandMethodName) {
             if (!array_key_exists($commandMethodName, $cachedCommandInfoList)) {
                 $commandInfo = CommandInfo::create($classNameOrInstance, $commandMethodName);
-                $commandInfoList[$commandInfo->getMethodName()] =  $commandInfo;
+                if (static::isCommandOrHookMethod($commandInfo, $this->getIncludeAllPublicMethods())) {
+                    $commandInfoList[$commandMethodName] =  $commandInfo;
+                }
             }
         }
 
@@ -281,22 +283,34 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
 
     public function createSelectedCommandsFromClassInfo($commandInfoList, $commandFileInstance, callable $commandSelector)
     {
-        $commandList = [];
+        $commandInfoList = $this->filterCommandInfoList($commandInfoList, $commandSelector);
+        return array_map(
+            function ($commandInfo) use ($commandFileInstance) {
+                return $this->createCommand($commandInfo, $commandFileInstance);
+            },
+            $commandInfoList
+        );
+    }
 
-        foreach ($commandInfoList as $commandInfo) {
-            if ($commandSelector($commandInfo)) {
-                $command = $this->createCommand($commandInfo, $commandFileInstance);
-                $commandList[] = $command;
-            }
-        }
+    protected function filterCommandInfoList($commandInfoList, callable $commandSelector)
+    {
+        return array_filter($commandInfoList, $commandSelector);
+    }
 
-        return $commandList;
+    public static function isCommandOrHookMethod($commandInfo, $includeAllPublicMethods)
+    {
+        return static::isHookMethod($commandInfo) || static::isCommandMethod($commandInfo, $includeAllPublicMethods);
+    }
+
+    public static function isHookMethod($commandInfo)
+    {
+        return $commandInfo->hasAnnotation('hook');
     }
 
     public static function isCommandMethod($commandInfo, $includeAllPublicMethods)
     {
         // Ignore everything labeled @hook
-        if ($commandInfo->hasAnnotation('hook')) {
+        if (static::isHookMethod($commandInfo)) {
             return false;
         }
         // Include everything labeled @command
@@ -315,7 +329,7 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
     public function registerCommandHooksFromClassInfo($commandInfoList, $commandFileInstance)
     {
         foreach ($commandInfoList as $commandInfo) {
-            if ($commandInfo->hasAnnotation('hook')) {
+            if (static::isHookMethod($commandInfo)) {
                 $this->registerCommandHook($commandInfo, $commandFileInstance);
             }
         }
@@ -344,7 +358,7 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
     public function registerCommandHook(CommandInfo $commandInfo, $commandFileInstance)
     {
         // Ignore if the command info has no @hook
-        if (!$commandInfo->hasAnnotation('hook')) {
+        if (!static::isHookMethod($commandInfo)) {
             return;
         }
         $hookData = $commandInfo->getAnnotation('hook');
