@@ -578,7 +578,7 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
         $annotationData = $commandInfo->getRawAnnotations();
         $this->assertEquals('addmycommandname', implode(',', $annotationData->keys()));
         $annotationData = $commandInfo->getAnnotations();
-        $this->assertEquals('addmycommandname,command,_path', implode(',', $annotationData->keys()));
+        $this->assertEquals('addmycommandname,command,_path,_classname', implode(',', $annotationData->keys()));
 
         $command = $this->commandFactory->createCommand($commandInfo, $this->commandFileInstance);
 
@@ -588,7 +588,6 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
         $input = new StringInput('alter:me-too');
         $this->assertRunCommandViaApplicationEquals($command, $input, 'fantabulous from alter:me-too');
     }
-
 
     function testHookedCommandWithHookAddedLater()
     {

@@ -2,6 +2,8 @@
 namespace Consolidation\AnnotatedCommand;
 
 use Consolidation\AnnotatedCommand\Parser\CommandInfo;
+use Consolidation\AnnotatedCommand\Parser\CommandInfoSerializer;
+use Consolidation\AnnotatedCommand\Parser\CommandInfoDeserializer;
 
 class CommandInfoTests extends \PHPUnit_Framework_TestCase
 {
@@ -25,9 +27,12 @@ class CommandInfoTests extends \PHPUnit_Framework_TestCase
         $commandInfo = CommandInfo::create('\Consolidation\TestUtils\ExampleCommandFile', 'testArithmatic');
         $this->assertCommandInfoIsAsExpected($commandInfo);
 
-        $serialized = $commandInfo->serialize();
+        $serializer = new CommandInfoSerializer();
+        $serialized = $serializer->serialize($commandInfo);
 
-        $deserializedCommandInfo = CommandInfo::deserialize($serialized);
+        $deserializer = new CommandInfoDeserializer();
+
+        $deserializedCommandInfo = $deserializer->deserialize($serialized);
         $this->assertCommandInfoIsAsExpected($deserializedCommandInfo);
     }
 
