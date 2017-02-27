@@ -32,7 +32,7 @@ class DefaultsWithDescriptions
     public function __construct($values = [], $defaultDefault = null)
     {
         $this->values = $values;
-        $this->hasDefault = [];
+        $this->hasDefault = array_filter($this->values);
         $this->descriptions = [];
         $this->defaultDefault = $defaultDefault;
     }

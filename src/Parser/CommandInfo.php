@@ -102,11 +102,14 @@ class CommandInfo
     {
         $this->reflection = new \ReflectionMethod($classNameOrInstance, $methodName);
         $this->methodName = $methodName;
+        $this->arguments = new DefaultsWithDescriptions();
+        $this->options = new DefaultsWithDescriptions();
 
         // If the cache came from a newer version, ignore it and
         // regenerate the cached information.
-        if (!empty($cache) && static::isValidSerializedData($cache) && !$this->cachedFileIsModified($cache)) {
-            $this->constructFromCache($cache);
+        if (!empty($cache) && CommandInfoDeserializer::isValidSerializedData($cache) && !$this->cachedFileIsModified($cache)) {
+            $deserializer = new CommandInfoDeserializer();
+            $deserializer->constructFromCache($this, $cache);
             $this->docBlockIsParsed = true;
         } else {
             $this->constructFromClassAndMethod($classNameOrInstance, $methodName);
@@ -121,32 +124,7 @@ class CommandInfo
     public static function deserialize($cache)
     {
         $cache = (array)$cache;
-
-        $className = $cache['class'];
-        $methodName = $cache['method_name'];
-
-        return new self($className, $methodName, $cache);
-    }
-
-    protected static function cachedMethodExists($cache)
-    {
-        $cache = (array)$cache;
-
-        $className = $cache['class'];
-        $methodName = $cache['method_name'];
-
-        return method_exists($className, $methodName);
-    }
-
-    public static function isValidSerializedData($cache)
-    {
-        return
-            isset($cache['schema']) &&
-            isset($cache['method_name']) &&
-            isset($cache['mtime']) &&
-            ($cache['schema'] > 0) &&
-            ($cache['schema'] <= self::SERIALIZATION_SCHEMA_VERSION) &&
-            self::cachedMethodExists($cache);
+        return new self($cache['class'], $cache['method_name'], $cache);
     }
 
     public function cachedFileIsModified($cache)
@@ -163,97 +141,6 @@ class CommandInfo
         $this->name = $this->convertName($methodName);
         $this->options = new DefaultsWithDescriptions($this->determineOptionsFromParameters(), false);
         $this->arguments = $this->determineAgumentClassifications();
-    }
-
-    protected function constructFromCache($info_array)
-    {
-        $info_array += $this->defaultSerializationData();
-
-        $this->name = $info_array['name'];
-        $this->methodName = $info_array['method_name'];
-        $this->otherAnnotations = new AnnotationData((array) $info_array['annotations']);
-        $this->arguments = new DefaultsWithDescriptions();
-        $this->options = new DefaultsWithDescriptions();
-        $this->aliases = $info_array['aliases'];
-        $this->help = $info_array['help'];
-        $this->description = $info_array['description'];
-        $this->exampleUsage = $info_array['example_usages'];
-        $this->returnType = $info_array['return_type'];
-
-        $this->constructDefaultsWithDescriptions($this->arguments, (array)$info_array['arguments']);
-        $this->constructDefaultsWithDescriptions($this->options, (array)$info_array['options']);
-    }
-
-    protected function constructDefaultsWithDescriptions(DefaultsWithDescriptions $defaults, $data)
-    {
-        foreach ($data as $key => $info) {
-            $info = (array)$info;
-            $defaults->add($key, $info['description']);
-            if (array_key_exists('default', $info)) {
-                $defaults->setDefaultValue($key, $info['default']);
-            }
-        }
-    }
-
-    public function serialize()
-    {
-        $path = $this->reflection->getFileName();
-
-        $info = [
-            'schema' => self::SERIALIZATION_SCHEMA_VERSION,
-            'class' => $this->reflection->getDeclaringClass()->getName(),
-            'method_name' => $this->getMethodName(),
-            'name' => $this->getName(),
-            'description' => $this->getDescription(),
-            'help' => $this->getHelp(),
-            'aliases' => $this->getAliases(),
-            'annotations' => $this->getAnnotations()->getArrayCopy(),
-            // Todo: Test This.
-            'topics' => $this->getTopics(),
-            'example_usages' => $this->getExampleUsages(),
-            'return_type' => $this->getReturnType(),
-            'mtime' => filemtime($path),
-        ] + $this->defaultSerializationData();
-        $info['arguments'] = $this->serializeDefaultsWithDescriptions($this->arguments());
-        $info['options'] = $this->serializeDefaultsWithDescriptions($this->options());
-
-        return $info;
-    }
-
-    protected function serializeDefaultsWithDescriptions(DefaultsWithDescriptions $defaults)
-    {
-        $result = [];
-        foreach ($defaults->getValues() as $key => $val) {
-            $result[$key] = [
-                'description' => $defaults->getDescription($key),
-            ];
-            if ($defaults->hasDefault($key)) {
-                $result[$key]['default'] = $val;
-            }
-        }
-        return $result;
-    }
-
-    /**
-     * Default data for serialization.
-     * @return array
-     */
-    protected function defaultSerializationData()
-    {
-        return [
-            'description' => '',
-            'help' => '',
-            'aliases' => [],
-            'annotations' => [],
-            'topics' => [],
-            'example_usages' => [],
-            'return_type' => [],
-            'parameters' => [],
-            'arguments' => [],
-            'options' => [],
-            'input_options' => [],
-            'mtime' => 0,
-        ];
     }
 
     /**
@@ -314,6 +201,15 @@ class CommandInfo
     }
 
     /**
+     * Replace the annotation data.
+     */
+    public function replaceRawAnnotations($annotationData)
+    {
+        $this->otherAnnotations = new AnnotationData((array) $annotationData);
+        return $this;
+    }
+
+    /**
      * Get any annotations included in the docblock comment,
      * also including default values such as @command.  We add
      * in the default @command annotation late, and only in a
@@ -325,14 +221,16 @@ class CommandInfo
      */
     public function getAnnotations()
     {
-        // Also provide the path to the commandfile that
-        // these annotations were pulled from.
+        // Also provide the path to the commandfile that these annotations
+        // were pulled from and the classname of that file.
         $path = $this->reflection->getFileName();
+        $className = $this->reflection->getDeclaringClass()->getName();
         return new AnnotationData(
             $this->getRawAnnotations()->getArrayCopy() +
             [
                 'command' => $this->getName(),
                 '_path' => $path,
+                '_classname' => $className,
             ]
         );
     }
@@ -469,6 +367,15 @@ class CommandInfo
     public function setExampleUsage($usage, $description)
     {
         $this->exampleUsage[$usage] = $description;
+        return $this;
+    }
+
+    /**
+     * Overwrite all example usages
+     */
+    public function replaceExampleUsages($usages)
+    {
+        $this->exampleUsage = $usages;
         return $this;
     }
 

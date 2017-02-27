@@ -143,7 +143,7 @@ class ExampleCommandFile
      *   Add two plus two and then negate.
      * @custom
      */
-    public function testArithmatic($one, $two, $options = ['negate' => false])
+    public function testArithmatic($one, $two = 2, $options = ['negate' => false, 'unused' => 'bob'])
     {
         $result = $one + $two;
         if ($options['negate']) {

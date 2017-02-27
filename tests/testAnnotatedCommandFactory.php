@@ -123,7 +123,7 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
         $this->assertEquals('This is the test:arithmatic command', $command->getDescription());
         $this->assertEquals("This command will add one and two. If the --negate flag\nis provided, then the result is negated.", $command->getHelp());
         $this->assertEquals('arithmatic', implode(',', $command->getAliases()));
-        $this->assertEquals('test:arithmatic [--negate] [--] <one> <two>', $command->getSynopsis());
+        $this->assertEquals('test:arithmatic [--negate] [--unused [UNUSED]] [--] <one> [<two>]', $command->getSynopsis());
         $this->assertEquals('test:arithmatic 2 2 --negate', implode(',', $command->getUsages()));
 
         $input = new StringInput('arithmatic 2 3 --negate');
@@ -578,7 +578,7 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
         $annotationData = $commandInfo->getRawAnnotations();
         $this->assertEquals('addmycommandname', implode(',', $annotationData->keys()));
         $annotationData = $commandInfo->getAnnotations();
-        $this->assertEquals('addmycommandname,command,_path', implode(',', $annotationData->keys()));
+        $this->assertEquals('addmycommandname,command,_path,_classname', implode(',', $annotationData->keys()));
 
         $command = $this->commandFactory->createCommand($commandInfo, $this->commandFileInstance);
 
@@ -588,7 +588,6 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
         $input = new StringInput('alter:me-too');
         $this->assertRunCommandViaApplicationEquals($command, $input, 'fantabulous from alter:me-too');
     }
-
 
     function testHookedCommandWithHookAddedLater()
     {

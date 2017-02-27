@@ -1,12 +1,14 @@
 <?php
 namespace Consolidation\AnnotatedCommand;
 
-use Consolidation\AnnotatedCommand\Cache\NullCache;
 use Consolidation\AnnotatedCommand\Cache\CacheWrapper;
+use Consolidation\AnnotatedCommand\Cache\NullCache;
 use Consolidation\AnnotatedCommand\Cache\SimpleCacheInterface;
 use Consolidation\AnnotatedCommand\Hooks\HookManager;
 use Consolidation\AnnotatedCommand\Options\AutomaticOptionsProviderInterface;
 use Consolidation\AnnotatedCommand\Parser\CommandInfo;
+use Consolidation\AnnotatedCommand\Parser\CommandInfoDeserializer;
+use Consolidation\AnnotatedCommand\Parser\CommandInfoSerializer;
 use Consolidation\OutputFormatters\Options\FormatterOptions;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -165,10 +167,11 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
             return;
         }
         $cache_data = [];
+        $serializer = new CommandInfoSerializer();
         $includeAllPublicMethods = $this->getIncludeAllPublicMethods();
         foreach ($commandInfoList as $i => $commandInfo) {
             if (static::isCommandOrHookMethod($commandInfo, $includeAllPublicMethods)) {
-                $cache_data[$i] = $commandInfo->serialize();
+                $cache_data[$i] = $serializer->serialize($commandInfo);
             }
         }
         $className = get_class($commandFileInstance);
@@ -188,10 +191,12 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
         if (!$this->getDataStore()->has($className)) {
             return [];
         }
+        $deserializer = new CommandInfoDeserializer();
+
         $cache_data = $this->getDataStore()->get($className);
         foreach ($cache_data as $i => $data) {
-            if (CommandInfo::isValidSerializedData((array)$data)) {
-                $commandInfoList[$i] = CommandInfo::deserialize((array)$data);
+            if (CommandInfoDeserializer::isValidSerializedData((array)$data)) {
+                $commandInfoList[$i] = $deserializer->deserialize((array)$data);
             }
         }
         return $commandInfoList;
