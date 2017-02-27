@@ -1,5 +1,10 @@
 # Change Log
 
+### 2.4.3 - 26 Feb 2017
+
+- BUGFIX: Avoid rewriting the command cache unless something has changed.
+- BUGFIX: Ensure that the default value of options are correctly cached.
+
 ### 2.4.2 - 24 Feb 2017
 
 - Add SimpleCacheInterface as a documentation interface (not enforced).
