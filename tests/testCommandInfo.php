@@ -56,8 +56,16 @@ class CommandInfoTests extends \PHPUnit_Framework_TestCase
             $commandInfo->arguments()->getDescription('two')
         );
         $this->assertEquals(
+            '2',
+            $commandInfo->arguments()->get('two')
+        );
+        $this->assertEquals(
             'Whether or not the result should be negated.',
             $commandInfo->options()->getDescription('negate')
+        );
+        $this->assertEquals(
+            'bob',
+            $commandInfo->options()->get('unused')
         );
     }
 

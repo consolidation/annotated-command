@@ -123,7 +123,7 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
         $this->assertEquals('This is the test:arithmatic command', $command->getDescription());
         $this->assertEquals("This command will add one and two. If the --negate flag\nis provided, then the result is negated.", $command->getHelp());
         $this->assertEquals('arithmatic', implode(',', $command->getAliases()));
-        $this->assertEquals('test:arithmatic [--negate] [--] <one> <two>', $command->getSynopsis());
+        $this->assertEquals('test:arithmatic [--negate] [--unused [UNUSED]] [--] <one> [<two>]', $command->getSynopsis());
         $this->assertEquals('test:arithmatic 2 2 --negate', implode(',', $command->getUsages()));
 
         $input = new StringInput('arithmatic 2 3 --negate');

@@ -251,7 +251,6 @@ class CommandInfo
             'parameters' => [],
             'arguments' => [],
             'options' => [],
-            'input_options' => [],
             'mtime' => 0,
         ];
     }
