@@ -1,6 +1,6 @@
 # Change Log
 
-### 2.4.3 - 26 Feb 2017
+### 2.4.4 - 27 Feb 2017
 
 - BUGFIX: Avoid rewriting the command cache unless something has changed.
 - BUGFIX: Ensure that the default value of options are correctly cached.

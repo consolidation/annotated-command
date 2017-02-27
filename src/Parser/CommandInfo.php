@@ -20,7 +20,7 @@ class CommandInfo
     /**
      * Serialization schema version. Incremented every time the serialization schema changes.
      */
-    const SERIALIZATION_SCHEMA_VERSION = 2;
+    const SERIALIZATION_SCHEMA_VERSION = 3;
 
     /**
      * @var \ReflectionMethod
