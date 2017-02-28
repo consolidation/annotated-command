@@ -175,6 +175,28 @@ class CommandInfo
         return $this;
     }
 
+    /**
+     * Return whether or not this method represents a valid command
+     * or hook.
+     */
+    public function valid()
+    {
+        return !empty($this->name);
+    }
+
+    /**
+     * If higher-level code decides that this CommandInfo is not interesting
+     * or useful (if it is not a command method or a hook method), then
+     * we will mark it as invalid to prevent it from being created as a command.
+     * We still cache a placeholder record for invalid methods, so that we
+     * do not need to re-parse the method again later simply to determine that
+     * it is invalid.
+     */
+    public function invalidate()
+    {
+        $this->name = '';
+    }
+
     public function getReturnType()
     {
         $this->parseDocBlock();

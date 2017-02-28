@@ -17,21 +17,28 @@ class CommandInfoSerializer
         $path = $allAnnotations['_path'];
         $className = $allAnnotations['_classname'];
 
+        // Include the minimum information for command info (including placeholder records)
         $info = [
             'schema' => CommandInfo::SERIALIZATION_SCHEMA_VERSION,
             'class' => $className,
             'method_name' => $commandInfo->getMethodName(),
-            'name' => $commandInfo->getName(),
-            'description' => $commandInfo->getDescription(),
-            'help' => $commandInfo->getHelp(),
-            'aliases' => $commandInfo->getAliases(),
-            'annotations' => $commandInfo->getRawAnnotations()->getArrayCopy(),
-            'example_usages' => $commandInfo->getExampleUsages(),
-            'return_type' => $commandInfo->getReturnType(),
             'mtime' => filemtime($path),
         ];
-        $info['arguments'] = $this->serializeDefaultsWithDescriptions($commandInfo->arguments());
-        $info['options'] = $this->serializeDefaultsWithDescriptions($commandInfo->options());
+
+        // If this is a valid method / hook, then add more information.
+        if ($commandInfo->valid()) {
+            $info += [
+                'name' => $commandInfo->getName(),
+                'description' => $commandInfo->getDescription(),
+                'help' => $commandInfo->getHelp(),
+                'aliases' => $commandInfo->getAliases(),
+                'annotations' => $commandInfo->getRawAnnotations()->getArrayCopy(),
+                'example_usages' => $commandInfo->getExampleUsages(),
+                'return_type' => $commandInfo->getReturnType(),
+            ];
+            $info['arguments'] = $this->serializeDefaultsWithDescriptions($commandInfo->arguments());
+            $info['options'] = $this->serializeDefaultsWithDescriptions($commandInfo->options());
+        }
 
         return $info;
     }
