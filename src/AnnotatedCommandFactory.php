@@ -168,11 +168,8 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
         }
         $cache_data = [];
         $serializer = new CommandInfoSerializer();
-        $includeAllPublicMethods = $this->getIncludeAllPublicMethods();
         foreach ($commandInfoList as $i => $commandInfo) {
-            if (static::isCommandOrHookMethod($commandInfo, $includeAllPublicMethods)) {
-                $cache_data[$i] = $serializer->serialize($commandInfo);
-            }
+            $cache_data[$i] = $serializer->serialize($commandInfo);
         }
         $className = get_class($commandFileInstance);
         $this->getDataStore()->set($className, $cache_data);
@@ -257,9 +254,10 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
         foreach ($commandMethodNames as $commandMethodName) {
             if (!array_key_exists($commandMethodName, $cachedCommandInfoList)) {
                 $commandInfo = CommandInfo::create($classNameOrInstance, $commandMethodName);
-                if (static::isCommandOrHookMethod($commandInfo, $this->getIncludeAllPublicMethods())) {
-                    $commandInfoList[$commandMethodName] =  $commandInfo;
+                if (!static::isCommandOrHookMethod($commandInfo, $this->getIncludeAllPublicMethods())) {
+                    $commandInfo->invalidate();
                 }
+                $commandInfoList[$commandMethodName] =  $commandInfo;
             }
         }
 

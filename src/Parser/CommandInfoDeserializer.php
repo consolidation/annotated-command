@@ -71,6 +71,7 @@ class CommandInfoDeserializer
     protected function defaultSerializationData()
     {
         return [
+            'name' => '',
             'description' => '',
             'help' => '',
             'aliases' => [],
