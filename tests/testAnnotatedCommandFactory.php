@@ -422,6 +422,9 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
 
         $input = new StringInput('test:hook bar');
         $this->assertRunCommandViaApplicationEquals($command, $input, '<[bar]>');
+
+        $input = new StringInput('list --raw');
+        $this->assertRunCommandViaApplicationContains($command, $input, ['This command wraps its parameter in []; its alter hook then wraps the result in .']);
     }
 
     function testPostCommandCalledAfterCommand()
