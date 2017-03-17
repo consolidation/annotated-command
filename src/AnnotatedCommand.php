@@ -135,6 +135,11 @@ class AnnotatedCommand extends Command implements HelpDocumentAlter
         return $this;
     }
 
+    public function getExampleUsages()
+    {
+        return $this->examples;
+    }
+
     protected function addUsageOrExample($usage, $description)
     {
         $this->addUsage($usage);
