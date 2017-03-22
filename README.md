@@ -211,8 +211,8 @@ class MyReplaceCommandHook  {
    * 
    * Parameters must match original command method. 
    */
-  public function myFooBarReplacement($first_arg) {
-    print "Hello world!";
+  public function myFooBarReplacement($value) {
+    print "Hello $value!";
   }
 }
 ```

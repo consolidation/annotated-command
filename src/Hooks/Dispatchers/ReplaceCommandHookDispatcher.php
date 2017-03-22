@@ -20,7 +20,7 @@ class ReplaceCommandHookDispatcher extends HookDispatcher implements LoggerAware
      */
     public function hasReplaceCommandHook()
     {
-        return count($this->getReplaceCommandHooks());
+        return (bool) count($this->getReplaceCommandHooks());
     }
 
     /**
