@@ -1,6 +1,8 @@
 <?php
 namespace Consolidation\AnnotatedCommand;
 
+use Acquia\Blt\Robo\Hooks\ReplaceCommandHook;
+use Consolidation\AnnotatedCommand\Hooks\Dispatchers\ReplaceCommandHookDispatcher;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -135,6 +137,11 @@ class CommandProcessor
         $validated = $validateDispatcher->validate($commandData);
         if (is_object($validated)) {
             return $validated;
+        }
+
+        $replaceDispatcher = new ReplaceCommandHookDispatcher($this->hookManager(), $names);
+        if ($replaceDispatcher->hasCommandReplacement($commandData)) {
+            $commandCallback = $replaceDispatcher->getReplacementCommand($commandData);
         }
 
         // Run the command, alter the results, and then handle output and status

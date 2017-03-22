@@ -101,6 +101,7 @@ There are ten types of hooks supported:
 - Status
 - Extract
 - On-event
+- Replace Command
 
 Most of these also have "pre" and "post" varieties, to give more flexibility vis-a-vis hook ordering (and for consistency). Note that many validate, process and alter hooks may run, but the first status or extract hook that successfully returns a result will halt processing of further hooks of the same type.
 
@@ -194,6 +195,25 @@ class MyCommands implements CustomEventAwareInterface
 }
 ```
 It is up to the command that defines the custom event to declare what the expected parameters for the callback function should be, and what the return value is and how it should be used.
+
+### Replace Command Hook
+
+The replace-command ([ReplaceCommandHookInterface](src/Hooks/ReplaceCommandHookInterface.php)) hook permits you to replace a command with another method. This is primarily useful if you'd like to replace a command provided by an upstream dependency.
+
+For instance, if you'd like to replace the `foo:bar` command, you utilize the following code:
+
+```php
+<?php
+class MyReplaceCommandHook  {
+
+  /**
+   * @hook replace-command foo:bar
+   */
+  public function myFooBarReplacement($args) {
+    print "Hello world!";
+  }
+}
+```
 
 ## Output
 
