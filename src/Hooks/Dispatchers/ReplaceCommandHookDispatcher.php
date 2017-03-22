@@ -16,20 +16,18 @@ class ReplaceCommandHookDispatcher extends HookDispatcher
 {
 
     /**
-     * @param \Consolidation\AnnotatedCommand\CommandData $commandData
-     *
      * @return int
      */
-    public function hasReplaceCommandHook(CommandData $commandData) {
-        return count($this->getReplaceCommandHooks($commandData));
+    public function hasReplaceCommandHook()
+    {
+        return count($this->getReplaceCommandHooks());
     }
 
     /**
-     * @param \Consolidation\AnnotatedCommand\CommandData $commandData
-     *
      * @return \callable[]
      */
-    public function getReplaceCommandHooks(CommandData $commandData) {
+    public function getReplaceCommandHooks()
+    {
         $hooks = [
             HookManager::REPLACE_COMMAND_HOOK,
         ];
@@ -43,7 +41,8 @@ class ReplaceCommandHookDispatcher extends HookDispatcher
      *
      * @return callable
      */
-    public function getReplacementCommand(CommandData $commandData) {
+    public function getReplacementCommand(CommandData $commandData)
+    {
         $replaceCommandHooks = $this->getReplaceCommandHooks($commandData);
 
         // We only take the first hook implementation of "replace-command" as the replacement. Commands shouldn't have
