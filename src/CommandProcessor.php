@@ -142,13 +142,20 @@ class CommandProcessor implements LoggerAwareInterface
         }
 
         $replaceDispatcher = new ReplaceCommandHookDispatcher($this->hookManager(), $names);
-        $replaceDispatcher->setLogger($this->logger);
+        if ($this->logger) {
+            $replaceDispatcher->setLogger($this->logger);
+        }
         if ($replaceDispatcher->hasReplaceCommandHook()) {
             $commandCallback = $replaceDispatcher->getReplacementCommand($commandData);
+            $args_and_options = $commandData->getArgsAndOptions();
+            $args = [ $args_and_options ];
+            $result = $this->runCommandCallback($commandCallback, $commandData, $args);
+        }
+        else {
+            // Run the command, alter the results, and then handle output and status
+            $result = $this->runCommandCallback($commandCallback, $commandData);
         }
 
-        // Run the command, alter the results, and then handle output and status
-        $result = $this->runCommandCallback($commandCallback, $commandData);
         return $this->processResults($names, $result, $commandData);
     }
 
@@ -197,11 +204,13 @@ class CommandProcessor implements LoggerAwareInterface
     /**
      * Run the main command callback
      */
-    protected function runCommandCallback($commandCallback, CommandData $commandData)
+    protected function runCommandCallback($commandCallback, CommandData $commandData, $args = [])
     {
         $result = false;
         try {
-            $args = $commandData->getArgsAndOptions();
+            if (!$args) {
+                $args = $commandData->getArgsAndOptions();
+            }
             $result = call_user_func_array($commandCallback, $args);
         } catch (\Exception $e) {
             $result = new CommandError($e->getMessage(), $e->getCode());
