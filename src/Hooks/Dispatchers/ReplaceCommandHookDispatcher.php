@@ -4,28 +4,16 @@ namespace Consolidation\AnnotatedCommand\Hooks\Dispatchers;
 
 use Consolidation\AnnotatedCommand\CommandData;
 use Consolidation\AnnotatedCommand\Hooks\HookManager;
-use Psr\Log\LoggerInterface;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\ConsoleEvents;
-use Symfony\Component\Console\Event\ConsoleCommandEvent;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 
 /**
  * Call hooks.
  */
-class ReplaceCommandHookDispatcher extends HookDispatcher
+class ReplaceCommandHookDispatcher extends HookDispatcher implements LoggerAwareInterface
 {
 
-    /**
-     * @var LoggerInterface|null
-     */
-    protected $logger = null;
-
-    public function setLogger(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
-    }
+    use LoggerAwareTrait;
 
     /**
      * @return int
