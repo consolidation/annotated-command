@@ -427,6 +427,30 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
         $this->assertRunCommandViaApplicationContains($command, $input, ['This command wraps its parameter in []; its alter hook then wraps the result in .']);
     }
 
+    function testReplaceCommandHook(){
+        $this->commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile();
+        $this->commandFactory = new AnnotatedCommandFactory();
+
+        $hookInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'hookTestReplaceCommandHook');
+
+        $this->assertTrue($hookInfo->hasAnnotation('hook'));
+        $this->assertEquals('replace-command test:replace-command', $hookInfo->getAnnotation('hook'));
+
+        $this->commandFactory->registerCommandHook($hookInfo, $this->commandFileInstance);
+
+        $hookCallback = $this->commandFactory->hookManager()->get('test:replace-command', [HookManager::REPLACE_COMMAND_HOOK]);
+        $this->assertTrue($hookCallback != null);
+        $this->assertEquals(1, count($hookCallback));
+        $this->assertEquals(2, count($hookCallback[0]));
+        $this->assertTrue(is_callable($hookCallback[0]));
+        $this->assertEquals('hookTestReplaceCommandHook', $hookCallback[0][1]);
+
+        $input = new StringInput('test:replace-command foo');
+        $commandInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'testReplaceCommand');
+        $command = $this->commandFactory->createCommand($commandInfo, $this->commandFileInstance);
+        $this->assertRunCommandViaApplicationEquals($command, $input, "bar", 0);
+    }
+
     function testPostCommandCalledAfterCommand()
     {
         $this->commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile();

@@ -25,6 +25,7 @@ class HookManager implements EventSubscriberInterface
     /** var CommandInfo[] */
     protected $hookOptions = [];
 
+    const REPLACE_COMMAND_HOOK = 'replace-command';
     const PRE_COMMAND_EVENT = 'pre-command-event';
     const COMMAND_EVENT = 'command-event';
     const POST_COMMAND_EVENT = 'post-command-event';
@@ -117,6 +118,18 @@ class HookManager implements EventSubscriberInterface
         }
         $reflectionClass = new \ReflectionClass($callback[0]);
         return $reflectionClass->getName();
+    }
+
+    /**
+     * Add a replace command hook
+     *
+     * @param type ReplaceCommandHookInterface $provider
+     * @param type string $command_name The name of the command to replace
+     */
+    public function addReplaceCommandHook(ReplaceCommandHookInterface $replaceCommandHook, $name)
+    {
+        $this->hooks[$name][self::REPLACE_COMMAND_HOOK][] = $replaceCommandHook;
+        return $this;
     }
 
     /**

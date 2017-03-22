@@ -256,6 +256,22 @@ class ExampleCommandFile
     }
 
     /**
+     * @command test:replace-command
+     */
+    public function testReplaceCommand($value)
+    {
+        $this->output->writeln($value);
+    }
+
+    /**
+     * @hook replace-command test:replace-command
+     */
+    public function hookTestReplaceCommandHook($value)
+    {
+        $this->output->writeln("bar");
+    }
+
+    /**
      * @hook pre-command test:post-command
      */
     public function hookTestPreCommandHook(CommandData $commandData)
