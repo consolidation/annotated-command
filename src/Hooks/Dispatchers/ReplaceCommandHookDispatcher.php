@@ -22,7 +22,8 @@ class ReplaceCommandHookDispatcher extends HookDispatcher
      */
     protected $logger = null;
 
-    public function setLogger(LoggerInterface $logger) {
+    public function setLogger(LoggerInterface $logger)
+    {
         $this->logger = $logger;
     }
 
@@ -63,7 +64,7 @@ class ReplaceCommandHookDispatcher extends HookDispatcher
         if ($this->logger && count($replaceCommandHooks) > 1) {
             $command_name = $commandData->annotationData()->get('command', 'unknown');
             $message = "Multiple implementations of the \"replace - command\" hook exist for the \"$command_name\" command.\n";
-            foreach($replaceCommandHooks as $replaceCommandHook) {
+            foreach ($replaceCommandHooks as $replaceCommandHook) {
                 $class = get_class($replaceCommandHook[0]);
                 $method = $replaceCommandHook[1];
                 $hook_name = "$class->$method";
