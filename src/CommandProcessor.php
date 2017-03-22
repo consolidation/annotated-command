@@ -116,7 +116,8 @@ class CommandProcessor
             $result = $this->validateRunAndAlter(
                 $names,
                 $commandCallback,
-                $commandData
+                $commandData,
+                $output
             );
             return $this->handleResults($output, $names, $result, $commandData);
         } catch (\Exception $e) {
@@ -128,7 +129,8 @@ class CommandProcessor
     public function validateRunAndAlter(
         $names,
         $commandCallback,
-        CommandData $commandData
+        CommandData $commandData,
+        OutputInterface $output
     ) {
         // Validators return any object to signal a validation error;
         // if the return an array, it replaces the arguments.
@@ -140,7 +142,7 @@ class CommandProcessor
 
         $replaceDispatcher = new ReplaceCommandHookDispatcher($this->hookManager(), $names);
         if ($replaceDispatcher->hasReplaceCommandHook()) {
-            $commandCallback = $replaceDispatcher->getReplacementCommand($commandData);
+            $commandCallback = $replaceDispatcher->getReplacementCommand($commandData, $output);
         }
 
         // Run the command, alter the results, and then handle output and status
