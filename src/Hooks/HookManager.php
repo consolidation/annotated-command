@@ -123,7 +123,7 @@ class HookManager implements EventSubscriberInterface
     /**
      * Add a replace command hook
      *
-     * @param type InitializeHookInterface $provider
+     * @param type ReplaceCommandHookInterface $provider
      * @param type string $command_name The name of the command to replace
      */
     public function addReplaceCommandHook(ReplaceCommandHookInterface $replaceCommandHook, $name)

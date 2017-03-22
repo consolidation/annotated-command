@@ -198,9 +198,9 @@ It is up to the command that defines the custom event to declare what the expect
 
 ### Replace Command Hook
 
-The replace-command ([ReplaceCommandHookInterface](src/Hooks/ReplaceCommandHookInterface.php)) hook permits you to replace a command with another method. This is primarily useful if you'd like to replace a command provided by an upstream dependency.
+The replace-command ([ReplaceCommandHookInterface](src/Hooks/ReplaceCommandHookInterface.php)) hook permits you to replace a command's method with another method of your own.
 
-For instance, if you'd like to replace the `foo:bar` command, you utilize the following code:
+For instance, if you'd like to replace the `foo:bar` command, you could utilize the following code:
 
 ```php
 <?php

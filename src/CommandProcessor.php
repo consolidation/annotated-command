@@ -1,7 +1,6 @@
 <?php
 namespace Consolidation\AnnotatedCommand;
 
-use Acquia\Blt\Robo\Hooks\ReplaceCommandHook;
 use Consolidation\AnnotatedCommand\Hooks\Dispatchers\ReplaceCommandHookDispatcher;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
