@@ -4,6 +4,7 @@ namespace Consolidation\AnnotatedCommand\Hooks\Dispatchers;
 
 use Consolidation\AnnotatedCommand\CommandData;
 use Consolidation\AnnotatedCommand\Hooks\HookManager;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\Console\Event\ConsoleCommandEvent;
@@ -15,6 +16,15 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  */
 class ReplaceCommandHookDispatcher extends HookDispatcher
 {
+
+    /**
+     * @var LoggerInterface|null
+     */
+    protected $logger = null;
+
+    public function setLogger(LoggerInterface $logger) {
+        $this->logger = $logger;
+    }
 
     /**
      * @return int
@@ -42,23 +52,24 @@ class ReplaceCommandHookDispatcher extends HookDispatcher
      *
      * @return callable
      */
-    public function getReplacementCommand(CommandData $commandData, OutputInterface $output)
+    public function getReplacementCommand(CommandData $commandData)
     {
-        $replaceCommandHooks = $this->getReplaceCommandHooks($commandData);
+        $replaceCommandHooks = $this->getReplaceCommandHooks();
 
         // We only take the first hook implementation of "replace-command" as the replacement. Commands shouldn't have
         // more than one replacement.
         $replacementCommand = reset($replaceCommandHooks);
 
-        if (count($replaceCommandHooks) > 1) {
+        if ($this->logger && count($replaceCommandHooks) > 1) {
             $command_name = $commandData->annotationData()->get('command', 'unknown');
-            $output->writeln("<comment>Warning: multiple implementations of the \"replace-command\" hook exist for the \"$command_name\" command:</comment>");
+            $message = "Multiple implementations of the \"replace - command\" hook exist for the \"$command_name\" command.\n";
             foreach($replaceCommandHooks as $replaceCommandHook) {
                 $class = get_class($replaceCommandHook[0]);
                 $method = $replaceCommandHook[1];
                 $hook_name = "$class->$method";
-                $output->writeln("<comment>  - $hook_name</comment>");
+                $message .= "  - $hook_name\n";
             }
+            $this->logger->warning($message);
         }
 
         return $replacementCommand;

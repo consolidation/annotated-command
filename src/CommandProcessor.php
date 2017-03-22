@@ -2,7 +2,8 @@
 namespace Consolidation\AnnotatedCommand;
 
 use Consolidation\AnnotatedCommand\Hooks\Dispatchers\ReplaceCommandHookDispatcher;
-use Symfony\Component\Console\Command\Command;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
@@ -26,8 +27,10 @@ use Consolidation\AnnotatedCommand\Hooks\Dispatchers\ExtracterHookDispatcher;
  * Provide your command processor to the AnnotatedCommandFactory
  * via AnnotatedCommandFactory::setCommandProcessor().
  */
-class CommandProcessor
+class CommandProcessor implements LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+
     /** var HookManager */
     protected $hookManager;
     /** var FormatterManager */
@@ -116,8 +119,7 @@ class CommandProcessor
             $result = $this->validateRunAndAlter(
                 $names,
                 $commandCallback,
-                $commandData,
-                $output
+                $commandData
             );
             return $this->handleResults($output, $names, $result, $commandData);
         } catch (\Exception $e) {
@@ -129,8 +131,7 @@ class CommandProcessor
     public function validateRunAndAlter(
         $names,
         $commandCallback,
-        CommandData $commandData,
-        OutputInterface $output
+        CommandData $commandData
     ) {
         // Validators return any object to signal a validation error;
         // if the return an array, it replaces the arguments.
@@ -141,8 +142,9 @@ class CommandProcessor
         }
 
         $replaceDispatcher = new ReplaceCommandHookDispatcher($this->hookManager(), $names);
+        $replaceDispatcher->setLogger($this->logger);
         if ($replaceDispatcher->hasReplaceCommandHook()) {
-            $commandCallback = $replaceDispatcher->getReplacementCommand($commandData, $output);
+            $commandCallback = $replaceDispatcher->getReplacementCommand($commandData);
         }
 
         // Run the command, alter the results, and then handle output and status
