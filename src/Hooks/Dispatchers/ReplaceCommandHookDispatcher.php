@@ -69,7 +69,8 @@ class ReplaceCommandHookDispatcher extends HookDispatcher implements LoggerAware
      *
      * @return array
      */
-    public function getReplacementCommandArguments(CommandData $commandData) {
+    public function getReplacementCommandArguments(CommandData $commandData)
+    {
         $args_and_options = $commandData->getArgsAndOptions();
         $args = [ $args_and_options ];
 
