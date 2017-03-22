@@ -75,4 +75,16 @@ class ReplaceCommandHookDispatcher extends HookDispatcher
 
         return $replacementCommand;
     }
+
+    /**
+     * @param \Consolidation\AnnotatedCommand\CommandData $commandData
+     *
+     * @return array
+     */
+    public function getReplacementCommandArguments(CommandData $commandData) {
+        $args_and_options = $commandData->getArgsAndOptions();
+        $args = [ $args_and_options ];
+
+        return $args;
+    }
 }

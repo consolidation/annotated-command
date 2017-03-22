@@ -147,11 +147,9 @@ class CommandProcessor implements LoggerAwareInterface
         }
         if ($replaceDispatcher->hasReplaceCommandHook()) {
             $commandCallback = $replaceDispatcher->getReplacementCommand($commandData);
-            $args_and_options = $commandData->getArgsAndOptions();
-            $args = [ $args_and_options ];
+            $args = $replaceDispatcher->getReplacementCommandArguments($commandData);
             $result = $this->runCommandCallback($commandCallback, $commandData, $args);
-        }
-        else {
+        } else {
             // Run the command, alter the results, and then handle output and status
             $result = $this->runCommandCallback($commandCallback, $commandData);
         }
