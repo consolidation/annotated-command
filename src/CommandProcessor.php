@@ -147,13 +147,10 @@ class CommandProcessor implements LoggerAwareInterface
         }
         if ($replaceDispatcher->hasReplaceCommandHook()) {
             $commandCallback = $replaceDispatcher->getReplacementCommand($commandData);
-            $args = $replaceDispatcher->getReplacementCommandArguments($commandData);
-            $result = $this->runCommandCallback($commandCallback, $commandData, $args);
-        } else {
-            // Run the command, alter the results, and then handle output and status
-            $result = $this->runCommandCallback($commandCallback, $commandData);
         }
 
+        // Run the command, alter the results, and then handle output and status
+        $result = $this->runCommandCallback($commandCallback, $commandData);
         return $this->processResults($names, $result, $commandData);
     }
 
@@ -202,13 +199,11 @@ class CommandProcessor implements LoggerAwareInterface
     /**
      * Run the main command callback
      */
-    protected function runCommandCallback($commandCallback, CommandData $commandData, $args = [])
+    protected function runCommandCallback($commandCallback, CommandData $commandData)
     {
         $result = false;
         try {
-            if (!$args) {
-                $args = $commandData->getArgsAndOptions();
-            }
+            $args = $commandData->getArgsAndOptions();
             $result = call_user_func_array($commandCallback, $args);
         } catch (\Exception $e) {
             $result = new CommandError($e->getMessage(), $e->getCode());

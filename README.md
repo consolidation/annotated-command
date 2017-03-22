@@ -208,8 +208,10 @@ class MyReplaceCommandHook  {
 
   /**
    * @hook replace-command foo:bar
+   * 
+   * Parameters must match original command method. 
    */
-  public function myFooBarReplacement($args) {
+  public function myFooBarReplacement($first_arg) {
     print "Hello world!";
   }
 }

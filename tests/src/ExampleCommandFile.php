@@ -266,7 +266,7 @@ class ExampleCommandFile
     /**
      * @hook replace-command test:replace-command
      */
-    public function hookTestReplaceCommandHook(array $args)
+    public function hookTestReplaceCommandHook($value)
     {
         $this->output->writeln("bar");
     }
