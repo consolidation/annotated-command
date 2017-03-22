@@ -139,7 +139,7 @@ class CommandProcessor
         }
 
         $replaceDispatcher = new ReplaceCommandHookDispatcher($this->hookManager(), $names);
-        if ($replaceDispatcher->hasCommandReplacement($commandData)) {
+        if ($replaceDispatcher->hasReplaceCommandHook($commandData)) {
             $commandCallback = $replaceDispatcher->getReplacementCommand($commandData);
         }
 

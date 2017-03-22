@@ -10,7 +10,7 @@ use Symfony\Component\Console\Event\ConsoleCommandEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
- * Call hooks
+ * Call hooks.
  */
 class ReplaceCommandHookDispatcher extends HookDispatcher
 {
@@ -20,7 +20,7 @@ class ReplaceCommandHookDispatcher extends HookDispatcher
      *
      * @return int
      */
-    public function hasCommandReplacement(CommandData $commandData) {
+    public function hasReplaceCommandHook(CommandData $commandData) {
         return count($this->getReplaceCommandHooks($commandData));
     }
 
