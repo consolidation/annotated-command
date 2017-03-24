@@ -72,6 +72,14 @@ class CommandInfoTests extends \PHPUnit_Framework_TestCase
             'bob',
             $commandInfo->options()->get('unused')
         );
+        $this->assertEquals(
+            'one,two',
+            $commandInfo->getAnnotation('dup')
+        );
+        $this->assertEquals(
+            ['one','two'],
+            $commandInfo->getAnnotationList('dup')
+        );
     }
 
     function testReturnValue()

@@ -142,6 +142,8 @@ class ExampleCommandFile
      * @usage 2 2 --negate
      *   Add two plus two and then negate.
      * @custom
+     * @dup one
+     * @dup two
      */
     public function testArithmatic($one, $two = 2, $options = ['negate' => false, 'unused' => 'bob'])
     {

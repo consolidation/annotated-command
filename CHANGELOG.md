@@ -1,5 +1,9 @@
 # Change Log
 
+### CURRENT
+
+- Allow multiple annotations with the same key. These are returned as a csv, or, alternately, can be accessed as an array via the new accessor.
+
 ### 2.4.4 - 27 Feb 2017
 
 - BUGFIX: Avoid rewriting the command cache unless something has changed.
