@@ -258,18 +258,34 @@ class CommandInfo
     }
 
     /**
-     * Return a specific named annotation for this command.
+     * Return a specific named annotation for this command as a list.
      *
-     * @param string $annotation The name of the annotation.
-     * @return string
+     * @param string $name The name of the annotation.
+     * @return array|null
      */
-    public function getAnnotation($annotation)
+    public function getAnnotationList($name)
     {
         // hasAnnotation parses the docblock
-        if (!$this->hasAnnotation($annotation)) {
+        if (!$this->hasAnnotation($name)) {
             return null;
         }
-        return $this->otherAnnotations[$annotation];
+        return $this->otherAnnotations->getList($name);
+        ;
+    }
+
+    /**
+     * Return a specific named annotation for this command as a string.
+     *
+     * @param string $name The name of the annotation.
+     * @return string|null
+     */
+    public function getAnnotation($name)
+    {
+        // hasAnnotation parses the docblock
+        if (!$this->hasAnnotation($name)) {
+            return null;
+        }
+        return $this->otherAnnotations->get($name);
     }
 
     /**
@@ -290,6 +306,11 @@ class CommandInfo
      */
     public function addAnnotation($name, $content)
     {
+        // Convert to an array and merge if there are multiple
+        // instances of the same annotation defined.
+        if (isset($this->otherAnnotations[$name])) {
+            $content = array_merge((array) $this->otherAnnotations[$name], (array)$content);
+        }
         $this->otherAnnotations[$name] = $content;
     }
 
