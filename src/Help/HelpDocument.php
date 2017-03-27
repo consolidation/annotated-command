@@ -19,8 +19,8 @@ class HelpDocument implements DomDataInterface
      */
     public function __construct(Command $command)
     {
-        $dom = self::generateBaseHelpDom($command);
-        $dom = self::alterHelpDocument($command, $dom);
+        $dom = $this->generateBaseHelpDom($command);
+        $dom = $this->alterHelpDocument($command, $dom);
 
         $this->command = $command;
         $this->dom = $dom;
@@ -41,7 +41,7 @@ class HelpDocument implements DomDataInterface
      * @param Command $command
      * @return \DomDocument
      */
-    private static function generateBaseHelpDom(Command $command)
+    protected function generateBaseHelpDom(Command $command)
     {
         // Use Symfony to generate xml text. If other formats are
         // requested, convert from xml to the desired form.
@@ -55,7 +55,7 @@ class HelpDocument implements DomDataInterface
      * @param \DomDocument $dom
      * @return \DomDocument
      */
-    private static function alterHelpDocument(Command $command, \DomDocument $dom)
+    protected function alterHelpDocument(Command $command, \DomDocument $dom)
     {
         if ($command instanceof HelpDocumentAlter) {
             $dom = $command->helpAlter($dom);
