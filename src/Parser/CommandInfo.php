@@ -89,6 +89,11 @@ class CommandInfo
     protected $returnType;
 
     /**
+     * @var array
+     */
+    protected $calls = [];
+
+    /**
      * Create a new CommandInfo class for a particular method of a class.
      *
      * @param string|mixed $classNameOrInstance The name of a class, or an
@@ -434,6 +439,25 @@ class CommandInfo
         }
         $topics = $this->getAnnotation('topics');
         return explode(',', trim($topics));
+    }
+
+    /**
+     * Returns an array of commands that this command calls.
+     *
+     * @return string[]
+     */
+    public function getCalls()
+    {
+        return $this->calls;
+    }
+
+    public function setCalls($calls) {
+        if (is_string($calls)) {
+            $calls = explode(',', static::convertListToCommaSeparated($calls));
+        }
+        $this->calls = array_filter($calls);
+
+        return $this;
     }
 
     /**

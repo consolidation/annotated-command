@@ -6,6 +6,7 @@ use Consolidation\AnnotatedCommand\Parser\CommandInfo;
 use Consolidation\OutputFormatters\FormatterManager;
 use Consolidation\OutputFormatters\Options\FormatterOptions;
 use Consolidation\AnnotatedCommand\Help\HelpDocumentAlter;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -29,6 +30,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class AnnotatedCommand extends Command implements HelpDocumentAlter
 {
+    protected $calls = [];
     protected $commandCallback;
     protected $commandProcessor;
     protected $annotationData;
@@ -120,8 +122,20 @@ class AnnotatedCommand extends Command implements HelpDocumentAlter
         return $this;
     }
 
+    public function getCalls()
+    {
+        return $this->calls;
+    }
+
+    public function setCalls($calls)
+    {
+        $this->calls = $calls;
+        return $this;
+    }
+
     public function setCommandInfo($commandInfo)
     {
+        $this->setCalls($commandInfo->getCalls());
         $this->setDescription($commandInfo->getDescription());
         $this->setHelp($commandInfo->getHelp());
         $this->setAliases($commandInfo->getAliases());
@@ -381,11 +395,53 @@ class AnnotatedCommand extends Command implements HelpDocumentAlter
         $this->commandProcessor()->initializeHook($input, $this->getNames(), $this->annotationData);
     }
 
+    protected function executeCallsCommands(InputInterface $input, OutputInterface $output) {
+        if ($this->getCalls()) {
+            //$logger = $this->getApplication()->get('logger');
+            foreach ($this->getCalls() as $command_name) {
+                $command = $this->getApplication()->find($command_name);
+                if (!$command) {
+                    /** @var LoggerInterface $logger */
+                    //$logger->warning("Command $command_name does not exist. Skipping.");
+                    continue;
+                }
+
+                // @see http://symfony.com/doc/current/console/calling_commands.html
+                try {
+                    $exit_code = $command->run($input, $output);
+                    // If command was not successful, return early.
+                    if ($exit_code !== 0) {
+                        return $exit_code;
+                    }
+                }
+                catch (\Exception $e) {
+                    //$logger->error("Exception was caught while executing $command_name.");
+                    // Return non-zero exit code.
+                    return 1;
+                }
+            }
+        }
+
+        // Return 0 exit code for success.
+        return 0;
+    }
+
+    protected function executeCommand() {
+
+    }
+
     /**
      * {@inheritdoc}
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $calls_exit_code = $this->executeCallsCommands($input, $output);
+        // If one of the "@calls" commands returned a non-zero exit code,
+        // return early.
+        if ($calls_exit_code !== 0) {
+            return $calls_exit_code;;
+        }
+
         // Validate, run, process, alter, handle results.
         return $this->commandProcessor()->process(
             $output,
