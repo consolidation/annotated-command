@@ -135,6 +135,19 @@ class HookManager implements EventSubscriberInterface
     /**
      * Add an configuration provider hook
      *
+     * @param type CommandEventHookInterface $commandEventHook
+     * @param type $name The name of the command to hook
+     *   ('*' for all)
+     */
+    public function addCommandEventHook(CommandEventHookInterface $commandEventHook, $name = '*')
+    {
+        $this->hooks[$name][self::COMMAND_EVENT][] = $commandEventHook;
+        return $this;
+    }
+
+    /**
+     * Add an configuration provider hook
+     *
      * @param type InitializeHookInterface $provider
      * @param type $name The name of the command to hook
      *   ('*' for all)
