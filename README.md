@@ -322,3 +322,4 @@ public function alterCommandInfo(CommandInfo $commandInfo, $commandFileInstance)
 
 The existing solutions used their own hand-rolled regex-based parsers to process the contents of the DocBlock comments. consolidation/annotated-command uses the [phpdocumentor/reflection-docblock](https://github.com/phpDocumentor/ReflectionDocBlock) project (which is itself a regex-based parser) to interpret DocBlock contents. 
 A test
+Another Test
