@@ -10,6 +10,8 @@ class PrepareTerminalWidthOption implements PrepareFormatter
     /** var Application */
     protected $application;
 
+    protected $terminal;
+
     /** var int */
     protected $defaultWidth;
 
@@ -38,6 +40,19 @@ class PrepareTerminalWidthOption implements PrepareFormatter
         $this->application = $application;
     }
 
+    public function setTerminal($terminal)
+    {
+        $this->terminal = $terminal;
+    }
+
+    public function getTerminal()
+    {
+        if (!$this->terminal && class_exists('\Symfony\Component\Console\Terminal')) {
+            $this->terminal = new \Symfony\Component\Console\Terminal();
+        }
+        return $this->terminal;
+    }
+
     public function enableWrap($shouldWrap)
     {
         $this->shouldWrap = $shouldWrap;
@@ -59,10 +74,24 @@ class PrepareTerminalWidthOption implements PrepareFormatter
 
     protected function getTerminalWidth()
     {
-        if (!$this->application || !$this->shouldWrap) {
+        // Don't wrap if wrapping has been disabled.
+        if (!$this->shouldWrap) {
             return 0;
         }
 
+        $terminal = $this->getTerminal();
+        if ($terminal) {
+            return $terminal->getWidth();
+        }
+
+        return $this->getTerminalWidthViaApplication();
+    }
+
+    protected function getTerminalWidthViaApplication()
+    {
+        if (!$this->application) {
+            return 0;
+        }
         $dimensions = $this->application->getTerminalDimensions();
         if ($dimensions[0] == null) {
             return 0;

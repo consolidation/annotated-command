@@ -300,7 +300,9 @@ EOT;
         }
     },
     "help": "Test command with formatters",
-    "alias": "extab",
+    "aliases": [
+        "extab"
+    ],
     "topics": [
         "docs-tables"
     ]
