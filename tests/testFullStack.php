@@ -13,6 +13,7 @@ use Consolidation\AnnotatedCommand\Hooks\ValidatorInterface;
 use Consolidation\AnnotatedCommand\Options\AlterOptionsCommandEvent;
 use Consolidation\AnnotatedCommand\Parser\CommandInfo;
 use Consolidation\OutputFormatters\FormatterManager;
+use Consolidation\TestUtils\TestTerminal;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -94,7 +95,10 @@ class FullStackTests extends \PHPUnit_Framework_TestCase
         $formatter->addDefaultSimplifiers();
         $hookManager = new HookManager();
         $terminalWidthOption = new PrepareTerminalWidthOption();
+        $terminalWidthOption->enableWrap(true);
         $terminalWidthOption->setApplication($this->application);
+        $testTerminal = new TestTerminal(0);
+        $terminalWidthOption->setTerminal($testTerminal);
         $commandProcessor = new CommandProcessor($hookManager);
         $commandProcessor->setFormatterManager($formatter);
         $commandProcessor->addPrepareFormatter($terminalWidthOption);
@@ -249,20 +253,21 @@ EOT;
         $this->assertRunCommandViaApplicationEquals('example:wrap', $expectedUnwrappedOutput);
 
         $expectedWrappedOutput = <<<EOT
- ------------------- --------------------
-  First               Second
- ------------------- --------------------
-  This is a really    This is the second
-  long cell that      column of the same
-  contains a lot of   table. It is also
-  data. When it is    very long, and
-  rendered, it        should be wrapped
-  should be wrapped   across multiple
-  across multiple     lines, just like
-  lines.              the first column.
- ------------------- --------------------
+ ------------------ --------------------
+  First              Second
+ ------------------ --------------------
+  This is a really   This is the second
+  long cell that     column of the same
+  contains a lot     table. It is also
+  of data. When it   very long, and
+  is rendered, it    should be wrapped
+  should be          across multiple
+  wrapped across     lines, just like
+  multiple lines.    the first column.
+ ------------------ --------------------
 EOT;
         $this->application->setWidthAndHeight(42, 24);
+        $testTerminal->setWidth(42);
         $this->assertRunCommandViaApplicationEquals('example:wrap', $expectedWrappedOutput);
     }
 
