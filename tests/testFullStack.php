@@ -94,6 +94,7 @@ class FullStackTests extends \PHPUnit_Framework_TestCase
         $formatter->addDefaultSimplifiers();
         $hookManager = new HookManager();
         $terminalWidthOption = new PrepareTerminalWidthOption();
+        $terminalWidthOption->enableWrap(true);
         $terminalWidthOption->setApplication($this->application);
         $commandProcessor = new CommandProcessor($hookManager);
         $commandProcessor->setFormatterManager($formatter);

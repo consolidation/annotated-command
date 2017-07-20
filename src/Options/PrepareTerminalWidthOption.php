@@ -19,14 +19,28 @@ class PrepareTerminalWidthOption implements PrepareFormatter
     /** var int */
     protected $minWidth = 0;
 
+    /* var boolean */
+    protected $shouldWrap = true;
+
     public function __construct($defaultWidth = 0)
     {
         $this->defaultWidth = $defaultWidth;
+
+        // If STDOUT is not attached to a terminal, then disable
+        // automatic width detection.
+        if (function_exists('posix_isatty') && !posix_isatty(STDOUT)) {
+            $this->shouldWrap = false;
+        }
     }
 
     public function setApplication(Application $application)
     {
         $this->application = $application;
+    }
+
+    public function enableWrap($shouldWrap)
+    {
+        $this->shouldWrap = $shouldWrap;
     }
 
     public function prepare(CommandData $commandData, FormatterOptions $options)
@@ -45,7 +59,7 @@ class PrepareTerminalWidthOption implements PrepareFormatter
 
     protected function getTerminalWidth()
     {
-        if (!$this->application) {
+        if (!$this->application || !$this->shouldWrap) {
             return 0;
         }
 
