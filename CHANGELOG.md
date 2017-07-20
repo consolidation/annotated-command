@@ -1,8 +1,24 @@
 # Change Log
 
-### CURRENT
+### 2.4.9 - 20 Jul 2017
+
+- Automatically disable wordwrap when the terminal is not connected to STDOUT (#102)
+
+### 2.4.8 - 3 Apr 2017
 
 - Allow multiple annotations with the same key. These are returned as a csv, or, alternately, can be accessed as an array via the new accessor.
+- Unprotect two methods for benefit of Drush help. (#99)
+- BUGFIX: Remove symfony/console pin (#100)
+
+### 2.4.7 & 2.4.6 - 17 Mar 2017
+
+- Avoid wrapping help text (#93)
+- Pin symfony/console to version < 3.2.5 (#94)
+- Add getExampleUsages() to AnnotatedCommand. (#92)
+
+### 2.4.5 - 28 Feb 2017
+
+- Ensure that placeholder entries are written into the commandfile cache. (#86)
 
 ### 2.4.4 - 27 Feb 2017
 
