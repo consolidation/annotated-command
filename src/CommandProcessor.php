@@ -39,6 +39,8 @@ class CommandProcessor implements LoggerAwareInterface
     protected $displayErrorFunction;
     /** var PrepareFormatterOptions[] */
     protected $prepareOptionsList = [];
+    /** var boolean */
+    protected $passExceptions;
 
     public function __construct(HookManager $hookManager)
     {
@@ -69,6 +71,32 @@ class CommandProcessor implements LoggerAwareInterface
     {
         $this->displayErrorFunction = $fn;
         return $this;
+    }
+
+    /**
+     * Set a mode to make the annotated command library re-throw
+     * any exception that it catches while processing a command.
+     *
+     * The default behavior in the current (2.x) branch is to catch
+     * the exception and replace it with a CommandError object that
+     * may be processed by the normal output processing passthrough.
+     *
+     * In the 3.x branch, exceptions will never be caught; they will
+     * be passed through, as if setPassExceptions(true) were called.
+     * This is the recommended behavior.
+     */
+    public function setPassExceptions($passExceptions)
+    {
+        $this->passExceptions = $passExceptions;
+        return $this;
+    }
+
+    public function commandErrorForException(\Exception $e)
+    {
+        if ($this->passExceptions) {
+            throw $e;
+        }
+        return new CommandError($e->getMessage(), $e->getCode());
     }
 
     /**
@@ -123,7 +151,7 @@ class CommandProcessor implements LoggerAwareInterface
             );
             return $this->handleResults($output, $names, $result, $commandData);
         } catch (\Exception $e) {
-            $result = new CommandError($e->getMessage(), $e->getCode());
+            $result = $this->commandErrorForException($e);
             return $this->handleResults($output, $names, $result, $commandData);
         }
     }
@@ -206,7 +234,7 @@ class CommandProcessor implements LoggerAwareInterface
             $args = $commandData->getArgsAndOptions();
             $result = call_user_func_array($commandCallback, $args);
         } catch (\Exception $e) {
-            $result = new CommandError($e->getMessage(), $e->getCode());
+            $result = $this->commandErrorForException($e);
         }
         return $result;
     }
