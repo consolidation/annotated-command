@@ -1,5 +1,9 @@
 # Change Log
 
+### 2.4.10 - 21 July 2017
+
+- Add a method CommandProcessor::setPassExceptions() to allow applicationsto prevent the command processor from catching exceptions thrown by command methods and hooks. (#103)
+
 ### 2.4.9 - 20 Jul 2017
 
 - Automatically disable wordwrap when the terminal is not connected to STDOUT (#102)
