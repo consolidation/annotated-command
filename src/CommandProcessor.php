@@ -88,6 +88,7 @@ class CommandProcessor implements LoggerAwareInterface
     public function setPassExceptions($passExceptions)
     {
         $this->passExceptions = $passExceptions;
+        return $this;
     }
 
     public function commandErrorForException(\Exception $e)
