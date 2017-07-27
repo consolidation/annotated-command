@@ -27,12 +27,6 @@ class PrepareTerminalWidthOption implements PrepareFormatter
     public function __construct($defaultWidth = 0)
     {
         $this->defaultWidth = $defaultWidth;
-
-        // If STDOUT is not attached to a terminal, then disable
-        // automatic width detection.
-        if (function_exists('posix_isatty') && !posix_isatty(STDOUT)) {
-            $this->shouldWrap = false;
-        }
     }
 
     public function setApplication(Application $application)
