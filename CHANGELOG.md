@@ -1,5 +1,9 @@
 # Change Log
 
+### 2.4.11 - 27 July 2017
+
+- Back out #102: do not change behavior of word wrap based on STDOUT redirection.
+
 ### 2.4.10 - 21 July 2017
 
 - Add a method CommandProcessor::setPassExceptions() to allow applicationsto prevent the command processor from catching exceptions thrown by command methods and hooks. (#103)
