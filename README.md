@@ -231,7 +231,7 @@ The Annotated-Command project is completely agnostic to logging. If a command wi
 
 If you want to use annotations, but still want access to the Symfony Command, e.g. to get a reference to the helpers in order to call some legacy code, you may create an ordinary Symfony Command that extends \Consolidation\AnnotatedCommand\AnnotatedCommand, which is a \Symfony\Component\Console\Command\Command. Omit the configure method, and place your annotations on the `execute()` method.
 
-It is also possible to add InputInterface or OutputInterface parameters to any annotated method of a command file.
+It is also possible to add InputInterface and/or OutputInterface parameters to any annotated method of a command file (the parameters must go before command arguments).
 
 ## API Usage
 

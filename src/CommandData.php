@@ -93,12 +93,12 @@ class CommandData
         // to the beginning.
         array_shift($args);
 
-        if ($this->usesInputInterface) {
-            array_unshift($args, $this->input());
-        }
-
         if ($this->usesOutputInterface) {
             array_unshift($args, $this->output());
+        }
+
+        if ($this->usesInputInterface) {
+            array_unshift($args, $this->input());
         }
 
         return $args;
