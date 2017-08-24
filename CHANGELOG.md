@@ -1,5 +1,9 @@
 # Change Log
 
+### 2.4.12 - 24 Aug 2017
+
+- BUGFIX: Allow annotated commands to directly use InputInterface and OutputInterface (#106)
+
 ### 2.4.11 - 27 July 2017
 
 - Back out #102: do not change behavior of word wrap based on STDOUT redirection.
