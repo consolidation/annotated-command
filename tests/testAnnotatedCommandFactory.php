@@ -254,6 +254,24 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
         );
     }
 
+    function testCommandWithIOParameters()
+    {
+        $this->commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile;
+        $this->commandFactory = new AnnotatedCommandFactory();
+        $commandInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'commandWithIOParameters');
+
+        $command = $this->commandFactory->createCommand($commandInfo, $this->commandFileInstance);
+
+        $this->assertInstanceOf('\Symfony\Component\Console\Command\Command', $command);
+        $this->assertEquals('command:with-io-parameters', $command->getName());
+        $this->assertEquals("This command work with app's input and output", $command->getDescription());
+        $this->assertEquals('', $command->getHelp());
+        $this->assertEquals('command:with-io-parameters', $command->getSynopsis());
+
+        $input = new StringInput('command:with-io-parameters');
+        $this->assertRunCommandViaApplicationEquals($command, $input, 'command:with-io-parameters');
+    }
+
     function testCommandWithNoArguments()
     {
         $this->commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile;

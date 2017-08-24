@@ -100,6 +100,16 @@ class ExampleCommandFile
     }
 
     /**
+     * This command work with app's input and output
+     *
+     * @command command:with-io-parameters
+     */
+    public function commandWithIOParameters(InputInterface $input, OutputInterface $output)
+    {
+        return $input->getFirstArgument();
+    }
+
+    /**
      * This command has no arguments--only options
      *
      * Return a result only if not silent.

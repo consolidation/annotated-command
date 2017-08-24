@@ -3,8 +3,6 @@ namespace Consolidation\AnnotatedCommand;
 
 use Consolidation\AnnotatedCommand\Hooks\HookManager;
 use Consolidation\AnnotatedCommand\Parser\CommandInfo;
-use Consolidation\OutputFormatters\FormatterManager;
-use Consolidation\OutputFormatters\Options\FormatterOptions;
 use Consolidation\AnnotatedCommand\Help\HelpDocumentAlter;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -225,8 +223,11 @@ class AnnotatedCommand extends Command implements HelpDocumentAlter
      */
     protected function checkUsesInputInterface($params)
     {
+        /** @var \ReflectionParameter $firstParam */
         $firstParam = reset($params);
-        return $firstParam instanceof InputInterface;
+        return $firstParam && $firstParam->getClass() && $firstParam->getClass()->implementsInterface(
+            '\\Symfony\\Component\\Console\\Input\\InputInterface'
+        );
     }
 
     /**
@@ -251,7 +252,11 @@ class AnnotatedCommand extends Command implements HelpDocumentAlter
         $index = $this->checkUsesInputInterface($params) ? 1 : 0;
         $this->usesOutputInterface =
             (count($params) > $index) &&
-            ($params[$index] instanceof OutputInterface);
+            $params[$index]->getClass() &&
+            $params[$index]->getClass()->implementsInterface(
+                '\\Symfony\\Component\\Console\\Output\\OutputInterface'
+            )
+        ;
         return $this;
     }
 
@@ -428,8 +433,8 @@ class AnnotatedCommand extends Command implements HelpDocumentAlter
         );
 
         $commandData->setUseIOInterfaces(
-            $this->usesOutputInterface,
-            $this->usesInputInterface
+            $this->usesInputInterface,
+            $this->usesOutputInterface
         );
 
         return $commandData;
