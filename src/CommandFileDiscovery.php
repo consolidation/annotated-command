@@ -40,6 +40,8 @@ class CommandFileDiscovery
     protected $includeFilesAtBase = true;
     /** @var integer */
     protected $searchDepth = 2;
+    /** @var bool */
+    protected $followLinks = false;
 
     public function __construct()
     {
@@ -98,6 +100,16 @@ class CommandFileDiscovery
     public function setSearchDepth($searchDepth)
     {
         $this->searchDepth = $searchDepth;
+        return $this;
+    }
+
+    /**
+     * Specify that the discovery object should follow symlinks. By
+     * default, symlinks are not followed.
+     */
+    public function followLinks($followLinks = true)
+    {
+        $this->followLinks = $followLinks;
         return $this;
     }
 
@@ -323,6 +335,10 @@ class CommandFileDiscovery
 
         foreach ($this->excludeList as $item) {
             $finder->exclude($item);
+        }
+
+        if ($this->followLinks) {
+            $finder->followLinks();
         }
 
         return $finder;
