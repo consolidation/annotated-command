@@ -113,15 +113,70 @@ The command-event hook is called via the Symfony Console command event notificat
 
 ### Option Event Hook
 
-The option event hook ([OptionHookInterface](src/Hooks/OptionHookInterface.php)) is called for a specific command, whenever it is executed, or its help command is called. Any additional options for the command may be added here by instantiating and returnng an InputOption array.
+The option event hook ([OptionHookInterface](src/Hooks/OptionHookInterface.php)) is called for a specific command, whenever it is executed, or its help command is called. Any additional options for the command may be added here by calling the `addOption` method of the provided `$command` object. Note that the option hook is only necessary for calculating dynamic options. Static options may be added via the @option annotation on any hook that uses them. See the [Alter Hook](https://github.com/consolidation/annotated-command#alter-hook) documentation below for an example.
+```
+use Consolidation\AnnotatedCommand\AnnotationData;
+use Symfony\Component\Console\Command\Command;
+
+/**
+ * @hook option some:command
+ */
+public function additionalOption(Command $command, AnnotationData $annotationData)
+{
+    $command->addOption(
+        'dynamic',
+        '',
+        InputOption::VALUE_NONE,
+        'Option added by @hook option some:command'
+    );
+}
+```
 
 ### Initialize Hook
 
 The initialize hook ([InitializeHookInterface](src/Hooks/InitializeHookInterface.php)) runs prior to the interact hook.  It may supply command arguments and options from a configuration file or other sources. It should never do any user interaction.
 
+The [consolidation/config](https://github.com/consolidation/config) project (which is used in [Robo PHP](https://github.com/consolidation/robo)) uses `@hook init` to automatically inject values from `config.yml` configuration files for options that were not provided on the command line.
+```
+use Consolidation\AnnotatedCommand\AnnotationData;
+use Symfony\Component\Console\Input\InputInterface;
+
+/**
+ * @hook init some:command
+ */
+public function initSomeCommand(InputInterface $input, AnnotationData $annotationData)
+{
+    $value = $input->getOption('some-option');
+    if (!$value) {
+        $input->setOption('some-option', $this->generateRandomOptionValue());
+    }
+}
+```
+
 ### Interact Hook
 
-The interact hook ([InteractorInterface](src/Hooks/InteractorInterface.php)) runs prior to argument and option validation. Required arguments and options not supplied on the command line may be provided during this phase by prompting the user.  Note that the interact hook is not called if the --no-interaction flag is supplied, whereas the command-event hook and the inject-configuration hook are.
+The interact hook ([InteractorInterface](src/Hooks/InteractorInterface.php)) runs prior to argument and option validation. Required arguments and options not supplied on the command line may be provided during this phase by prompting the user.  Note that the interact hook is not called if the --no-interaction flag is supplied, whereas the command-event hook and the init hook are.
+```
+use Consolidation\AnnotatedCommand\AnnotationData;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
+
+/**
+ * @hook interact some:command
+ */
+public function interact(InputInterface $input, OutputInterface $output, AnnotationData $annotationData)
+{
+    $io = new SymfonyStyle($input, $output);
+
+    // If the user did not specify a password, then prompt for one.
+    $password = $input->getOption('password');
+    if (empty($password)) {
+        $password = $io->askHidden("Enter a password:", function ($value) { return $value; });
+        $input->setOption('password', $password);
+    }
+}
+```
 
 ### Validate Hook
 
@@ -133,24 +188,91 @@ The purpose of the validate hook ([ValidatorInterface](src/Hooks/ValidatorInterf
 - Return false. Message is empty, and status is 1. Deprecated.
 
 The validate hook may change the arguments and options of the command by modifying the Input object in the provided CommandData parameter.  Any number of validation hooks may run, but if any fails, then execution of the command stops.
+```
+use Consolidation\AnnotatedCommand\CommandData;
+
+/**
+ * @hook validate some:command
+ */
+public function validatePassword(CommandData $commandData)
+{
+    $input = $commandData->input();
+    $password = $input->getOption('password');
+
+    if (strpbrk($password, '!;$`') === false) {
+        throw new \Exception("Your password MUST contain at least one of the characters ! ; ` or $, for no rational reason whatsoever.");
+    }
+}
+```
 
 ### Command Hook
 
 The command hook is provided for semantic purposes.  The pre-command and command hooks are equivalent to the post-validate hook, and should confirm to the interface ([ValidatorInterface](src/Hooks/ValidatorInterface.php)).  All of the post-validate hooks will be called before the first pre-command hook is called.  Similarly, the post-command hook is equivalent to the pre-process hook, and should implement the interface ([ProcessResultInterface](src/Hooks/ProcessResultInterface.php)).
 
 The command callback itself (the method annotated @command) is called after the last command hook, and prior to the first post-command hook.
+```
+use Consolidation\AnnotatedCommand\CommandData;
+
+/**
+ * @hook pre-command some:command
+ */
+public function preCommand(CommandData $commandData)
+{
+    // Do something before some:command
+}
+
+/**
+ * @hook post-command some:command
+ */
+public function postCommand($result, CommandData $commandData)
+{
+    // Do something after some:command
+}
+```
 
 ### Process Hook
 
-The process hook ([ProcessResultInterface](src/Hooks/ProcessResultInterface.php)) is specifically designed to convert a series of processing instructions into a final result.  An example of this is implemented in Robo; if a Robo command returns a TaskInterface, then a Robo process hook will execute the task and return the result. This allows a pre-process hook to alter the task, e.g. by adding more operations to a task collection.
+The process hook ([ProcessResultInterface](src/Hooks/ProcessResultInterface.php)) is specifically designed to convert a series of processing instructions into a final result.  An example of this is implemented in Robo in the [CollectionProcessHook](https://github.com/consolidation/Robo/blob/master/src/Collection/CollectionProcessHook.php) class; if a Robo command returns a TaskInterface, then a Robo process hook will execute the task and return the result. This allows a pre-process hook to alter the task, e.g. by adding more operations to a task collection.
 
 The process hook should not be used for other purposes.
+```
+use Consolidation\AnnotatedCommand\CommandData;
+
+/**
+ * @hook process some:command
+ */
+public function process($result, CommandData $commandData)
+{
+    if ($result instanceof MyInterimType) {
+        $result = $this->convertInterimResult($result);
+    }
+}
+```
 
 ### Alter Hook
 
 An alter hook ([AlterResultInterface](src/Hooks/AlterResultInterface.php)) changes the result object. Alter hooks should only operate on result objects of a type they explicitly recognize. They may return an object of the same type, or they may convert the object to some other type.
 
 If something goes wrong, and the alter hooks wishes to force the command to fail, then it may either return a CommandError object, or throw an exception.
+```
+use Consolidation\AnnotatedCommand\CommandData;
+
+/**
+ * Demonstrate an alter hook with an option
+ *
+ * @hook alter some:command
+ * @option my-alteration Alter the result of the command in some way.
+ * @usage some:command --my-alteration
+ */
+public function alterSomeCommand($result, CommandData $commandData)
+{
+    if ($commandData->input()->getOption('my-alteration')) {
+        $result[] = $this->getOneMoreRow();
+    }
+
+    return $result;
+}
+```
 
 ### Status Hook
 
