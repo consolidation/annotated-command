@@ -1,5 +1,9 @@
 # Change Log
 
+### 2.4.13 - 28 Aug 2017
+
+- Add a followLinks() method (#108)
+
 ### 2.4.12 - 24 Aug 2017
 
 - BUGFIX: Allow annotated commands to directly use InputInterface and OutputInterface (#106)

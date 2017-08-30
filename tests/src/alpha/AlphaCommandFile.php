@@ -9,6 +9,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Consolidation\AnnotatedCommand\CommandData;
 use Consolidation\AnnotatedCommand\Events\CustomEventAwareInterface;
 use Consolidation\AnnotatedCommand\Events\CustomEventAwareTrait;
+use Symfony\Component\Console\Command\Command;
 
 /**
  * Test file used in the testCommandDiscovery() test.
@@ -126,7 +127,7 @@ class AlphaCommandFile implements CustomEventAwareInterface
     /**
      * @hook option example:table
      */
-    public function additionalOptionForExampleTable($command, $annotationData)
+    public function additionalOptionForExampleTable(Command $command, AnnotationData $annotationData)
     {
         $command->addOption(
             'dynamic',
