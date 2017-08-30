@@ -82,11 +82,15 @@ No other values should be used for the default value. For example, `$options = [
 
 Commandfiles may provide hooks in addition to commands. A commandfile method that contains a @hook annotation is registered as a hook instead of a command.  The format of the hook annotation is:
 ```
-@hook type commandname|annotation
+@hook type target
 ```
-The commandname may be the command's primary name (e.g. `my:command`), it's method name (e.g. myCommand) or any of its aliases.
+The hook **type** determines when during the command lifecycle this hook will be called. The available hook types are described in detail below.
 
-If an annotation is given instead, then this hook function will run for all commands with the specified annotation.
+The hook **target** specifies which command or commands the hook will be attached to. There are several different ways to specify the hook target.
+
+- The command's primary name (e.g. `my:command`) or the command's method name (e.g. myCommand) will attach the hook to only that command.
+- An annotation (e.g. `@foo`) will attach the hook to any command that is annotated with the given label.
+- If the target is omitted, then the hook will be attached to every command defined in the same class as the hook implementation.
 
 There are ten types of hooks supported:
 
