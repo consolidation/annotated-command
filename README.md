@@ -78,6 +78,8 @@ The `$options` array must be an associative array whose key is the name of the o
 
 No other values should be used for the default value. For example, `$options = ['a' => 1]` is **incorrect**; instead, use `$options = ['a' => '1']`. Similarly, `$options = ['a' => true]` is unsupported, or at least not useful, as this would indicate that the value of `--a` was always `true`, whether or not it appeared on the command line.
 
+Default values for options may also be provided via the `@default` annotation. See hook alter, below.
+
 ## Hooks
 
 Commandfiles may provide hooks in addition to commands. A commandfile method that contains a @hook annotation is registered as a hook instead of a command.  The format of the hook annotation is:
@@ -265,14 +267,35 @@ use Consolidation\AnnotatedCommand\CommandData;
  * Demonstrate an alter hook with an option
  *
  * @hook alter some:command
- * @option my-alteration Alter the result of the command in some way.
- * @usage some:command --my-alteration
+ * @option $alteration Alter the result of the command in some way.
+ * @usage some:command --alteration
  */
 public function alterSomeCommand($result, CommandData $commandData)
 {
-    if ($commandData->input()->getOption('my-alteration')) {
+    if ($commandData->input()->getOption('alteration')) {
         $result[] = $this->getOneMoreRow();
     }
+
+    return $result;
+}
+```
+
+If an option needs to be provided with a default value, that may be done via the `@default` annotation.
+
+```
+use Consolidation\AnnotatedCommand\CommandData;
+
+/**
+ * Demonstrate an alter hook with an option that has a default value
+ *
+ * @hook alter some:command
+ * @option $name Give the result a name.
+ * @default $name George
+ * @usage some:command --name=George
+ */
+public function nameSomeCommand($result, CommandData $commandData)
+{
+    $result['name'] = $commandData->input()->getOption('name')
 
     return $result;
 }
