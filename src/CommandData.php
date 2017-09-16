@@ -1,6 +1,7 @@
 <?php
 namespace Consolidation\AnnotatedCommand;
 
+use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -80,7 +81,23 @@ class CommandData
 
     public function options()
     {
-        return $this->input->getOptions();
+        $options = $this->input->getOptions();
+
+        // If Input isn't an ArgvInput, then return the options as-is.
+        if (!$this->input instanceof ArgvInput) {
+            return $options;
+        }
+
+        // If we have an ArgvInput, then we can determine if options
+        // are missing from the command line. Convert any missing
+        // options with a 'null' value to 'true' or false'.
+        foreach ($options as $option => $value) {
+            if ($value === null) {
+                $options[$option] = $this->input->hasParameterOption("--$option");
+            }
+        }
+
+        return $options;
     }
 
     public function getArgsWithoutAppName()

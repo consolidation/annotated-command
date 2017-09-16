@@ -496,6 +496,16 @@ class CommandInfo
                 list($fullName, $shortcut) = explode('|', $name, 2);
             }
 
+            // Treat the following three cases identically:
+            //   - 'foo' => InputOption::VALUE_OPTIONAL
+            //   - 'foo' => true
+            //   - 'foo' => null
+            // The first form is preferred, but we will convert all
+            // forms to 'null' for storage as the option default value.
+            if (($defaultValue === InputOption::VALUE_OPTIONAL) || ($defaultValue === true)) {
+                $defaultValue = null;
+            }
+
             if (is_bool($defaultValue)) {
                 $explicitOptions[$fullName] = new InputOption($fullName, $shortcut, InputOption::VALUE_NONE, $description);
             } elseif ($defaultValue === InputOption::VALUE_REQUIRED) {
