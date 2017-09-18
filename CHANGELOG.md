@@ -1,5 +1,9 @@
 # Change Log
 
+### 2.6.1 - 18 Sep 2017
+
+- Revert to version 2.4.9, backing out breaking changes in 2.5.x.
+
 ### 2.4.13 - 28 Aug 2017
 
 - Add a followLinks() method (#108)
