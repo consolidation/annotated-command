@@ -115,17 +115,18 @@ class CommandData
         }
 
         // If we have an ArgvInput, then we can determine if options
-        // are missing from the command line. Convert any missing
-        // options with a 'null' value to 'true' or false'.
+        // are missing from the command line. If the option value is
+        // missing from $input, then we will keep the value `null`.
+        // If it is present, but has no explicit value, then change it its
+        // value to `true`.
         foreach ($options as $option => $value) {
-            if ($value === null) {
-                $options[$option] = $this->input->hasParameterOption("--$option");
+            if (($value === null) && ($this->input->hasParameterOption("--$option"))) {
+                $options[$option] = true;
             }
         }
 
         return $options;
     }
-
 
     protected function shouldConvertOptionToFalse($options, $option, $value)
     {

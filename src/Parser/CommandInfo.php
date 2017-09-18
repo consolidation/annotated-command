@@ -511,12 +511,11 @@ class CommandInfo
                 list($fullName, $shortcut) = explode('|', $name, 2);
             }
 
-            // Treat the following three cases identically:
+            // Treat the following two cases identically:
             //   - 'foo' => InputOption::VALUE_OPTIONAL
-            //   - 'foo' => true
             //   - 'foo' => null
-            // The first form is preferred, but we will convert all
-            // forms to 'null' for storage as the option default value.
+            // The first form is preferred, but we will convert the value
+            // to 'null' for storage as the option default value.
             if ($defaultValue === InputOption::VALUE_OPTIONAL) {
                 $defaultValue = null;
             }
