@@ -19,6 +19,8 @@ class CommandData
     protected $usesOutputInterface;
     /** var boolean */
     protected $includeOptionsInArgs;
+    /** var array */
+    protected $specialDefaults = [];
 
     public function __construct(
         AnnotationData $annotationData,
@@ -81,6 +83,30 @@ class CommandData
 
     public function options()
     {
+        // We cannot tell the difference between '--foo' (an option without
+        // a value) and the absence of '--foo' when the option has an optional
+        // value, and the current vallue of the option is 'null' using only
+        // the public methods of InputInterface. We'll try to figure out
+        // which is which by other means here.
+        $options = $this->getAdjustedOptions();
+
+        // Make two conversions here:
+        // --foo=0 wil convert $value from '0' to 'false' for binary options.
+        // --foo with $value of 'true' will be forced to 'false' if --no-foo exists.
+        foreach ($options as $option => $value) {
+            if ($this->shouldConvertOptionToFalse($options, $option, $value)) {
+                $options[$option] = false;
+            }
+        }
+
+        return $options;
+    }
+
+    /**
+     * Use 'hasParameterOption()' to attempt to disambiguate option states.
+     */
+    protected function getAdjustedOptions()
+    {
         $options = $this->input->getOptions();
 
         // If Input isn't an ArgvInput, then return the options as-is.
@@ -98,6 +124,41 @@ class CommandData
         }
 
         return $options;
+    }
+
+
+    protected function shouldConvertOptionToFalse($options, $option, $value)
+    {
+        // If the value is 'true' (e.g. the option is '--foo'), then convert
+        // it to false if there is also an option '--no-foo'. n.b. if the
+        // commandline has '--foo=bar' then $value will not be 'true', and
+        // --no-foo will be ignored.
+        if ($value === true) {
+            // Check if the --no-* option exists. Note that none of the other
+            // alteration apply in the $value == true case, so we can exit early here.
+            $negation_key = 'no-' . $option;
+            return array_key_exists($negation_key, $options) && $options[$negation_key];
+        }
+
+        // If the option is '--foo=0', convert the '0' to 'false' when appropriate.
+        if ($value !== '0') {
+            return false;
+        }
+
+        // The '--foo=0' convertion is only applicable when the default value
+        // is not in the special defaults list. i.e. you get a literal '0'
+        // when your default is a string.
+        return in_array($option, $this->specialDefaults);
+    }
+
+    public function cacheSpecialDefaults($definition)
+    {
+        foreach ($definition->getOptions() as $option => $inputOption) {
+            $defaultValue = $inputOption->getDefault();
+            if (($defaultValue === null) || ($defaultValue === true)) {
+                $this->specialDefaults[] = $option;
+            }
+        }
     }
 
     public function getArgsWithoutAppName()

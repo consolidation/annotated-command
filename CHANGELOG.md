@@ -1,5 +1,9 @@
 # Change Log
 
+### 2.5.1 - 17 Sep 2017
+
+- Add support for options with a default value of 'true' (#119)
+
 ### 2.5.0 - 16 Sep 2017
 
 - BUGFIX: Improve handling of options with optional values, which previously was not working correctly. (#118)
