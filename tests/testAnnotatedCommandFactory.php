@@ -82,6 +82,26 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
         $this->assertRunCommandViaApplicationEquals($command, $input, 'Foo is false');
     }
 
+    function testOptionThatDefaultsToTrue()
+    {
+        $this->commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile;
+        $this->commandFactory = new AnnotatedCommandFactory();
+
+        $commandInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'defaultOptionDefaultsToTrue');
+
+        $command = $this->commandFactory->createCommand($commandInfo, $this->commandFileInstance);
+
+        // Test to see if we can differentiate between a missing option, and
+        // an option that has no value at all.
+        $input = new StringInput('default:option-defaults-to-true --foo=bar');
+        $this->assertRunCommandViaApplicationEquals($command, $input, "Foo is 'bar'");
+
+        $input = new StringInput('default:option-defaults-to-true --foo');
+        $this->assertRunCommandViaApplicationEquals($command, $input, 'Foo is true');
+
+        $input = new StringInput('default:option-defaults-to-true');
+        $this->assertRunCommandViaApplicationEquals($command, $input, 'Foo is true');
+    }
     /**
      * Test CommandInfo command caching.
      *

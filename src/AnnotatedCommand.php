@@ -437,6 +437,11 @@ class AnnotatedCommand extends Command implements HelpDocumentAlter
             $this->usesOutputInterface
         );
 
+        // Allow the commandData to cache the list of options with
+        // special default values ('null' and 'true'), as these will
+        // need special handling. @see CommandData::options().
+        $commandData->cacheSpecialDefaults($this->getDefinition());
+
         return $commandData;
     }
 }

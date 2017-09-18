@@ -502,11 +502,11 @@ class CommandInfo
             //   - 'foo' => null
             // The first form is preferred, but we will convert all
             // forms to 'null' for storage as the option default value.
-            if (($defaultValue === InputOption::VALUE_OPTIONAL) || ($defaultValue === true)) {
+            if ($defaultValue === InputOption::VALUE_OPTIONAL) {
                 $defaultValue = null;
             }
 
-            if (is_bool($defaultValue)) {
+            if ($defaultValue === false) {
                 $explicitOptions[$fullName] = new InputOption($fullName, $shortcut, InputOption::VALUE_NONE, $description);
             } elseif ($defaultValue === InputOption::VALUE_REQUIRED) {
                 $explicitOptions[$fullName] = new InputOption($fullName, $shortcut, InputOption::VALUE_REQUIRED, $description);
