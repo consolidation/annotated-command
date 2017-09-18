@@ -76,9 +76,15 @@ The `$options` array must be an associative array whose key is the name of the o
 - The special value InputOption::VALUE_OPTIONAL, which produces the following behavior:
   - If the option is given a value (e.g. `--foo=bar`), then the value will be a string.
   - If the option exists on the commandline, but has no value (e.g. `--foo`), then the value will be `true`.
-  - If the option does not exist on the commandline at all, then the value will be `false`.
+  - If the option does not exist on the commandline at all, then the value will be `null`.
+  - If the user explicitly sets `--foo=0`, then the value will be converted to `false`.
   - LIMITATION: If any Input object other than ArgvInput (or a subclass thereof) is used, then the value will be `null` for both the no-value case (`--foo`) and the no-option case. When using a StringInput, use `--foo=1` instead of `--foo` to avoid this problem.
-- The special value `true`. Note that if the default value of `--foo` is true, then the value of the `foo` option will be `true` when `--foo` is omitted from the commandline. Use `--foo=0` or `--no-foo` to set the value to `false`. The option may also be given other values (e.g. `--foo=bar`).
+- The special value `true` produces the following behavior:
+  - If the option is given a value (e.g. `--foo=bar`), then the value will be a string.
+  - If the option exists on the commandline, but has no value (e.g. `--foo`), then the value will be `true`.
+  - If the option does not exist on the commandline at all, then the value will also be `true`.
+  - If the user explicitly sets `--foo=0`, then the value will be converted to `false`.
+  - If the user adds `--no-foo` on the commandline, then the value of `foo` will be `false`.
 - An empty array, which indicates that the option may appear multiple times on the command line.
 
 No other values should be used for the default value. For example, `$options = ['a' => 1]` is **incorrect**; instead, use `$options = ['a' => '1']`. Similarly, `$options = ['a' => true]` is unsupported, or at least not useful, as this would indicate that the value of `--a` was always `true`, whether or not it appeared on the command line.

@@ -79,7 +79,7 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
         $this->assertRunCommandViaApplicationEquals($command, $input, 'Foo is true');
 
         $input = new StringInput('default:optional-value');
-        $this->assertRunCommandViaApplicationEquals($command, $input, 'Foo is false');
+        $this->assertRunCommandViaApplicationEquals($command, $input, 'Foo is NULL');
     }
 
     function testOptionThatDefaultsToTrue()
