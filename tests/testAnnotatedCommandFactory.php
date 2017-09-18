@@ -101,6 +101,18 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
 
         $input = new StringInput('default:option-defaults-to-true');
         $this->assertRunCommandViaApplicationEquals($command, $input, 'Foo is true');
+
+        $input = new StringInput('help default:option-defaults-to-true');
+        $this->assertRunCommandViaApplicationContains(
+            $command,
+            $input,
+            [
+                '--no-foo',
+                'Negate --foo option',
+            ]
+        );
+        $input = new StringInput('default:option-defaults-to-true --no-foo');
+        $this->assertRunCommandViaApplicationEquals($command, $input, 'Foo is false');
     }
     /**
      * Test CommandInfo command caching.

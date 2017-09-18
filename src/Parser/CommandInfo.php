@@ -482,9 +482,24 @@ class CommandInfo
         return $this->inputOptions;
     }
 
+    protected function addImplicitNoOptions()
+    {
+        $opts = $this->options()->getValues();
+        foreach ($opts as $name => $defaultValue) {
+            if ($defaultValue === true) {
+                $key = 'no-' . $name;
+                if (!array_key_exists($key, $opts)) {
+                    $description = "Negate --$name option.";
+                    $this->options()->add($key, $description, false);
+                }
+            }
+        }
+    }
+
     protected function createInputOptions()
     {
         $explicitOptions = [];
+        $this->addImplicitNoOptions();
 
         $opts = $this->options()->getValues();
         foreach ($opts as $name => $defaultValue) {
