@@ -1,5 +1,9 @@
 # Change Log
 
+### 2.6.0 - 18 Sep 2017
+
+- Revert to version 2.4.9, backing out breaking changes in 2.5.x.
+
 ### 2.4.9 - 20 Jul 2017
 
 - Automatically disable wordwrap when the terminal is not connected to STDOUT (#102)
