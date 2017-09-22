@@ -107,18 +107,46 @@ The hook **target** specifies which command or commands the hook will be attache
 
 There are ten types of hooks supported:
 
-- Command Event (Symfony)
-- Option
-- Initialize (Symfony)
-- Interact (Symfony)
-- Validate
-- Command
-- Process
-- Alter
-- Status
-- Extract
-- On-event
-- Replace Command
+- [Command Event](#command-event-hook) (Symfony)
+   - @pre-command-event
+   - @command-event
+   - @post-command-event
+- [Option](#option-event-hook)
+   - @pre-option
+   - @option
+   - @post-option
+- [Initialize](#initialize-hook) (Symfony)
+   - @pre-init
+   - @init
+   - @post-init
+- [Interact](#interact-hook) (Symfony)
+   - @pre-interact
+   - @interact
+   - @post-interact
+- [Validate](#validate-hook)
+   - @pre-validate
+   - @validate
+   - @post-validate
+- [Command](#command-hook)
+   - @pre-command
+   - @command
+   - @command-init
+- [Process](#process-hook)
+   - @pre-process
+   - @process
+   - @post-process
+- [Alter](#alter-hook)
+   - @pre-alter
+   - @alter
+   - @post-alter
+- [Status](#status-hook)
+   - @status
+- [Extract](#extract-hook)
+   - @extract
+- [On-event](#on-event-hook)
+   - @on-event
+- [Replace Command](#replace-command-hook)
+   - @replace-command
 
 Most of these also have "pre" and "post" varieties, to give more flexibility vis-a-vis hook ordering (and for consistency). Within one type of hook, the running order is undefined and not guaranteed. Note that many validate, process and alter hooks may run, but the first status or extract hook that successfully returns a result will halt processing of further hooks of the same type.
 
