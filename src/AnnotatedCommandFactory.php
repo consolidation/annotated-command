@@ -321,8 +321,9 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
         if ($commandInfo->hasAnnotation('command')) {
             return true;
         }
-        // Skip anything that has an invalid name.
-        if (empty($commandInfo->getName())) {
+        // Skip anything that has a missing or invalid name.
+        $commandName = $commandInfo->getName();
+        if (empty($commandName) || preg_match('#[^a-zA-Z0-9:_-]#', $commandName)) {
             return false;
         }
         // Skip anything named like an accessor ('get' or 'set')
