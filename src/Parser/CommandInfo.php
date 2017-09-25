@@ -388,6 +388,27 @@ class CommandInfo
     }
 
     /**
+     * Get hidden status for the command.
+     * @return bool
+     */
+    public function getHidden()
+    {
+        $this->parseDocBlock();
+        return $this->hasAnnotation('hidden');
+    }
+
+    /**
+     * Set hidden status. List command omits hidden commands.
+     *
+     * @param bool $hidden
+     */
+    public function setHidden($hidden)
+    {
+        $this->hidden = $hidden;
+        return $this;
+    }
+
+    /**
      * Return the examples for this command. This is @usage instead of
      * @example because the later is defined by the phpdoc standard to
      * be example method calls.
