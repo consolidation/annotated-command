@@ -246,8 +246,9 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
         // can never be commands.
         $commandMethodNames = array_filter(
             get_class_methods($classNameOrInstance) ?: [],
-            function ($m) {
-                return !preg_match('#^_#', $m);
+            function ($m) use ($classNameOrInstance) {
+                $reflectionMethod = new \ReflectionMethod($classNameOrInstance, $m);
+                return !$reflectionMethod->isStatic() && !preg_match('#^_#', $m);
             }
         );
 
@@ -319,6 +320,11 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
         // Include everything labeled @command
         if ($commandInfo->hasAnnotation('command')) {
             return true;
+        }
+        // Skip anything that has a missing or invalid name.
+        $commandName = $commandInfo->getName();
+        if (empty($commandName) || preg_match('#[^a-zA-Z0-9:_-]#', $commandName)) {
+            return false;
         }
         // Skip anything named like an accessor ('get' or 'set')
         if (preg_match('#^(get[A-Z]|set[A-Z])#', $commandInfo->getMethodName())) {

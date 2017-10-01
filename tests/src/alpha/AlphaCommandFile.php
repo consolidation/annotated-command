@@ -30,6 +30,11 @@ class AlphaCommandFile implements CustomEventAwareInterface
         return new CommandError('This command always fails.', 13);
     }
 
+    public static function ignoredStaticMethod()
+    {
+        return 'This method is static; it should not generate a command.';
+    }
+
     /**
      * @command simulated:status
      */
