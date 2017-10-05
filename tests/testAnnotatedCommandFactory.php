@@ -61,6 +61,18 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
         $this->assertRunCommandViaApplicationContains($command, $input, ['The "--foo" option requires a value.'], 1);
     }
 
+    function testGlobalOptionsOnly()
+    {
+        $this->commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile;
+        $this->commandFactory = new AnnotatedCommandFactory();
+        $commandInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'globalOptionsOnly');
+
+        $command = $this->commandFactory->createCommand($commandInfo, $this->commandFileInstance);
+
+        $input = new StringInput('global-options-only test');
+        $this->assertRunCommandViaApplicationEquals($command, $input, "Arg is test, options[help] is false");
+    }
+
     function testOptionWithOptionalValue()
     {
         $this->commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile;

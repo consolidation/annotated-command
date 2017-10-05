@@ -451,4 +451,12 @@ class ExampleCommandFile
     {
         return implode(' ', $opts['arr']);
     }
+
+    /**
+     * @command global-options-only
+     */
+    public function globalOptionsOnly($arg, $options = [])
+    {
+        return "Arg is $arg, options[help] is " . var_export($options['help'], true) . "\n";
+    }
 }
