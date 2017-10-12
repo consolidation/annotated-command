@@ -187,7 +187,7 @@ class BespokeDocBlockParser extends AbstractCommandDocBlockParser
 
         // Everything up to the first blank line goes in the description.
         $description = array_shift($lines);
-        while (!empty($lines) && !empty(trim($lines[0]))) {
+        while ($this->nextLineIsNotEmpty($lines)) {
             $description .= ' ' . array_shift($lines);
         }
 
@@ -196,6 +196,16 @@ class BespokeDocBlockParser extends AbstractCommandDocBlockParser
 
         $this->commandInfo->setDescription($description);
         $this->commandInfo->setHelp($help);
+    }
+
+    protected function nextLineIsNotEmpty($lines)
+    {
+        if (empty($lines)) {
+            return false;
+        }
+
+        $nextLine = trim($lines[0]);
+        return !empty($nextLine);
     }
 
     protected function processAllTags($tags)
