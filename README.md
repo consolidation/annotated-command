@@ -87,7 +87,7 @@ The `$options` array must be an associative array whose key is the name of the o
   - If the user adds `--no-foo` on the commandline, then the value of `foo` will be `false`.
 - An empty array, which indicates that the option may appear multiple times on the command line.
 
-No other values should be used for the default value. For example, `$options = ['a' => 1]` is **incorrect**; instead, use `$options = ['a' => '1']`. Similarly, `$options = ['a' => true]` is unsupported, or at least not useful, as this would indicate that the value of `--a` was always `true`, whether or not it appeared on the command line.
+No other values should be used for the default value. For example, `$options = ['a' => 1]` is **incorrect**; instead, use `$options = ['a' => '1']`.
 
 Default values for options may also be provided via the `@default` annotation. See hook alter, below.
 

@@ -15,6 +15,8 @@ class CommandDocBlockParserFactory
 
     private static function create(CommandInfo $commandInfo, \ReflectionMethod $reflection)
     {
+        return new BespokeDocBlockParser($commandInfo, $reflection);
+
         if (static::hasReflectionDocBlock3()) {
             return new CommandDocBlockParser3($commandInfo, $reflection);
         }

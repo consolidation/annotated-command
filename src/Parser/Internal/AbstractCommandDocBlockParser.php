@@ -33,7 +33,7 @@ abstract class AbstractCommandDocBlockParser
         'command' => 'processCommandTag',
         'name' => 'processCommandTag',
         'arg' => 'processArgumentTag',
-        'param' => 'processParamTag',
+        'param' => 'processArgumentTag',
         'return' => 'processReturnTag',
         'option' => 'processOptionTag',
         'default' => 'processDefaultTag',

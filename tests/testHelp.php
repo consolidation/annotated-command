@@ -111,7 +111,7 @@ class HelpTests extends \PHPUnit_Framework_TestCase
 <?xml version="1.0" encoding="UTF-8"?>
 <command id="example:table" name="example:table">
   <usages>
-    <usage>example:table [--format [FORMAT]] [--fields [FIELDS]] [--field [FIELD]] [--] [&lt;unused&gt;]</usage>
+    <usage>example:table [--format [FORMAT]] [--fields [FIELDS]] [--field FIELD] [--] [&lt;unused&gt;]</usage>
   </usages>
   <examples>
     <example>
@@ -145,7 +145,7 @@ class HelpTests extends \PHPUnit_Framework_TestCase
       <description>Available fields: I (first), II (second), III (third)</description>
       <defaults/>
     </option>
-    <option name="--field" shortcut="" accept_value="1" is_value_required="0" is_multiple="0">
+    <option name="--field" shortcut="" accept_value="1" is_value_required="1" is_multiple="0">
       <description>Select just one field, and force format to 'string'.</description>
       <defaults/>
     </option>
@@ -188,7 +188,7 @@ EOT;
     "id": "example:table",
     "name": "example:table",
     "usages": [
-        "example:table [--format [FORMAT]] [--fields [FIELDS]] [--field [FIELD]] [--] [<unused>]"
+        "example:table [--format [FORMAT]] [--fields [FIELDS]] [--field FIELD] [--] [<unused>]"
     ],
     "examples": [
         {
@@ -237,7 +237,7 @@ EOT;
             "name": "--field",
             "shortcut": "",
             "accept_value": "1",
-            "is_value_required": "0",
+            "is_value_required": "1",
             "is_multiple": "0",
             "description": "Select just one field, and force format to 'string'."
         },
