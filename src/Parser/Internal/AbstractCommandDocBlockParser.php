@@ -61,8 +61,6 @@ abstract class AbstractCommandDocBlockParser
         }
     }
 
-    abstract protected function getTagContents($tag);
-
     /**
      * Parse the docBlock comment for this command, and set the
      * fields of this class with the data thereby obtained.

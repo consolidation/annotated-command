@@ -21,11 +21,6 @@ class BespokeDocBlockParser extends AbstractCommandDocBlockParser
         $this->parseDocBlock($doc);
     }
 
-    // Unused; remove
-    protected function getTagContents($tag)
-    {
-    }
-
     /**
      * Save any tag that we do not explicitly recognize in the
      * 'otherAnnotations' map.
