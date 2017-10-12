@@ -34,6 +34,27 @@ class ExampleCommandFile
     }
 
     /**
+     * Code sniffer.
+     *
+     * Run the PHP Codesniffer on a file or directory.
+     *
+     * @param string $file
+     *    A file or directory to analyze.
+     * @option $autofix Whether to run the automatic fixer or not.
+     * @option $strict Show warnings as well as errors.
+     *    Default is to show only errors.
+     */
+    public function sniff(
+        $file,
+        $options = [
+            'autofix' => false,
+            'strict' => false,
+        ]
+    ) {
+        return var_export($options, true);
+    }
+
+    /**
      * This is the my:cat command
      *
      * This command will concatenate two parameters. If the --flip flag

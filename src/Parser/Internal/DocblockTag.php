@@ -18,13 +18,13 @@ class DocblockTag
     /** @var string|null Contents of the tag. */
     protected $content;
 
-    const TAG_REGEX = '@(?P<tag>[^ \t]+)[ \t]*';
-    const VARIABLE_REGEX = '\\$(?P<variable>[^ \t]+)[ \t]*';
-    const VARIABLE_OR_WORD_REGEX = '\\$?(?P<variable>[^ \t]+)[ \t]*';
-    const TYPE_REGEX = '(?P<type>[^ \t]+)[ \t]*';
-    const WORD_REGEX = '(?P<word>[^ \t]+)[ \t]*';
+    const TAG_REGEX = '@(?P<tag>[^\s$]+)[\s]*';
+    const VARIABLE_REGEX = '\\$(?P<variable>[^\s$]+)[\s]*';
+    const VARIABLE_OR_WORD_REGEX = '\\$?(?P<variable>[^\s$]+)[\s]*';
+    const TYPE_REGEX = '(?P<type>[^\s$]+)[\s]*';
+    const WORD_REGEX = '(?P<word>[^\s$]+)[\s]*';
     const DESCRIPTION_REGEX = '(?P<description>.*)';
-    const IS_TAG_REGEX = '/^[* \t]*@/';
+    const IS_TAG_REGEX = '/^[*\s]*@/';
 
     /**
      * Check if the provided string begins with a tag

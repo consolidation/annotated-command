@@ -20,6 +20,23 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
     protected $commandFileInstance;
     protected $commandFactory;
 
+    function testSniff()
+    {
+        $this->commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile;
+        $this->commandFactory = new AnnotatedCommandFactory();
+        $commandInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'sniff');
+
+        $command = $this->commandFactory->createCommand($commandInfo, $this->commandFileInstance);
+        $this->assertEquals('sniff', $command->getName());
+        $this->assertEquals('sniff [--autofix] [--strict] [--] <file>', $command->getSynopsis());
+
+        $this->assertInstanceOf('\Symfony\Component\Console\Command\Command', $command);
+
+        $input = new StringInput('sniff --autofix --strict -- foo');
+        $this->assertRunCommandViaApplicationContains($command, $input, ["'autofix' => true",
+        "'strict' => true"]);
+    }
+
     function testOptionDefaultValue()
     {
         $this->commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile;

@@ -9,8 +9,31 @@ use Consolidation\AnnotatedCommand\Parser\DefaultsWithDescriptions;
  * DocBlock comment, and provide accessor methods for all of
  * the elements that are needed to create an annotated Command.
  */
-class BespokeDocBlockParser extends AbstractCommandDocBlockParser
+class BespokeDocBlockParser
 {
+    /**
+     * @var array
+     */
+    protected $tagProcessors = [
+        'command' => 'processCommandTag',
+        'name' => 'processCommandTag',
+        'arg' => 'processArgumentTag',
+        'param' => 'processArgumentTag',
+        'return' => 'processReturnTag',
+        'option' => 'processOptionTag',
+        'default' => 'processDefaultTag',
+        'aliases' => 'processAliases',
+        'usage' => 'processUsageTag',
+        'description' => 'processAlternateDescriptionTag',
+        'desc' => 'processAlternateDescriptionTag',
+    ];
+
+    public function __construct(CommandInfo $commandInfo, \ReflectionMethod $reflection)
+    {
+        $this->commandInfo = $commandInfo;
+        $this->reflection = $reflection;
+    }
+
     /**
      * Parse the docBlock comment for this command, and set the
      * fields of this class with the data thereby obtained.
@@ -62,13 +85,13 @@ class BespokeDocBlockParser extends AbstractCommandDocBlockParser
      */
     protected function processArgumentTag($tag)
     {
-        if (!$this->pregMatchNameAndDescription((string)$tag->getContent(), $match)) {
+        if (!$tag->hasVariable($matches)) {
+            throw new \Exception('Could not determine parameter name from tag ' . (string)$tag);
+        }
+        if ($matches['variable'] == $this->optionParamName()) {
             return;
         }
-        if ($match['name'] == $this->optionParamName()) {
-            return;
-        }
-        $this->addOptionOrArgumentTag($tag, $this->commandInfo->arguments(), $match);
+        $this->addOptionOrArgumentTag($tag, $this->commandInfo->arguments(), $matches['variable'], $matches['description']);
     }
 
     /**
@@ -76,17 +99,16 @@ class BespokeDocBlockParser extends AbstractCommandDocBlockParser
      */
     protected function processOptionTag($tag)
     {
-        if (!$this->pregMatchOptionNameAndDescription((string)$tag->getContent(), $match)) {
-            return;
+        if (!$tag->hasVariable($matches)) {
+            throw new \Exception('Could not determine parameter name from tag ' . (string)$tag);
         }
-        $this->addOptionOrArgumentTag($tag, $this->commandInfo->options(), $match);
+        $this->addOptionOrArgumentTag($tag, $this->commandInfo->options(), $matches['variable'], $matches['description']);
     }
 
-    protected function addOptionOrArgumentTag($tag, DefaultsWithDescriptions $set, $nameAndDescription)
+    protected function addOptionOrArgumentTag($tag, DefaultsWithDescriptions $set, $name, $description)
     {
-        $variableName = $this->commandInfo->findMatchingOption($nameAndDescription['name']);
-        $desc = $nameAndDescription['description'];
-        $description = static::removeLineBreaks($desc);
+        $variableName = $this->commandInfo->findMatchingOption($name);
+        $description = static::removeLineBreaks($description);
         $set->add($variableName, $description);
     }
 
@@ -96,11 +118,11 @@ class BespokeDocBlockParser extends AbstractCommandDocBlockParser
      */
     protected function processDefaultTag($tag)
     {
-        if (!$this->pregMatchNameAndDescription((string)$tag->getContent(), $match)) {
-            return;
+        if (!$tag->hasWordAndDescription($matches)) {
+            throw new \Exception('Could not determine parameter name from tag ' . (string)$tag);
         }
-        $variableName = $match['name'];
-        $defaultValue = $this->interpretDefaultValue($match['description']);
+        $variableName = $matches['word'];
+        $defaultValue = $this->interpretDefaultValue($matches['description']);
         if ($this->commandInfo->arguments()->exists($variableName)) {
             $this->commandInfo->arguments()->setDefaultValue($variableName, $defaultValue);
             return;
@@ -218,5 +240,68 @@ class BespokeDocBlockParser extends AbstractCommandDocBlockParser
             }
             $processFn($tag);
         }
+    }
+
+    protected function lastParameterName()
+    {
+        $params = $this->commandInfo->getParameters();
+        $param = end($params);
+        if (!$param) {
+            return '';
+        }
+        return $param->name;
+    }
+
+    /**
+     * Return the name of the last parameter if it holds the options.
+     */
+    public function optionParamName()
+    {
+        // Remember the name of the last parameter, if it holds the options.
+        // We will use this information to ignore @param annotations for the options.
+        if (!isset($this->optionParamName)) {
+            $this->optionParamName = '';
+            $options = $this->commandInfo->options();
+            if (!$options->isEmpty()) {
+                $this->optionParamName = $this->lastParameterName();
+            }
+        }
+
+        return $this->optionParamName;
+    }
+
+    protected function interpretDefaultValue($defaultValue)
+    {
+        $defaults = [
+            'null' => null,
+            'true' => true,
+            'false' => false,
+            "''" => '',
+            '[]' => [],
+        ];
+        foreach ($defaults as $defaultName => $defaultTypedValue) {
+            if ($defaultValue == $defaultName) {
+                return $defaultTypedValue;
+            }
+        }
+        return $defaultValue;
+    }
+
+    /**
+     * Given a list that might be 'a b c' or 'a, b, c' or 'a,b,c',
+     * convert the data into the last of these forms.
+     */
+    protected static function convertListToCommaSeparated($text)
+    {
+        return preg_replace('#[ \t\n\r,]+#', ',', $text);
+    }
+
+    /**
+     * Take a multiline description and convert it into a single
+     * long unbroken line.
+     */
+    protected static function removeLineBreaks($text)
+    {
+        return trim(preg_replace('#[ \t\n\r]+#', ' ', $text));
     }
 }
