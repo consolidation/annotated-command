@@ -11,6 +11,8 @@ use Consolidation\AnnotatedCommand\Events\CustomEventAwareInterface;
 use Consolidation\AnnotatedCommand\Events\CustomEventAwareTrait;
 use Symfony\Component\Console\Command\Command;
 
+use Consolidation\TestUtils\ExampleCommandFile as ExampleAliasedClass;
+
 /**
  * Test file used in the testCommandDiscovery() test.
  *
@@ -98,6 +100,36 @@ class AlphaCommandFile implements CustomEventAwareInterface
      * @return \Consolidation\OutputFormatters\StructuredData\RowsOfFields
      */
     public function exampleTable($unused = '', $options = ['format' => 'table', 'fields' => ''])
+    {
+        $outputData = [
+            [ 'first' => 'One',  'second' => 'Two',  'third' => 'Three' ],
+            [ 'first' => 'Eins', 'second' => 'Zwei', 'third' => 'Drei'  ],
+            [ 'first' => 'Ichi', 'second' => 'Ni',   'third' => 'San'   ],
+            [ 'first' => 'Uno',  'second' => 'Dos',  'third' => 'Tres'  ],
+        ];
+        return new RowsOfFields($outputData);
+    }
+
+    /**
+     * Test command with formatters using a short classname in @return
+     *
+     * @command example:table2
+     * @param $unused An unused argument
+     * @field-labels
+     *   first: I
+     *   second: II
+     *   third: III
+     * @usage example:table --format=yml
+     *   Show the example table in yml format.
+     * @usage example:table --fields=first,third
+     *   Show only the first and third fields in the table.
+     * @usage example:table --fields=II,III
+     *   Note that either the field ID or the visible field label may be used.
+     * @aliases extab
+     * @topics docs-tables
+     * @return RowsOfFields
+     */
+    public function exampleTableTwo($unused = '', $options = ['format' => 'table', 'fields' => ''])
     {
         $outputData = [
             [ 'first' => 'One',  'second' => 'Two',  'third' => 'Three' ],

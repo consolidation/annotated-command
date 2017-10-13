@@ -11,6 +11,8 @@ use Consolidation\AnnotatedCommand\Parser\DefaultsWithDescriptions;
  */
 class BespokeDocBlockParser
 {
+    protected $fqcnCache;
+
     /**
      * @var array
      */
@@ -28,10 +30,11 @@ class BespokeDocBlockParser
         'desc' => 'processAlternateDescriptionTag',
     ];
 
-    public function __construct(CommandInfo $commandInfo, \ReflectionMethod $reflection)
+    public function __construct(CommandInfo $commandInfo, \ReflectionMethod $reflection, $fqcnCache = null)
     {
         $this->commandInfo = $commandInfo;
         $this->reflection = $reflection;
+        $this->fqcnCache = $fqcnCache ?: new FullyQualifiedClassCache();
     }
 
     /**
@@ -163,9 +166,19 @@ class BespokeDocBlockParser
         if (!$tag->hasWordAndDescription($matches)) {
             throw new \Exception('Could not determine return type from tag ' . (string)$tag);
         }
-        // TODO: look at namespace and `use` statments to make returnType a fqdn
+        // Look at namespace and `use` statments to make returnType a fqdn
         $returnType = $matches['word'];
+        $returnType = $this->findFullyQualifiedClass($returnType);
         $this->commandInfo->setReturnType($returnType);
+    }
+
+    protected function findFullyQualifiedClass($className)
+    {
+        if (strpos($className, '\\') !== false) {
+            return $className;
+        }
+
+        return $this->fqcnCache->qualify($this->reflection->getFileName(), $className);
     }
 
     private function parseDocBlock($doc)
