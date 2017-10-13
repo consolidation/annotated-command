@@ -465,7 +465,7 @@ EOT;
 
     function simplifyWhitespace($data)
     {
-        return trim(preg_replace('#[ \t]+$#m', '', $data));
+        return trim(preg_replace('#\s+$#m', '', $data));
     }
 
     function callProtected($object, $method, $args = [])

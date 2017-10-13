@@ -102,7 +102,7 @@ class HelpTests extends \PHPUnit_Framework_TestCase
 
     function simplifyWhitespace($data)
     {
-        return trim(preg_replace('#[ \t]+$#m', '', $data));
+        return trim(preg_replace('#\s+$#m', '', $data));
     }
 
     function testHelp()
