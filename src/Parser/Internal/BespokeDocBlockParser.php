@@ -163,11 +163,13 @@ class BespokeDocBlockParser
      */
     protected function processReturnTag($tag)
     {
-        if (!$tag->hasWordAndDescription($matches)) {
+        // The return type might be a variable -- '$this'. It will
+        // usually be a type, like RowsOfFields, or \Namespace\RowsOfFields.
+        if (!$tag->hasVariableAndDescription($matches)) {
             throw new \Exception('Could not determine return type from tag ' . (string)$tag);
         }
         // Look at namespace and `use` statments to make returnType a fqdn
-        $returnType = $matches['word'];
+        $returnType = $matches['variable'];
         $returnType = $this->findFullyQualifiedClass($returnType);
         $this->commandInfo->setReturnType($returnType);
     }
