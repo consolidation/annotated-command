@@ -979,7 +979,7 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
         $application->add($command);
 
         $statusCode = $application->run($input, $output);
-        $commandOutput = trim($output->fetch());
+        $commandOutput = trim(str_replace("\r", '', $output->fetch()));
 
         return [$statusCode, $commandOutput];
     }
