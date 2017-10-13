@@ -229,7 +229,7 @@ class BespokeDocBlockParser
         }
 
         // Everything else goes in the help.
-        $help = trim(implode(PHP_EOL, $lines));
+        $help = trim(implode("\n", $lines));
 
         $this->commandInfo->setDescription($description);
         $this->commandInfo->setHelp($help);
