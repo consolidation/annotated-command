@@ -183,6 +183,11 @@ class BespokeDocBlockParser
 
     private function parseDocBlock($doc)
     {
+        // Remove the leading /** and the trailing */
+        $doc = preg_replace('#^\s*/\*+\s*#', '', $doc);
+        $doc = preg_replace('#\s*\*+/\s*#', '', $doc);
+
+        // Nothing left? Exit.
         if (empty($doc)) {
             return;
         }
@@ -194,11 +199,6 @@ class BespokeDocBlockParser
             // Remove trailing whitespace and leading space + '*'s
             $row = rtrim($row);
             $row = preg_replace('#^[ \t]*\**#', '', $row);
-
-            // Throw out the /** and */ lines ('*' trimmed from beginning)
-            if ($row == '/**' || $row == '/') {
-                continue;
-            }
 
             if (!$tagFactory->parseLine($row)) {
                 $lines[] = $row;
