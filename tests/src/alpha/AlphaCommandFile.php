@@ -97,7 +97,7 @@ class AlphaCommandFile implements CustomEventAwareInterface
      *   Note that either the field ID or the visible field label may be used.
      * @aliases extab
      * @topics docs-tables
-     * @return \Consolidation\OutputFormatters\StructuredData\RowsOfFields
+     * @return \Consolidation\OutputFormatters\StructuredData\RowsOfFields Fully-qualified class name
      */
     public function exampleTable($unused = '', $options = ['format' => 'table', 'fields' => ''])
     {
@@ -127,7 +127,7 @@ class AlphaCommandFile implements CustomEventAwareInterface
      *   Note that either the field ID or the visible field label may be used.
      * @aliases extab
      * @topics docs-tables
-     * @return RowsOfFields
+     * @return RowsOfFields Short class names are converted to fqcns
      */
     public function exampleTableTwo($unused = '', $options = ['format' => 'table', 'fields' => ''])
     {
