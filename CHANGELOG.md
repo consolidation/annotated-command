@@ -1,5 +1,9 @@
 # Change Log
 
+### 2.8.0
+
+- Remove phpdocumentor/reflection-docblock in favor of using a bespoke parser (#130)
+
 ### 2.7.0
 
 - Add support for options with a default value of 'true' (#119)
