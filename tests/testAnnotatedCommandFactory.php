@@ -20,6 +20,38 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
     protected $commandFileInstance;
     protected $commandFactory;
 
+    function testFibonacci()
+    {
+        $this->commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile;
+        $this->commandFactory = new AnnotatedCommandFactory();
+        $commandInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'fibonacci');
+
+        //$this->assertEquals('', var_export($commandInfo->options(), true));
+        //$this->assertEquals('', var_export($commandInfo, true));
+
+        $description = $commandInfo->options()->getDescription('graphic');
+        //$this->assertEquals('?', $description);
+
+        $command = $this->commandFactory->createCommand($commandInfo, $this->commandFileInstance);
+        $this->assertEquals('fibonacci', $command->getName());
+        $this->assertEquals('fibonacci [--graphic] [--] <start> <steps>', $command->getSynopsis());
+        $this->assertEquals('Calculate the fibonacci sequence between two numbers.', $command->getDescription());
+        $this->assertEquals("Graphic output will look like
++----+---+-------------+
+|    |   |             |
+|    |-+-|             |
+|----+-+-+             |
+|        |             |
+|        |             |
+|        |             |
++--------+-------------+", $command->getHelp());
+
+        $this->assertInstanceOf('\Symfony\Component\Console\Command\Command', $command);
+
+        $input = new StringInput('help fibonacci');
+        $this->assertRunCommandViaApplicationContains($command, $input, ['Display the sequence graphically using cube representation']);
+    }
+
     function testSniff()
     {
         $this->commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile;
@@ -31,6 +63,9 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
         $this->assertEquals('sniff [--autofix] [--strict] [--] [<file>]', $command->getSynopsis());
 
         $this->assertInstanceOf('\Symfony\Component\Console\Command\Command', $command);
+
+        $input = new StringInput('help sniff');
+        $this->assertRunCommandViaApplicationContains($command, $input, ['A file or directory to analyze.']);
 
         $input = new StringInput('sniff --autofix --strict -- foo');
         $this->assertRunCommandViaApplicationContains($command, $input, ["'autofix' => true",

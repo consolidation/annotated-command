@@ -45,7 +45,7 @@ class DocblockTag
      */
     public static function splitTagAndContent($subject, &$matches)
     {
-        $regex = '/' . self::TAG_REGEX . self::DESCRIPTION_REGEX . '/';
+        $regex = '/' . self::TAG_REGEX . self::DESCRIPTION_REGEX . '/s';
         return preg_match($regex, $subject, $matches);
     }
 
@@ -122,7 +122,7 @@ class DocblockTag
      */
     public function hasVariableAndDescription(&$matches)
     {
-        $regex = '/' . self::VARIABLE_OR_WORD_REGEX . self::DESCRIPTION_REGEX . '/';
+        $regex = '/' . self::VARIABLE_OR_WORD_REGEX . self::DESCRIPTION_REGEX . '/s';
         return preg_match($regex, $this->getContent(), $matches);
     }
 
@@ -136,7 +136,7 @@ class DocblockTag
      */
     public function hasTypeVariableAndDescription(&$matches)
     {
-        $regex = '/' . self::TYPE_REGEX . self::VARIABLE_REGEX . self::DESCRIPTION_REGEX . '/';
+        $regex = '/' . self::TYPE_REGEX . self::VARIABLE_REGEX . self::DESCRIPTION_REGEX . '/s';
         return preg_match($regex, $this->getContent(), $matches);
     }
 
@@ -149,7 +149,7 @@ class DocblockTag
      */
     public function hasWordAndDescription(&$matches)
     {
-        $regex = '/' . self::WORD_REGEX . self::DESCRIPTION_REGEX . '/';
+        $regex = '/' . self::WORD_REGEX . self::DESCRIPTION_REGEX . '/s';
         return preg_match($regex, $this->getContent(), $matches);
     }
 }
