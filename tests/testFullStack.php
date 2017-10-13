@@ -62,7 +62,13 @@ class FullStackTests extends \PHPUnit_Framework_TestCase
         $formatter->addDefaultSimplifiers();
 
         $this->commandFactory->commandProcessor()->setFormatterManager($formatter);
-        $commandInfo = $this->commandFactory->createCommandInfo($commandFileInstance, 'exampleTable');
+        $this->assertAutomaticOptionsForCommand($commandFileInstance, 'exampleTable', 'example:table');
+        $this->assertAutomaticOptionsForCommand($commandFileInstance, 'exampleTableTwo', 'example:table2');
+    }
+
+    function assertAutomaticOptionsForCommand($commandFileInstance, $functionName, $commandName)
+    {
+        $commandInfo = $this->commandFactory->createCommandInfo($commandFileInstance, $functionName);
 
         $command = $this->commandFactory->createCommand($commandInfo, $commandFileInstance);
         $this->application->add($command);
@@ -72,7 +78,7 @@ class FullStackTests extends \PHPUnit_Framework_TestCase
             '--format[=FORMAT]  Format the result data. Available formats: csv,json,list,php,print-r,sections,string,table,tsv,var_export,xml,yaml [default: "table"]',
             '--fields[=FIELDS]  Available fields: I (first), II (second), III (third) [default: ""]',
         ];
-        $this->assertRunCommandViaApplicationContains('help example:table', $containsList);
+        $this->assertRunCommandViaApplicationContains('help ' . $commandName, $containsList);
     }
 
     function testCommandsAndHooks()
@@ -459,7 +465,7 @@ EOT;
 
     function simplifyWhitespace($data)
     {
-        return trim(preg_replace('#[ \t]+$#m', '', $data));
+        return trim(preg_replace('#\s+$#m', '', $data));
     }
 
     function callProtected($object, $method, $args = [])

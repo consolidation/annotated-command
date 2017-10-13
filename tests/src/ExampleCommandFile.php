@@ -34,6 +34,65 @@ class ExampleCommandFile
     }
 
     /**
+     * Import config from a config directory.
+     *
+     * @command config:import
+     * @param $label A config directory label (i.e. a key in \$config_directories array in settings.php).
+     * @interact-config-label
+     * @option preview Format for displaying proposed changes. Recognized values: list, diff.
+     * @option source An arbitrary directory that holds the configuration files. An alternative to label argument
+     * @option partial Allows for partial config imports from the source directory. Only updates and new configs will be processed with this flag (missing configs will not be deleted).
+     * @aliases cim,config-import
+     */
+    public function import($label = null, $options = ['preview' => 'list', 'source' => InputOption::VALUE_REQUIRED, 'partial' => false])
+    {
+    }
+
+    /**
+     * Calculate the fibonacci sequence between two numbers.
+     *
+     * Graphic output will look like
+     *     +----+---+-------------+
+     *     |    |   |             |
+     *     |    |-+-|             |
+     *     |----+-+-+             |
+     *     |        |             |
+     *     |        |             |
+     *     |        |             |
+     *     +--------+-------------+
+     *
+     * @param int $start Number to start from
+     * @param int $steps Number of steps to perform
+     * @param array $opts
+     * @option $graphic Display the sequence graphically using cube
+     *   representation
+     */
+    public function fibonacci($start, $steps, $opts = ['graphic' => false])
+    {
+    }
+
+    /**
+     * Code sniffer.
+     *
+     * Run the PHP Codesniffer on a file or directory.
+     *
+     * @param string $file
+     *    A file or directory to analyze.
+     * @option $autofix Whether to run the automatic fixer or not.
+     * @option $strict Show warnings as well as errors.
+     *    Default is to show only errors.
+     */
+    public function sniff(
+        $file = 'src',
+        array $options = [
+            'autofix' => false,
+            'strict' => false,
+        ]
+    ) {
+        return var_export($options, true);
+    }
+
+    /**
      * This is the my:cat command
      *
      * This command will concatenate two parameters. If the --flip flag
@@ -47,7 +106,7 @@ class ExampleCommandFile
      *   Concatenate "alpha" and "bet".
      * @arbitrary This annotation is here merely as a marker used in testing.
      */
-    public function myCat($one, $two = '', $options = ['flip' => false])
+    public function myCat($one, $two = '', array $options = ['flip' => false])
     {
         if ($options['flip']) {
             return "{$two}{$one}";
@@ -58,7 +117,7 @@ class ExampleCommandFile
     /**
      * @command my:repeat
      */
-    public function myRepeat($one, $two = '', $options = ['repeat' => 1])
+    public function myRepeat($one, $two = '', array $options = ['repeat' => 1])
     {
         return str_repeat("{$one}{$two}", $options['repeat']);
     }
@@ -74,7 +133,7 @@ class ExampleCommandFile
      * @usage
      *   Example with no parameters or options
      */
-    public function myJoin(array $args, $options = ['flip' => false, 'repeat' => 1])
+    public function myJoin(array $args, array $options = ['flip' => false, 'repeat' => 1])
     {
         if ($options['flip']) {
             $args = array_reverse($args);
@@ -116,7 +175,7 @@ class ExampleCommandFile
      *
      * @option silent Supress output.
      */
-    public function commandWithNoArguments($opts = ['silent|s' => false])
+    public function commandWithNoArguments(array $opts = ['silent|s' => false])
     {
         if (!$opts['silent']) {
             return "Hello, world";
@@ -131,7 +190,7 @@ class ExampleCommandFile
      * @param $opts The options
      * @option silent|s Supress output.
      */
-    public function shortcutOnAnnotation($opts = ['silent' => false])
+    public function shortcutOnAnnotation(array $opts = ['silent' => false])
     {
         if (!$opts['silent']) {
             return "Hello, world";
@@ -155,7 +214,7 @@ class ExampleCommandFile
      * @dup one
      * @dup two
      */
-    public function testArithmatic($one, $two = 2, $options = ['negate' => false, 'unused' => 'bob'])
+    public function testArithmatic($one, $two = 2, array $options = ['negate' => false, 'unused' => 'bob'])
     {
         $result = $one + $two;
         if ($options['negate']) {
@@ -389,7 +448,7 @@ class ExampleCommandFile
     /**
      * @return string
      */
-    public function defaultOptionOne($options = ['foo' => '1'])
+    public function defaultOptionOne(array $options = ['foo' => '1'])
     {
         return "Foo is " . $options['foo'];
     }
@@ -397,7 +456,7 @@ class ExampleCommandFile
     /**
      * @return string
      */
-    public function defaultOptionTwo($options = ['foo' => '2'])
+    public function defaultOptionTwo(array $options = ['foo' => '2'])
     {
         return "Foo is " . $options['foo'];
     }
@@ -405,7 +464,7 @@ class ExampleCommandFile
     /**
      * @return string
      */
-    public function defaultOptionNone($options = ['foo' => InputOption::VALUE_REQUIRED])
+    public function defaultOptionNone(array $options = ['foo' => InputOption::VALUE_REQUIRED])
     {
         return "Foo is " . $options['foo'];
     }
@@ -413,7 +472,7 @@ class ExampleCommandFile
     /**
      * @return string
      */
-    public function defaultOptionalValue($options = ['foo' => InputOption::VALUE_OPTIONAL])
+    public function defaultOptionalValue(array $options = ['foo' => InputOption::VALUE_OPTIONAL])
     {
         return "Foo is " . var_export($options['foo'], true);
     }
@@ -421,7 +480,7 @@ class ExampleCommandFile
     /**
      * @return string
      */
-    public function defaultOptionDefaultsToTrue($options = ['foo' => true])
+    public function defaultOptionDefaultsToTrue(array $options = ['foo' => true])
     {
         return "Foo is " . var_export($options['foo'], true);
     }
@@ -434,7 +493,7 @@ class ExampleCommandFile
      * @param array $opts
      * @return string
      */
-    public function testRequiredArrayOption($opts = ['arr|a' => []])
+    public function testRequiredArrayOption(array $opts = ['arr|a' => []])
     {
         return implode(' ', $opts['arr']);
     }
@@ -447,7 +506,7 @@ class ExampleCommandFile
      * @param array $opts
      * @return string
      */
-    public function testArrayOption($opts = ['arr|a' => ['1', '2', '3']])
+    public function testArrayOption(array $opts = ['arr|a' => ['1', '2', '3']])
     {
         return implode(' ', $opts['arr']);
     }
@@ -455,7 +514,7 @@ class ExampleCommandFile
     /**
      * @command global-options-only
      */
-    public function globalOptionsOnly($arg, $options = [])
+    public function globalOptionsOnly($arg, array $options = [])
     {
         return "Arg is $arg, options[help] is " . var_export($options['help'], true) . "\n";
     }

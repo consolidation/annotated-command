@@ -36,6 +36,17 @@ class CommandInfoTests extends \PHPUnit_Framework_TestCase
         $this->assertCommandInfoIsAsExpected($deserializedCommandInfo);
     }
 
+    function testWithConfigImport()
+    {
+        $commandInfo = CommandInfo::create('\Consolidation\TestUtils\ExampleCommandFile', 'import');
+        $this->assertEquals('config:import', $commandInfo->getName());
+
+        $this->assertEquals(
+            'A config directory label (i.e. a key in \$config_directories array in settings.php).',
+            $commandInfo->arguments()->getDescription('label')
+        );
+    }
+
     function assertCommandInfoIsAsExpected($commandInfo)
     {
         $this->assertEquals('test:arithmatic', $commandInfo->getName());
