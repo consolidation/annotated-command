@@ -122,7 +122,7 @@ class DocblockTag
      */
     public function hasVariableAndDescription(&$matches)
     {
-        $regex = '/' . self::VARIABLE_OR_WORD_REGEX . self::DESCRIPTION_REGEX . '/s';
+        $regex = '/^\s*' . self::VARIABLE_OR_WORD_REGEX . self::DESCRIPTION_REGEX . '/s';
         return preg_match($regex, $this->getContent(), $matches);
     }
 
@@ -136,7 +136,7 @@ class DocblockTag
      */
     public function hasTypeVariableAndDescription(&$matches)
     {
-        $regex = '/' . self::TYPE_REGEX . self::VARIABLE_REGEX . self::DESCRIPTION_REGEX . '/s';
+        $regex = '/^\s*' . self::TYPE_REGEX . self::VARIABLE_REGEX . self::DESCRIPTION_REGEX . '/s';
         return preg_match($regex, $this->getContent(), $matches);
     }
 
@@ -149,7 +149,7 @@ class DocblockTag
      */
     public function hasWordAndDescription(&$matches)
     {
-        $regex = '/' . self::WORD_REGEX . self::DESCRIPTION_REGEX . '/s';
+        $regex = '/^\s*' . self::WORD_REGEX . self::DESCRIPTION_REGEX . '/s';
         return preg_match($regex, $this->getContent(), $matches);
     }
 }

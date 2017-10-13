@@ -89,7 +89,7 @@ class BespokeDocBlockParser
     protected function processArgumentTag($tag)
     {
         if (!$tag->hasVariable($matches)) {
-            throw new \Exception('Could not determine parameter name from tag ' . (string)$tag);
+            throw new \Exception('Could not determine argument name from tag ' . (string)$tag);
         }
         if ($matches['variable'] == $this->optionParamName()) {
             return;
@@ -103,7 +103,7 @@ class BespokeDocBlockParser
     protected function processOptionTag($tag)
     {
         if (!$tag->hasVariable($matches)) {
-            throw new \Exception('Could not determine parameter name from tag ' . (string)$tag);
+            throw new \Exception('Could not determine option name from tag ' . (string)$tag);
         }
         $this->addOptionOrArgumentTag($tag, $this->commandInfo->options(), $matches['variable'], $matches['description']);
     }
@@ -121,10 +121,10 @@ class BespokeDocBlockParser
      */
     protected function processDefaultTag($tag)
     {
-        if (!$tag->hasWordAndDescription($matches)) {
-            throw new \Exception('Could not determine parameter name from tag ' . (string)$tag);
+        if (!$tag->hasVariable($matches)) {
+            throw new \Exception('Could not determine parameter name for default value from tag ' . (string)$tag);
         }
-        $variableName = $matches['word'];
+        $variableName = $matches['variable'];
         $defaultValue = $this->interpretDefaultValue($matches['description']);
         if ($this->commandInfo->arguments()->exists($variableName)) {
             $this->commandInfo->arguments()->setDefaultValue($variableName, $defaultValue);

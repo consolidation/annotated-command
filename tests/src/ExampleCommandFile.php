@@ -34,6 +34,21 @@ class ExampleCommandFile
     }
 
     /**
+     * Import config from a config directory.
+     *
+     * @command config:import
+     * @param $label A config directory label (i.e. a key in \$config_directories array in settings.php).
+     * @interact-config-label
+     * @option preview Format for displaying proposed changes. Recognized values: list, diff.
+     * @option source An arbitrary directory that holds the configuration files. An alternative to label argument
+     * @option partial Allows for partial config imports from the source directory. Only updates and new configs will be processed with this flag (missing configs will not be deleted).
+     * @aliases cim,config-import
+     */
+    public function import($label = null, $options = ['preview' => 'list', 'source' => InputOption::VALUE_REQUIRED, 'partial' => false])
+    {
+    }
+
+    /**
      * Calculate the fibonacci sequence between two numbers.
      *
      * Graphic output will look like

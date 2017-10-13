@@ -26,12 +26,6 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
         $this->commandFactory = new AnnotatedCommandFactory();
         $commandInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'fibonacci');
 
-        //$this->assertEquals('', var_export($commandInfo->options(), true));
-        //$this->assertEquals('', var_export($commandInfo, true));
-
-        $description = $commandInfo->options()->getDescription('graphic');
-        //$this->assertEquals('?', $description);
-
         $command = $this->commandFactory->createCommand($commandInfo, $this->commandFileInstance);
         $this->assertEquals('fibonacci', $command->getName());
         $this->assertEquals('fibonacci [--graphic] [--] <start> <steps>', $command->getSynopsis());
