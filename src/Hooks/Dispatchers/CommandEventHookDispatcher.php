@@ -7,6 +7,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\Console\Event\ConsoleCommandEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Call hooks
@@ -25,8 +26,11 @@ class CommandEventHookDispatcher extends HookDispatcher
         ];
         $commandEventHooks = $this->getHooks($hooks);
         foreach ($commandEventHooks as $commandEvent) {
+            if ($commandEvent instanceof EventDispatcherInterface) {
+                return $commandEvent->dispatch(ConsoleEvents::COMMAND, $event);
+            }
             if (is_callable($commandEvent)) {
-                $commandEvent($event);
+                return $commandEvent($event);
             }
         }
     }
