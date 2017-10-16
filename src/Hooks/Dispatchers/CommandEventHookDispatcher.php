@@ -27,10 +27,10 @@ class CommandEventHookDispatcher extends HookDispatcher
         $commandEventHooks = $this->getHooks($hooks);
         foreach ($commandEventHooks as $commandEvent) {
             if ($commandEvent instanceof EventDispatcherInterface) {
-                return $commandEvent->dispatch(ConsoleEvents::COMMAND, $event);
+                $commandEvent->dispatch(ConsoleEvents::COMMAND, $event);
             }
             if (is_callable($commandEvent)) {
-                return $commandEvent($event);
+                $commandEvent($event);
             }
         }
     }
