@@ -8,6 +8,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\Console\Event\ConsoleCommandEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 use Consolidation\AnnotatedCommand\ExitCodeInterface;
 use Consolidation\AnnotatedCommand\OutputDataInterface;
@@ -130,6 +132,32 @@ class HookManager implements EventSubscriberInterface
     {
         $this->hooks[$name][self::REPLACE_COMMAND_HOOK][] = $replaceCommandHook;
         return $this;
+    }
+
+    public function addPreCommandEventDispatcher(EventDispatcherInterface $eventDispatcher, $name = '*')
+    {
+        $this->hooks[$name][self::PRE_COMMAND_EVENT][] = $eventDispatcher;
+        return $this;
+    }
+
+    public function addCommandEventDispatcher(EventDispatcherInterface $eventDispatcher, $name = '*')
+    {
+        $this->hooks[$name][self::COMMAND_EVENT][] = $eventDispatcher;
+        return $this;
+    }
+
+    public function addPostCommandEventDispatcher(EventDispatcherInterface $eventDispatcher, $name = '*')
+    {
+        $this->hooks[$name][self::POST_COMMAND_EVENT][] = $eventDispatcher;
+        return $this;
+    }
+
+    public function addCommandEvent(EventSubscriberInterface $eventSubscriber)
+    {
+        // Wrap the event subscriber in a dispatcher and add it
+        $dispatcher = new EventDispatcher();
+        $dispatcher->addSubscriber($eventSubscriber);
+        return $this->addCommandEventDispatcher($dispatcher);
     }
 
     /**

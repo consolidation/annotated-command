@@ -972,7 +972,7 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
 
         $eventDispatcher = new \Symfony\Component\EventDispatcher\EventDispatcher();
         $eventDispatcher->addSubscriber($this->commandFactory->commandProcessor()->hookManager());
-        $eventDispatcher->addSubscriber($alterOptionsEventManager);
+        $this->commandFactory->commandProcessor()->hookManager()->addCommandEvent($alterOptionsEventManager);
         $application->setDispatcher($eventDispatcher);
 
         $application->setAutoExit(false);

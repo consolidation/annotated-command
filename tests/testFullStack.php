@@ -39,7 +39,7 @@ class FullStackTests extends \PHPUnit_Framework_TestCase
         $alterOptionsEventManager = new AlterOptionsCommandEvent($this->application);
         $eventDispatcher = new \Symfony\Component\EventDispatcher\EventDispatcher();
         $eventDispatcher->addSubscriber($this->commandFactory->commandProcessor()->hookManager());
-        $eventDispatcher->addSubscriber($alterOptionsEventManager);
+        $this->commandFactory->commandProcessor()->hookManager()->addCommandEvent($alterOptionsEventManager);
         $this->application->setDispatcher($eventDispatcher);
         $this->application->setAutoExit(false);
     }
