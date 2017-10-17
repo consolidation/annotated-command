@@ -1,5 +1,9 @@
 # Change Log
 
+### 2.8.1
+
+- Add hook methods to allow Symfony command events to be added directly to the hook manager, givig better control of hook order. (#131)
+
 ### 2.8.0
 
 - Remove phpdocumentor/reflection-docblock in favor of using a bespoke parser (#130)
