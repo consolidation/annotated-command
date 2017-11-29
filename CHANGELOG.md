@@ -1,14 +1,18 @@
 # Change Log
 
-### 2.8.1
+### 2.8.2 - 29 Nov 2017
+
+- Allow Symfony 4 components.
+
+### 2.8.1 - 16 Oct 2017
 
 - Add hook methods to allow Symfony command events to be added directly to the hook manager, givig better control of hook order. (#131)
 
-### 2.8.0
+### 2.8.0 - 13 Oct 2017
 
 - Remove phpdocumentor/reflection-docblock in favor of using a bespoke parser (#130)
 
-### 2.7.0
+### 2.7.0 - 18 Sept 2017
 
 - Add support for options with a default value of 'true' (#119)
 - BUGFIX: Improve handling of options with optional values, which previously was not working correctly. (#118)
