@@ -52,7 +52,7 @@
             "@unit",
             "@cs"
         ],
-        "scenario": "tests/scripts/install-scenario",
+        "scenario": "install-scenario",
         "post-update-cmd": [
             "create-scenario symfony2 'symfony/console:^2.8' --platform-php '5.4' --no-lockfile",
             "create-scenario symfony3 'symfony/console:^3.0' --platform-php '5.6'",

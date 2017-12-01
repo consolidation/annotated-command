@@ -403,12 +403,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/greg-1-anderson/composer-test-scenarios.git",
-                "reference": "9dc68a514d77b31f4795316c97d9a954ce0e3864"
+                "reference": "d0969e3edc8d73e1850b701ef094928f339aac2e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/greg-1-anderson/composer-test-scenarios/zipball/9dc68a514d77b31f4795316c97d9a954ce0e3864",
-                "reference": "9dc68a514d77b31f4795316c97d9a954ce0e3864",
+                "url": "https://api.github.com/repos/greg-1-anderson/composer-test-scenarios/zipball/d0969e3edc8d73e1850b701ef094928f339aac2e",
+                "reference": "d0969e3edc8d73e1850b701ef094928f339aac2e",
                 "shasum": ""
             },
             "bin": [
@@ -418,7 +418,7 @@
             "type": "library",
             "notification-url": "https://packagist.org/downloads/",
             "description": "Useful scripts for testing multiple sets of Composer dependencies.",
-            "time": "2017-12-01T19:36:32+00:00"
+            "time": "2017-12-01T20:48:44+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",

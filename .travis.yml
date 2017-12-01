@@ -28,7 +28,7 @@ cache:
     - $HOME/.composer/cache
 
 install:
-  - 'composer scenario "${SCENARIO}" "${HIGHEST_LOWEST-install}"'
+  - 'scenarios/install "${SCENARIO}" "${HIGHEST_LOWEST-install}"'
 
 script:
   - composer test
