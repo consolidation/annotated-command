@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "d4d9b792859320521708f391fcce2905",
+    "content-hash": "43457fe2aff2a2576ca0578471c305a4",
     "packages": [
         {
             "name": "consolidation/output-formatters",

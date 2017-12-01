@@ -1,0 +1,113 @@
+#!/bin/bash
+
+# The first argument is always the scenario name. Options come after.
+SCENARIO="$1"
+shift
+
+#
+# This script is typically called after `composer update` from a
+# "post-update-cmd" in the "scripts" section of composer.json.
+#
+
+# Defaults
+PLATFORM_PHP="--unset"
+STABILITY="stable"
+CREATE_LOCKFILE=true
+AUTOLOAD_DIRECTORIES="src tests"
+REQUIREMENTS=
+
+echo
+echo "::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::"
+echo "::"
+echo ":: Create scenario ${SCENARIO}"
+echo "::"
+echo "::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::"
+echo
+
+while [ $# -gt 0 ] ; do
+
+  option="$1"
+  shift
+
+  case "$option" in
+    --platform-php)
+      PLATFORM_PHP="$1"
+      shift
+      ;;
+
+    --stability)
+      STABILITY="$1"
+      shift
+      ;;
+
+    --create-lockfile)
+      CREATE_LOCKFILE=true
+      ;;
+
+    --no-lockfile)
+      CREATE_LOCKFILE=false
+      ;;
+
+    --autoload-dir)
+      autoload_dir="$1"
+      shift
+      AUTOLOAD_DIRECTORIES="${AUTOLOAD_DIRECTORIES} ${autoload_dir}"
+      ;;
+
+    -*)
+      echo "Unknown option $option"
+      exit 1;
+      ;;
+
+    *)
+      REQUIREMENTS="${REQUIREMENTS} ${option}"
+      ;;
+  esac
+done
+
+set -ex
+
+# Create the scenario directory, and start with a fresh composer.json file.
+dir=scenarios/${SCENARIO}
+mkdir -p $dir
+cp composer.json $dir
+
+# Then set our own platform php version if applicable (otherwise unset it)
+composer -n --working-dir=$dir config platform.php "${PLATFORM_PHP}"
+
+# Set an appropriate minimum stability for this version of Symfony
+composer -n --working-dir=$dir config minimum-stability "${STABILITY}"
+
+# Add a constraint to limit the Symfony version
+[[ -z "${REQUIREMENTS}" ]] || composer -n --working-dir=$dir require --dev --no-update "${REQUIREMENTS}"
+
+# Never commit a cached 'vendor' directory in the scenario folder
+echo 'vendor' > $dir/.gitignore
+
+# Create a lockfile via `composer update`, if requested
+if $CREATE_LOCKFILE ; then
+
+  # Temporarily set our vendor directory to 'vendor'
+  composer -n --working-dir=$dir config vendor-dir vendor
+
+  # Create the composer.lock file. Ignore the vendor directory created.
+  composer -n --working-dir=$dir update --no-scripts
+
+else
+
+  # If we are not storing a composer.lock, mark it as ignored if
+  # transiently generated in the future
+  echo 'composer.lock' >> $dir/.gitignore
+
+fi
+
+# Set the vendor directory to its final desired location.
+composer -n --working-dir=$dir config vendor-dir '../../vendor'
+
+# The 'autoload' section specifies directory paths that are relative
+# to the composer.json file. We will drop in some symlinks so that
+# these paths will resolve as if the composer.json were in the root.
+for target in ${AUTOLOAD_DIRECTORIES} ; do
+  [[ ! -d "$target" ]] || ln -s -f ../../$target $dir
+done
+

@@ -29,13 +29,13 @@
         "phpunit/phpunit": "^4.8",
         "satooshi/php-coveralls": "^1.0.2 | dev-master",
         "squizlabs/php_codesniffer": "^2.7",
-        "symfony/console": "^2.8"
+        "symfony/console": "^4.0"
     },
     "config": {
         "optimize-autoloader": true,
         "sort-packages": true,
         "platform": {
-            "php": "5.4"
+
         },
         "vendor-dir": "../../vendor"
     },
@@ -53,7 +53,11 @@
             "@cs"
         ],
         "scenario": "tests/scripts/install-scenario",
-        "post-update-cmd": "tests/scripts/prep-dependencies"
+        "post-update-cmd": [
+            "tests/scripts/create-scenario symfony2 'symfony/console:^2.8' --platform-php '5.4' --no-lockfile",
+            "tests/scripts/create-scenario symfony3 'symfony/console:^3.0' --platform-php '5.6'",
+            "tests/scripts/create-scenario symfony4 'symfony/console:^4.0'"
+        ]
     },
     "extra": {
         "branch-alias": {
