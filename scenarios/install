@@ -3,7 +3,7 @@
 SCENARIO=$1
 ACTION=${2-install}
 
-dir=dependencies/${SCENARIO}
+dir=scenarios/${SCENARIO}
 if [ -z "$SCENARIO" ] ; then
   SCENARIO=default
   dir=.

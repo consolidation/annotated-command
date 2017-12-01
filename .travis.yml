@@ -13,7 +13,7 @@ matrix:
     - php: 7.1
       env: 'SCENARIO=symfony4'
     - php: 7.0.11
-      env: 'SCENARIO=symfony3 HIGHEST_LOWEST="update"'
+      env: 'HIGHEST_LOWEST="update"'
     - php: 7.0.11
     - php: 5.6
     - php: 5.5
@@ -28,7 +28,7 @@ cache:
     - $HOME/.composer/cache
 
 install:
-  - 'composer scenario "${SCENARIO}" "${HIGHEST_LOWEST-install}"'
+  - 'scenarios/install "${SCENARIO}" "${HIGHEST_LOWEST-install}"'
 
 script:
   - composer test
