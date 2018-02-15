@@ -169,7 +169,20 @@ class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
                 'Negate --foo option',
             ]
         );
-        $input = new StringInput('default:option-defaults-to-true --no-foo');
+        $input = new ArgvInput(['cli.php', 'default:option-defaults-to-true', '--no-foo']);
+        $this->assertRunCommandViaApplicationEquals($command, $input, 'Foo is false');
+
+        // Do all of those things again, but with ArgvInput
+        $input = new ArgvInput(['cli.php', 'default:option-defaults-to-true', '--foo=bar']);
+        $this->assertRunCommandViaApplicationEquals($command, $input, "Foo is 'bar'");
+
+        $input = new ArgvInput(['cli.php', 'default:option-defaults-to-true', '--foo']);
+        $this->assertRunCommandViaApplicationEquals($command, $input, 'Foo is true');
+
+        $input = new ArgvInput(['cli.php', 'default:option-defaults-to-true']);
+        $this->assertRunCommandViaApplicationEquals($command, $input, 'Foo is true');
+
+        $input = new ArgvInput(['cli.php', 'default:option-defaults-to-true', '--no-foo']);
         $this->assertRunCommandViaApplicationEquals($command, $input, 'Foo is false');
     }
     /**
