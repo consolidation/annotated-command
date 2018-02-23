@@ -53,7 +53,7 @@
             "@unit",
             "@cs"
         ],
-        "scenario": "install-scenario",
+        "scenario": "scenarios/install",
         "post-update-cmd": [
             "create-scenario symfony4 'symfony/console:^4.0'",
             "create-scenario symfony2 'symfony/console:^2.8' --platform-php '5.4' --no-lockfile"
