@@ -15,7 +15,9 @@ use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class AnnotatedCommandFactoryTests extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class AnnotatedCommandFactoryTests extends TestCase
 {
     protected $commandFileInstance;
     protected $commandFactory;

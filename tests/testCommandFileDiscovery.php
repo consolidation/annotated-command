@@ -1,7 +1,9 @@
 <?php
 namespace Consolidation\AnnotatedCommand;
 
-class CommandFileDiscoveryTests extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class CommandFileDiscoveryTests extends TestCase
 {
     function testCommandDiscovery()
     {

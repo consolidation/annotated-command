@@ -5,7 +5,9 @@ use Consolidation\AnnotatedCommand\Parser\CommandInfo;
 use Consolidation\AnnotatedCommand\Parser\CommandInfoSerializer;
 use Consolidation\AnnotatedCommand\Parser\CommandInfoDeserializer;
 
-class CommandInfoTests extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class CommandInfoTests extends TestCase
 {
     function flattenArray($actualValue)
     {

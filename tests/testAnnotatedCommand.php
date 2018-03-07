@@ -7,8 +7,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Application;
+use PHPUnit\Framework\TestCase;
 
-class AnnotatedCommandTests extends \PHPUnit_Framework_TestCase
+class AnnotatedCommandTests extends TestCase
 {
     function testMyCatCommand()
     {
