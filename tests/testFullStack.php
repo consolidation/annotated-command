@@ -24,11 +24,12 @@ use Consolidation\TestUtils\ApplicationWithTerminalWidth;
 use Consolidation\AnnotatedCommand\Options\PrepareTerminalWidthOption;
 use Consolidation\AnnotatedCommand\Events\CustomEventAwareInterface;
 use Consolidation\AnnotatedCommand\Events\CustomEventAwareTrait;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Do a test of all of the classes in this project, top-to-bottom.
  */
-class FullStackTests extends \PHPUnit_Framework_TestCase
+class FullStackTests extends TestCase
 {
     protected $application;
     protected $commandFactory;

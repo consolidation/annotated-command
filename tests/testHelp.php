@@ -23,11 +23,12 @@ use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Consolidation\TestUtils\ApplicationWithTerminalWidth;
 use Consolidation\AnnotatedCommand\Options\PrepareTerminalWidthOption;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Test our 'help' command.
  */
-class HelpTests extends \PHPUnit_Framework_TestCase
+class HelpTests extends TestCase
 {
     protected $application;
     protected $commandFactory;

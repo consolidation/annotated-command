@@ -16,8 +16,9 @@ use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 
 use \Consolidation\AnnotatedCommand\Parser\Internal\FullyQualifiedClassCache;
+use PHPUnit\Framework\TestCase;
 
-class FullyQualifiedClassCacheTests extends \PHPUnit_Framework_TestCase
+class FullyQualifiedClassCacheTests extends TestCase
 {
     function testFqcn()
     {
