@@ -14,8 +14,8 @@ DEPENDENCY LICENSES:
 Name                             Version  License  
 consolidation/output-formatters  3.1.13   MIT      
 psr/log                          1.0.2    MIT      
-symfony/console                  v3.3.6   MIT      
-symfony/debug                    v3.3.6   MIT      
-symfony/event-dispatcher         v3.3.6   MIT      
-symfony/finder                   v3.3.6   MIT      
+symfony/console                  v3.4.6   MIT      
+symfony/debug                    v3.4.6   MIT      
+symfony/event-dispatcher         v3.4.6   MIT      
+symfony/finder                   v3.4.6   MIT      
 symfony/polyfill-mbstring        v1.7.0   MIT      
