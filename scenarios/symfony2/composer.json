@@ -27,7 +27,7 @@
     },
     "require-dev": {
         "g-1-a/composer-test-scenarios": "^2",
-        "phpunit/phpunit": "^4.8",
+        "phpunit/phpunit": "^4.8.36",
         "squizlabs/php_codesniffer": "^2.7",
         "symfony/console": "^2.8"
     },
@@ -55,8 +55,8 @@
         "scenario": "scenarios/install",
         "post-update-cmd": [
             "create-scenario symfony4 'symfony/console:^4.0' --platform-php '7.1.3'",
-            "create-scenario symfony2 'symfony/console:^2.8' 'phpunit/phpunit:^4.8' --remove 'satooshi/php-coveralls' --platform-php '5.4' --no-lockfile",
-            "create-scenario phpunit4 'phpunit/phpunit:^4.8' --remove 'satooshi/php-coveralls' --platform-php '5.4'",
+            "create-scenario symfony2 'symfony/console:^2.8' 'phpunit/phpunit:^4.8.36' --remove 'satooshi/php-coveralls' --platform-php '5.4' --no-lockfile",
+            "create-scenario phpunit4 'phpunit/phpunit:^4.8.36' --remove 'satooshi/php-coveralls' --platform-php '5.4'",
             "dependency-licenses"
         ]
     },
