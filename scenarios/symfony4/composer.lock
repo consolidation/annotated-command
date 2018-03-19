@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "7102328b45eea35292c7549ea6b6e5ab",
+    "content-hash": "ac24ca475bb4f1a5d10a2be818fae41c",
     "packages": [
         {
             "name": "consolidation/output-formatters",
@@ -399,16 +399,16 @@
         },
         {
             "name": "g-1-a/composer-test-scenarios",
-            "version": "1.0.3",
+            "version": "2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/g-1-a/composer-test-scenarios.git",
-                "reference": "240841a15f332750d5f0499371f880e9ea5b18cc"
+                "reference": "ed9e89e0fa1b4503a05921e0ee97119bd5621f40"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/g-1-a/composer-test-scenarios/zipball/240841a15f332750d5f0499371f880e9ea5b18cc",
-                "reference": "240841a15f332750d5f0499371f880e9ea5b18cc",
+                "url": "https://api.github.com/repos/g-1-a/composer-test-scenarios/zipball/ed9e89e0fa1b4503a05921e0ee97119bd5621f40",
+                "reference": "ed9e89e0fa1b4503a05921e0ee97119bd5621f40",
                 "shasum": ""
             },
             "bin": [
@@ -428,7 +428,7 @@
                 }
             ],
             "description": "Useful scripts for testing multiple sets of Composer dependencies.",
-            "time": "2018-03-07T21:36:05+00:00"
+            "time": "2018-03-19T05:31:48+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -2452,5 +2452,8 @@
     "platform": {
         "php": ">=5.4.0"
     },
-    "platform-dev": []
+    "platform-dev": [],
+    "platform-overrides": {
+        "php": "7.1.3"
+    }
 }
