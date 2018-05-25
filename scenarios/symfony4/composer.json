@@ -26,7 +26,7 @@
         "symfony/finder": "^2.5|^3|^4"
     },
     "require-dev": {
-        "g-1-a/composer-test-scenarios": "^2",
+        "g1a/composer-test-scenarios": "^2",
         "phpunit/phpunit": "^6",
         "satooshi/php-coveralls": "^2",
         "squizlabs/php_codesniffer": "^2.7",
