@@ -315,7 +315,11 @@ class AnnotatedCommandFactoryTests extends TestCase
         $this->assertEquals('my:join', $command->getName());
         $this->assertEquals('This is the my:join command', $command->getDescription());
         $this->assertEquals("This command will join its parameters together. It can also reverse and repeat its arguments.", $command->getHelp());
-        $this->assertEquals('my:join [--flip] [--repeat [REPEAT]] [--] [<args>]...', $command->getSynopsis());
+        // Older versions of Symfony: [<args>]...
+        // Newer versions of Symfony: [<args>...]
+        $synopsis = $command->getSynopsis();
+        $synopsis = preg_replace('#]...$#', '...]', $synopsis);
+        $this->assertEquals('my:join [--flip] [--repeat [REPEAT]] [--] [<args>...]', $synopsis);
 
         // TODO: Extra whitespace character if there are no options et. al. in the
         // usage. This is uncommon, and the defect is invisible. Maybe find it someday.
