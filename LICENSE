@@ -12,10 +12,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 DEPENDENCY LICENSES:
 
 Name                             Version  License  
-consolidation/output-formatters  3.2.0    MIT      
+consolidation/output-formatters  3.2.1    MIT      
 psr/log                          1.0.2    MIT      
-symfony/console                  v3.4.11  MIT      
-symfony/debug                    v3.4.11  MIT      
-symfony/event-dispatcher         v3.4.11  MIT      
-symfony/finder                   v3.4.11  MIT      
+symfony/console                  v3.4.12  MIT      
+symfony/debug                    v3.4.12  MIT      
+symfony/event-dispatcher         v3.4.12  MIT      
+symfony/finder                   v3.4.12  MIT      
 symfony/polyfill-mbstring        v1.8.0   MIT      
