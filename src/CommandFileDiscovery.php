@@ -145,13 +145,17 @@ class CommandFileDiscovery
      * then Composer will place the command files in `drush/Commands/contrib`.
      * The namespace should not be any different in this instance than if
      * the extension were placed in `drush/Commands`, though, so Drush therefore
-     * calls `ignoreNamespacePart('Commands', 'contrib')`. This causes the
+     * calls `ignoreNamespacePart('contrib', 'Commands')`. This causes the
      * `contrib` component to be removed from the namespace if it follows
-     * the namespace `Commands`.
+     * the namespace `Commands`. If the '$base' parameter is not specified, then
+     * the ignored portion of the namespace may appear anywhere in the path.
      */
-    public function ignoreNamespacePart($base, $ignore)
+    public function ignoreNamespacePart($ignore, $base = '')
     {
-        $replacementPart = '\\' . $base . '\\';
+        $replacementPart = '\\';
+        if (!empty($base)) {
+            $replacementPart .= $base . '\\';
+        }
         $ignoredPart = $replacementPart . $ignore . '\\';
         $this->strippedNamespaces[$ignoredPart] = $replacementPart;
 
