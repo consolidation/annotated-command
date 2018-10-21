@@ -28,7 +28,7 @@ use PHPUnit\Framework\TestCase;
 /**
  * Test our 'help' command.
  */
-class HelpTests extends TestCase
+class HelpTest extends TestCase
 {
     protected $application;
     protected $commandFactory;
@@ -137,7 +137,7 @@ class HelpTests extends TestCase
   </arguments>
   <options>
     <option name="--format" shortcut="" accept_value="1" is_value_required="0" is_multiple="0">
-      <description>Format the result data. Available formats: csv,json,list,php,print-r,sections,string,table,tsv,var_export,xml,yaml</description>
+      <description>Format the result data. Available formats: csv,json,list,null,php,print-r,sections,string,table,tsv,var_export,xml,yaml</description>
       <defaults>
         <default>table</default>
       </defaults>
@@ -221,7 +221,7 @@ EOT;
             "accept_value": "1",
             "is_value_required": "0",
             "is_multiple": "0",
-            "description": "Format the result data. Available formats: csv,json,list,php,print-r,sections,string,table,tsv,var_export,xml,yaml",
+            "description": "Format the result data. Available formats: csv,json,list,null,php,print-r,sections,string,table,tsv,var_export,xml,yaml",
             "defaults": [
                 "table"
             ]

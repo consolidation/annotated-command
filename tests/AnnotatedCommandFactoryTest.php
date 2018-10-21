@@ -17,7 +17,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 use PHPUnit\Framework\TestCase;
 
-class AnnotatedCommandFactoryTests extends TestCase
+class AnnotatedCommandFactoryTest extends TestCase
 {
     protected $commandFileInstance;
     protected $commandFactory;

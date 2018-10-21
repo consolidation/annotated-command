@@ -20,7 +20,7 @@
     },
     "require": {
         "php": ">=5.4.0",
-        "consolidation/output-formatters": "^3.1.12",
+        "consolidation/output-formatters": "^3.4",
         "psr/log": "^1",
         "symfony/console": "^2.8|^3|^4",
         "symfony/event-dispatcher": "^2.5|^3|^4",

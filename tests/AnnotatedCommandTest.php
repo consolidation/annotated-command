@@ -9,7 +9,7 @@ use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Application;
 use PHPUnit\Framework\TestCase;
 
-class AnnotatedCommandTests extends TestCase
+class AnnotatedCommandTest extends TestCase
 {
     function testMyCatCommand()
     {
