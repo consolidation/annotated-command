@@ -3,7 +3,7 @@ namespace Consolidation\AnnotatedCommand;
 
 use PHPUnit\Framework\TestCase;
 
-class CommandFileDiscoveryTests extends TestCase
+class CommandFileDiscoveryTest extends TestCase
 {
     function testCommandDiscovery()
     {

@@ -29,7 +29,7 @@ use PHPUnit\Framework\TestCase;
 /**
  * Do a test of all of the classes in this project, top-to-bottom.
  */
-class FullStackTests extends TestCase
+class FullStackTest extends TestCase
 {
     protected $application;
     protected $commandFactory;
@@ -76,7 +76,7 @@ class FullStackTests extends TestCase
 
         $containsList =
         [
-            '--format[=FORMAT]  Format the result data. Available formats: csv,json,list,php,print-r,sections,string,table,tsv,var_export,xml,yaml [default: "table"]',
+            '--format[=FORMAT]  Format the result data. Available formats: csv,json,list,null,php,print-r,sections,string,table,tsv,var_export,xml,yaml [default: "table"]',
             '--fields[=FIELDS]  Available fields: I (first), II (second), III (third) [default: ""]',
         ];
         $this->assertRunCommandViaApplicationContains('help ' . $commandName, $containsList);
@@ -139,7 +139,7 @@ class FullStackTests extends TestCase
         $returnType = $exampleTableCommand->getReturnType();
         $this->assertEquals('\Consolidation\OutputFormatters\StructuredData\RowsOfFields', $returnType);
         $validFormats = $formatter->validFormats($returnType);
-        $this->assertEquals('csv,json,list,php,print-r,sections,string,table,tsv,var_export,xml,yaml', implode(',', $validFormats));
+        $this->assertEquals('csv,json,list,null,php,print-r,sections,string,table,tsv,var_export,xml,yaml', implode(',', $validFormats));
 
         // Control: run commands without hooks.
         $this->assertRunCommandViaApplicationEquals('always:fail', 'This command always fails.', 13);

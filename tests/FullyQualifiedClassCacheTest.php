@@ -18,7 +18,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use \Consolidation\AnnotatedCommand\Parser\Internal\FullyQualifiedClassCache;
 use PHPUnit\Framework\TestCase;
 
-class FullyQualifiedClassCacheTests extends TestCase
+class FullyQualifiedClassCacheTest extends TestCase
 {
     function testFqcn()
     {
@@ -45,10 +45,10 @@ class FullyQualifiedClassCacheTests extends TestCase
         $this->assertEquals('Consolidation\OutputFormatters\StructuredData\RowsOfFields', $fqcn);
 
         $fqcn = $fqcnCache->qualify($filename, 'ClassWithoutUse');
-        $this->assertEquals('Consolidation\TestUtils\alpha\ClassWithoutUse', $fqcn);
+        $this->assertEquals('ClassWithoutUse', $fqcn);
 
         $fqcn = $fqcnCache->qualify($filename, 'ExampleAliasedClass');
-        $this->assertEquals('Consolidation\TestUtils\ExampleCommandFile', $fqcn);
+        $this->assertEquals('Consolidation\TestUtils\ExampleAliasedClass', $fqcn);
     }
 
     function callProtected($object, $method, $args = [])
