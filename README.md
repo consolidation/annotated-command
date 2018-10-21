@@ -24,7 +24,7 @@ Extant commandline tools that utilize this technique include:
 
 This library provides routines to produce the Symfony\Component\Console\Command\Command from all public methods defined in the provided class.
 
-**Note** If you are looking for a very fast way to write a Symfony Console-base command-line tool, you should consider using [Robo](https://github.com/consolidation/Robo), which is built on top of this library, and adds additional conveniences to get you going quickly. See [Using Robo as a Framework](http://robo.li/framework/).  It is possible to use this project without Robo if desired, of course.
+**Note** If you are looking for a very fast way to write a Symfony Console-base command-line tool, you should consider using [Robo](https://github.com/consolidation/Robo), which is built on top of this library, and adds additional conveniences to get you going quickly. Use [g1a/starter](https://github.com/g1a/starter) to quickly scaffold a new commandline tool. See [Using Robo as a Framework](http://robo.li/framework/).  It is possible to use this project without Robo if desired, of course.
 
 ## Library Usage
 
