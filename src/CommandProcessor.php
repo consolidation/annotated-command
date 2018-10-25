@@ -208,20 +208,10 @@ class CommandProcessor implements LoggerAwareInterface
         if ($status != 0) {
             return $this->writeErrorMessage($output, $status, $structuredOutput, $result);
         }
-        if ($this->dataCanBeFormatted($structuredOutput) && isset($this->formatterManager)) {
+        if (isset($this->formatterManager)) {
             return $this->writeUsingFormatter($output, $structuredOutput, $commandData);
         }
         return $this->writeCommandOutput($output, $structuredOutput);
-    }
-
-    protected function dataCanBeFormatted($structuredOutput)
-    {
-        if (!isset($this->formatterManager)) {
-            return false;
-        }
-        return
-            is_object($structuredOutput) ||
-            is_array($structuredOutput);
     }
 
     /**
