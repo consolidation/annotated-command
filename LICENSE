@@ -19,4 +19,4 @@ symfony/console                  v3.4.17  MIT
 symfony/debug                    v3.4.17  MIT      
 symfony/event-dispatcher         v3.4.17  MIT      
 symfony/finder                   v3.4.17  MIT      
-symfony/polyfill-mbstring        v1.9.0   MIT      
+symfony/polyfill-mbstring        v1.10.0  MIT      
