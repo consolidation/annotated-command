@@ -27,9 +27,11 @@ class BetaCommandFile
      */
     public function alterFormattersChinese($result, CommandData $commandData)
     {
+        $data = $result->getOutputData();
         if ($commandData->input()->getOption('chinese')) {
-            $result[] = [ 'first' => '壹',  'second' => '貳',  'third' => '叁'  ];
+            $data[] = [ 'first' => '壹',  'second' => '貳',  'third' => '叁'  ];
         }
+        $result->setOutputData($data);
 
         return $result;
     }
@@ -43,9 +45,11 @@ class BetaCommandFile
      */
     public function alterFormattersKanji($result, CommandData $commandData)
     {
+        $data = $result->getOutputData();
         if ($commandData->input()->getOption('kanji')) {
-            $result[] = [ 'first' => '一',  'second' => '二',  'third' => '三'  ];
+            $data[] = [ 'first' => '一',  'second' => '二',  'third' => '三'  ];
         }
+        $result->setOutputData($data);
 
         return $result;
     }
