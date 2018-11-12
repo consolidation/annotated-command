@@ -318,6 +318,7 @@ EOT;
 
         $this->assertRunCommandViaApplicationEquals('get:serious', 'very serious');
         $this->assertRunCommandViaApplicationContains('get:lost', 'Command "get:lost" is not defined.', [], 1);
+        $this->assertRunCommandViaApplicationContains('get:both', 'Here is some data.', [], 1);
     }
 
     function testCommandsAndHooksWithBetaFolder()

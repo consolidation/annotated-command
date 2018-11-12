@@ -292,6 +292,24 @@ class AlphaCommandFile implements CustomEventAwareInterface
     }
 
     /**
+     * Test command with formatters using an associative list
+     *
+     * @command get:both
+     * @field-labels
+     *   reason: Reason
+     *   message: Message
+     * @return \Consolidation\OutputFormatters\StructuredData\AssociativeList
+     */
+    public function getBoth()
+    {
+        $outputData = [
+            'reason' => 'There was data and there was an exit code to report.',
+            'message' => 'Here is some data.',
+        ];
+        return CommandResult::data(new AssociativeList($outputData), 3);
+    }
+
+    /**
      * This command uses a custom event 'my-event' to collect data.  Note that
      * the event handlers will not be found unless the hook manager is
      * injected into this command handler object via `setHookManager()`
