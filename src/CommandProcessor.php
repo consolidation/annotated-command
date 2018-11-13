@@ -200,8 +200,7 @@ class CommandProcessor implements LoggerAwareInterface
         // result.
         if ($result instanceof ExitCodeInterface) {
             $status = $result->getExitCode();
-        }
-        else {
+        } else {
             $status = $statusCodeDispatcher->determineStatusCode($result);
             if (isset($status) && ($status != 0)) {
                 return $status;
