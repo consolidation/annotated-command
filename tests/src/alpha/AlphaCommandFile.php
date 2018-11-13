@@ -2,6 +2,7 @@
 namespace Consolidation\TestUtils\alpha;
 
 use Consolidation\AnnotatedCommand\CommandError;
+use Consolidation\AnnotatedCommand\CommandResult;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Consolidation\OutputFormatters\StructuredData\AssociativeList;
 use Consolidation\AnnotatedCommand\AnnotationData;
@@ -107,7 +108,7 @@ class AlphaCommandFile implements CustomEventAwareInterface
             [ 'first' => 'Ichi', 'second' => 'Ni',   'third' => 'San'   ],
             [ 'first' => 'Uno',  'second' => 'Dos',  'third' => 'Tres'  ],
         ];
-        return new RowsOfFields($outputData);
+        return CommandResult::data(new RowsOfFields($outputData));
     }
 
     /**
@@ -137,7 +138,7 @@ class AlphaCommandFile implements CustomEventAwareInterface
             [ 'first' => 'Ichi', 'second' => 'Ni',   'third' => 'San'   ],
             [ 'first' => 'Uno',  'second' => 'Dos',  'third' => 'Tres'  ],
         ];
-        return new RowsOfFields($outputData);
+        return CommandResult::data(new RowsOfFields($outputData));
     }
 
     /**
@@ -158,7 +159,7 @@ class AlphaCommandFile implements CustomEventAwareInterface
                 'second' => 'This is the second column of the same table. It is also very long, and should be wrapped across multiple lines, just like the first column.',
             ]
         ];
-        return new RowsOfFields($data);
+        return CommandResult::data(new RowsOfFields($data));
     }
 
     /**
@@ -183,9 +184,11 @@ class AlphaCommandFile implements CustomEventAwareInterface
      */
     public function alterFormatters($result, CommandData $commandData)
     {
+        $data = $result->getOutputData();
         if ($commandData->input()->getOption('french')) {
-            $result[] = [ 'first' => 'Un',  'second' => 'Deux',  'third' => 'Trois'  ];
+            $data[] = [ 'first' => 'Un',  'second' => 'Deux',  'third' => 'Trois'  ];
         }
+        $result->setOutputData($data);
 
         return $result;
     }
@@ -240,7 +243,7 @@ class AlphaCommandFile implements CustomEventAwareInterface
             'mysql_port' => 16191,
             'mysql_database' => 'pantheon',
         ];
-        return new AssociativeList($outputData);
+        return CommandResult::data(new AssociativeList($outputData));
     }
 
     /**
@@ -286,6 +289,24 @@ class AlphaCommandFile implements CustomEventAwareInterface
     public function getLost()
     {
         return 'very lost';
+    }
+
+    /**
+     * Test command with formatters using an associative list
+     *
+     * @command get:both
+     * @field-labels
+     *   reason: Reason
+     *   message: Message
+     * @return \Consolidation\OutputFormatters\StructuredData\AssociativeList
+     */
+    public function getBoth()
+    {
+        $outputData = [
+            'reason' => 'There was data and there was an exit code to report.',
+            'message' => 'Here is some data.',
+        ];
+        return CommandResult::dataWithExitCode(new AssociativeList($outputData), 3);
     }
 
     /**
