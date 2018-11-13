@@ -306,7 +306,7 @@ class AlphaCommandFile implements CustomEventAwareInterface
             'reason' => 'There was data and there was an exit code to report.',
             'message' => 'Here is some data.',
         ];
-        return CommandResult::data(new AssociativeList($outputData), 3);
+        return CommandResult::dataWithExitCode(new AssociativeList($outputData), 3);
     }
 
     /**

@@ -194,7 +194,19 @@ class CommandProcessor implements LoggerAwareInterface
     public function handleResults(OutputInterface $output, $names, $result, CommandData $commandData)
     {
         $statusCodeDispatcher = new StatusDeterminerHookDispatcher($this->hookManager(), $names);
-        $status = $statusCodeDispatcher->determineStatusCode($result);
+        // A little messy, for backwards compatibility: if the result implements
+        // ExitCodeInterface, then use that as the exit code. If a status code
+        // dispatcher returns a non-zero result, then we will never print a
+        // result.
+        if ($result instanceof ExitCodeInterface) {
+            $status = $result->getExitCode();
+        }
+        else {
+            $status = $statusCodeDispatcher->determineStatusCode($result);
+            if (isset($status) && ($status != 0)) {
+                return $status;
+            }
+        }
         // If the result is an integer and no separate status code was provided, then use the result as the status and do no output.
         if (is_integer($result) && !isset($status)) {
             return $result;
@@ -205,13 +217,13 @@ class CommandProcessor implements LoggerAwareInterface
         $extractDispatcher = new ExtracterHookDispatcher($this->hookManager(), $names);
         $structuredOutput = $extractDispatcher->extractOutput($result);
         $output = $this->chooseOutputStream($output, $status);
-        if ($status != 0) {
+        if (($status != 0) && is_string($structuredOutput)) {
             return $this->writeErrorMessage($output, $status, $structuredOutput, $result);
         }
         if ($this->dataCanBeFormatted($structuredOutput) && isset($this->formatterManager)) {
-            return $this->writeUsingFormatter($output, $structuredOutput, $commandData);
+            return $this->writeUsingFormatter($output, $structuredOutput, $commandData, $status);
         }
-        return $this->writeCommandOutput($output, $structuredOutput);
+        return $this->writeCommandOutput($output, $structuredOutput, $status);
     }
 
     protected function dataCanBeFormatted($structuredOutput)
@@ -288,7 +300,7 @@ class CommandProcessor implements LoggerAwareInterface
     /**
      * Call the formatter to output the provided data.
      */
-    protected function writeUsingFormatter(OutputInterface $output, $structuredOutput, CommandData $commandData)
+    protected function writeUsingFormatter(OutputInterface $output, $structuredOutput, CommandData $commandData, $status = 0)
     {
         $formatterOptions = $this->createFormatterOptions($commandData);
         $format = $this->getFormat($formatterOptions);
@@ -298,7 +310,7 @@ class CommandProcessor implements LoggerAwareInterface
             $structuredOutput,
             $formatterOptions
         );
-        return 0;
+        return $status;
     }
 
     /**
@@ -339,14 +351,15 @@ class CommandProcessor implements LoggerAwareInterface
      */
     protected function writeCommandOutput(
         OutputInterface $output,
-        $structuredOutput
+        $structuredOutput,
+        $status = 0
     ) {
         // If there is no formatter, we will print strings,
         // but can do no more than that.
         if (is_string($structuredOutput)) {
             $output->writeln($structuredOutput);
         }
-        return 0;
+        return $status;
     }
 
     /**
