@@ -345,11 +345,19 @@ public function nameSomeCommand($result, CommandData $commandData)
 
 ### Status Hook
 
+**DEPRECATED**
+
+Instead of using a Status Determiner hook, commands should simply return their exit code and result data separately using a CommandResult object.
+
 The status hook ([StatusDeterminerInterface](src/Hooks/StatusDeterminerInterface.php)) is responsible for determing whether a command succeeded (status code 0) or failed (status code > 0).  The result object returned by a command may be a compound object that contains multiple bits of information about the command result.  If the result object implements [ExitCodeInterface](ExitCodeInterface.php), then the `getExitCode()` method of the result object is called to determine what the status result code for the command should be. If ExitCodeInterface is not implemented, then all of the status hooks attached to this command are executed; the first one that successfully returns a result will stop further execution of status hooks, and the result it returned will be used as the status result code for this operation.
 
 If no status hook returns any result, then success is presumed.
 
 ### Extract Hook
+
+**DEPRECATED**
+
+See [RowsOfFieldsWithMetadata in output-formatters](https://github.com/consolidation/output-formatters/blob/master/src/StructuredData/RowsOfFieldsWithMetadata.php) for an alternative that is more flexible for most use cases.
 
 The extract hook ([ExtractOutputInterface](src/Hooks/ExtractOutputInterface.php)) is responsible for determining what the actual rendered output for the command should be.  The result object returned by a command may be a compound object that contains multiple bits of information about the command result.  If the result object implements [OutputDataInterface](OutputDataInterface.php), then the `getOutputData()` method of the result object is called to determine what information should be displayed to the user as a result of the command's execution. If OutputDataInterface is not implemented, then all of the extract hooks attached to this command are executed; the first one that successfully returns output data will stop further execution of extract hooks.
 
