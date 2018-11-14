@@ -215,8 +215,8 @@ class CommandProcessor implements LoggerAwareInterface
         // Get the structured output, the output stream and the formatter
         $extractDispatcher = new ExtracterHookDispatcher($this->hookManager(), $names);
         $structuredOutput = $extractDispatcher->extractOutput($result);
-        $output = $this->chooseOutputStream($output, $status);
         if (($status != 0) && is_string($structuredOutput)) {
+            $output = $this->chooseOutputStream($output, $status);
             return $this->writeErrorMessage($output, $status, $structuredOutput, $result);
         }
         if ($this->dataCanBeFormatted($structuredOutput) && isset($this->formatterManager)) {
