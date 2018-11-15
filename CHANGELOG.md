@@ -1,6 +1,6 @@
 # Change Log
 
-### 2.10.0 - 13 Nov 2018
+### 2.10.0 - 14 Nov 2018
 
 - Add a new data type, CommandResult (#167)
 
