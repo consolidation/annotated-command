@@ -29,7 +29,7 @@
     "require-dev": {
         "phpunit/phpunit": "^6",
         "satooshi/php-coveralls": "^2",
-        "g1a/composer-test-scenarios": "^2",
+        "g1a/composer-test-scenarios": "^3.0.0-alpha1",
         "squizlabs/php_codesniffer": "^2.7"
     },
     "config": {
@@ -52,15 +52,41 @@
             "@unit",
             "@cs"
         ],
-        "scenario": "scenarios/install",
         "post-update-cmd": [
-            "create-scenario symfony4 'symfony/console:^4.0' --platform-php '7.1.3'",
-            "create-scenario symfony2 'symfony/console:^2.8' 'phpunit/phpunit:^4.8.36' --remove 'satooshi/php-coveralls' --platform-php '5.4' --no-lockfile",
-            "create-scenario phpunit4 'phpunit/phpunit:^4.8.36' --remove 'satooshi/php-coveralls' --platform-php '5.4'",
             "dependency-licenses"
         ]
     },
     "extra": {
+        "scenarios": {
+            "symfony4": {
+                "require": {
+                    "symfony/console": "^4.0"
+                },
+                "config": {
+                    "platform": {
+                        "php": "7.1.3"
+                    }
+                }
+            },
+            "symfony2": {
+                "require": {
+                    "symfony/console": "^2.8"
+                },
+                "config": {
+                    "platform": {
+                        "php": "5.4"
+                    }
+                },
+                "scenario-options": {
+                    "create-lockfile": "false"
+                }
+            },
+            "phpunit4": {
+                "require": {
+                    "phpunit/phpunit": "^4.8.36"
+                }
+            }
+        },
         "branch-alias": {
             "dev-master": "2.x-dev"
         }
