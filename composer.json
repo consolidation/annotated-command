@@ -28,7 +28,7 @@
     },
     "require-dev": {
         "phpunit/phpunit": "^6",
-        "satooshi/php-coveralls": "^2",
+        "php-coveralls/php-coveralls": "^2",
         "g1a/composer-test-scenarios": "^3.0.0-alpha1",
         "squizlabs/php_codesniffer": "^2.7"
     },
@@ -74,7 +74,7 @@
                 },
                 "config": {
                     "platform": {
-                        "php": "5.4"
+                        "php": "5.4.8"
                     }
                 },
                 "scenario-options": {
@@ -82,8 +82,16 @@
                 }
             },
             "phpunit4": {
-                "require": {
+                "require-dev": {
                     "phpunit/phpunit": "^4.8.36"
+                },
+                "remove": [
+                    "php-coveralls/php-coveralls"
+                ],
+                "config": {
+                    "platform": {
+                        "php": "5.4.8"
+                    }
                 }
             }
         },
