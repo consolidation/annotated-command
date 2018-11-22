@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "78c2a4f480f0c80d9ba050794ae1336a",
+    "content-hash": "3c6b3e869447a986290d067cbf905c6f",
     "packages": [
         {
             "name": "consolidation/output-formatters",
@@ -123,16 +123,16 @@
         },
         {
             "name": "psr/log",
-            "version": "1.0.2",
+            "version": "1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-fig/log.git",
-                "reference": "4ebe3a8bf773a19edfe0a84b6585ba3d401b724d"
+                "reference": "6c001f1daafa3a3ac1d8ff69ee4db8e799a654dd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/log/zipball/4ebe3a8bf773a19edfe0a84b6585ba3d401b724d",
-                "reference": "4ebe3a8bf773a19edfe0a84b6585ba3d401b724d",
+                "url": "https://api.github.com/repos/php-fig/log/zipball/6c001f1daafa3a3ac1d8ff69ee4db8e799a654dd",
+                "reference": "6c001f1daafa3a3ac1d8ff69ee4db8e799a654dd",
                 "shasum": ""
             },
             "require": {
@@ -166,7 +166,7 @@
                 "psr",
                 "psr-3"
             ],
-            "time": "2016-10-10T12:19:37+00:00"
+            "time": "2018-11-20T15:27:04+00:00"
         },
         {
             "name": "symfony/console",
@@ -522,16 +522,16 @@
         },
         {
             "name": "g1a/composer-test-scenarios",
-            "version": "3.0.0-alpha5",
+            "version": "3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/g1a/composer-test-scenarios.git",
-                "reference": "24c68ded290e7986252ee156ddd943e4ae82787b"
+                "reference": "2a7156f1572898888ea50ad1d48a6b4d3f9fbf78"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/g1a/composer-test-scenarios/zipball/24c68ded290e7986252ee156ddd943e4ae82787b",
-                "reference": "24c68ded290e7986252ee156ddd943e4ae82787b",
+                "url": "https://api.github.com/repos/g1a/composer-test-scenarios/zipball/2a7156f1572898888ea50ad1d48a6b4d3f9fbf78",
+                "reference": "2a7156f1572898888ea50ad1d48a6b4d3f9fbf78",
                 "shasum": ""
             },
             "require": {
@@ -570,7 +570,7 @@
                 }
             ],
             "description": "Useful scripts for testing multiple sets of Composer dependencies.",
-            "time": "2018-11-17T08:11:57+00:00"
+            "time": "2018-11-22T05:10:20+00:00"
         },
         {
             "name": "guzzle/guzzle",
@@ -2490,9 +2490,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "g1a/composer-test-scenarios": 15
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
