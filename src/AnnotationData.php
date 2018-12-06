@@ -27,7 +27,22 @@ class AnnotationData extends \ArrayObject
 
     public function set($key, $default = '')
     {
-        $this->{$key} = $default;
+        $this->offsetSet($key, $default);
+        return $this;
+    }
+
+    public function append($key, $default = '')
+    {
+        $data = $this->offsetGet($key);
+        if (is_array($data)) {
+            $this->offsetSet($key, array_merge($data, $default));
+        }
+        elseif (is_numeric($data)) {
+            $this->offsetSet($key, $data + $default);
+        }
+        elseif (is_scalar($data)) {
+            $this->offsetSet($key, $data . $default);
+        }
         return $this;
     }
 }

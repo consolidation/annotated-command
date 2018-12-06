@@ -5,7 +5,7 @@ Initialize Symfony Console commands from annotated command class methods.
 [![Travis CI](https://travis-ci.org/consolidation/annotated-command.svg?branch=master)](https://travis-ci.org/consolidation/annotated-command)
 [![Windows CI](https://ci.appveyor.com/api/projects/status/c2c4lcf43ux4c30p?svg=true)](https://ci.appveyor.com/project/greg-1-anderson/annotated-command)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/consolidation/annotated-command/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/consolidation/annotated-command/?branch=master)
-[![Coverage Status](https://coveralls.io/repos/github/consolidation/annotated-command/badge.svg?branch=master)](https://coveralls.io/github/consolidation/annotated-command?branch=master) 
+[![Coverage Status](https://coveralls.io/repos/github/consolidation/annotated-command/badge.svg?branch=master)](https://coveralls.io/github/consolidation/annotated-command?branch=master)
 [![License](https://poser.pugx.org/consolidation/annotated-command/license)](https://packagist.org/packages/consolidation/annotated-command)
 
 ## Component Status
@@ -65,7 +65,7 @@ class MyCommandClass
         return "{$one}{$two}";
     }
 }
-``` 
+```
 ## Option Default Values
 
 The `$options` array must be an associative array whose key is the name of the option, and whose value is one of:
@@ -143,7 +143,7 @@ There are ten types of hooks in the command processing request flow:
    - @status
 - [Extract](#extract-hook)
    - @extract
-   
+
 In addition to these, there are two more hooks available:
 
 - [On-event](#on-event-hook)
@@ -198,6 +198,42 @@ public function initSomeCommand(InputInterface $input, AnnotationData $annotatio
     if (!$value) {
         $input->setOption('some-option', $this->generateRandomOptionValue());
     }
+}
+```
+
+You may alter the AnnotationData here by using simple array syntax. Below, we
+add an additional display field label for a Property List.
+
+```
+use Consolidation\AnnotatedCommand\AnnotationData;
+use Symfony\Component\Console\Input\InputInterface;
+
+/**
+ * @hook init some:command
+ */
+public function initSomeCommand(InputInterface $input, AnnotationData $annotationData)
+{
+    $annotationData['field-labels'] .= "\n" . "new_field: My new field";
+}
+```
+
+Alternately, you may use the `set()` or `append()` methods on the AnnotationData
+class.
+
+```
+use Consolidation\AnnotatedCommand\AnnotationData;
+use Symfony\Component\Console\Input\InputInterface;
+
+/**
+ * @hook init some:command
+ */
+public function initSomeCommand(InputInterface $input, AnnotationData $annotationData)
+{
+    // Add a line to the field labels.
+    $annotationData->append('field-labels', "\n" . "new_field: My new field");
+    // Replace all field labels.
+    $annotationData->set('field-labels', "one_field: My only field");
+
 }
 ```
 
@@ -407,8 +443,8 @@ class MyReplaceCommandHook  {
 
   /**
    * @hook replace-command foo:bar
-   * 
-   * Parameters must match original command method. 
+   *
+   * Parameters must match original command method.
    */
   public function myFooBarReplacement($value) {
     print "Hello $value!";
@@ -504,7 +540,7 @@ Listeners can be used to construct command file instances as they are provided t
 
 ### Option Providers
 
-An option provider is given an opportunity to add options to a command as it is being constructed.  
+An option provider is given an opportunity to add options to a command as it is being constructed.
 ```
 public function AnnotatedCommandFactory::addAutomaticOptionProvider(AutomaticOptionsProviderInterface $listener);
 ```
@@ -519,4 +555,4 @@ public function alterCommandInfo(CommandInfo $commandInfo, $commandFileInstance)
 
 ## Comparison to Existing Solutions
 
-The existing solutions used their own hand-rolled regex-based parsers to process the contents of the DocBlock comments. consolidation/annotated-command uses the [phpdocumentor/reflection-docblock](https://github.com/phpDocumentor/ReflectionDocBlock) project (which is itself a regex-based parser) to interpret DocBlock contents. 
+The existing solutions used their own hand-rolled regex-based parsers to process the contents of the DocBlock comments. consolidation/annotated-command uses the [phpdocumentor/reflection-docblock](https://github.com/phpDocumentor/ReflectionDocBlock) project (which is itself a regex-based parser) to interpret DocBlock contents.
