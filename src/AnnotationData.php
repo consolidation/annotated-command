@@ -24,4 +24,10 @@ class AnnotationData extends \ArrayObject
     {
         return array_keys($this->getArrayCopy());
     }
+
+    public function set($key, $default = '')
+    {
+        $this->{$key} = $default;
+        return $this;
+    }
 }
