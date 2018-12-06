@@ -25,23 +25,23 @@ class AnnotationData extends \ArrayObject
         return array_keys($this->getArrayCopy());
     }
 
-    public function set($key, $default = '')
+    public function set($key, $value = '')
     {
-        $this->offsetSet($key, $default);
+        $this->offsetSet($key, $value);
         return $this;
     }
 
-    public function append($key, $default = '')
+    public function append($key, $value = '')
     {
         $data = $this->offsetGet($key);
         if (is_array($data)) {
-            $this->offsetSet($key, array_merge($data, $default));
+            $this->offsetSet($key, array_merge($data, $value));
         }
         elseif (is_numeric($data)) {
-            $this->offsetSet($key, $data + $default);
+            $this->offsetSet($key, $data + $value);
         }
         elseif (is_scalar($data)) {
-            $this->offsetSet($key, $data . $default);
+            $this->offsetSet($key, $data . $value);
         }
         return $this;
     }
