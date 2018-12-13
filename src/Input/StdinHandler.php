@@ -70,11 +70,34 @@ use Symfony\Component\Console\Input\InputInterface;
  *
  * You may also inject your stdin file fixture stream into the $input object
  * as usual, and then use it with 'select()' or 'setStream()' as shown above.
+ *
+ * Finally, this class may also be used in absence of a dependency injection
+ * container by using the static 'selectStream()' method:
+ *
+ *      /**
+ *       * @command example
+ *       * /
+ *      public function example($file)
+ *      {
+ *          StdinHandler::selectStream($this->input, 'file');
+ *      }
+ *
+ * To test a method that uses this technique, simply inject your stdin
+ * fixture into the $input object in your test:
+ *
+ *      $input->setStream(fopen($pathToFixture, 'r'));
  */
 class StdinHandler
 {
     protected $path;
     protected $stream;
+
+    public static function selectStream(InputInterface $input, $optionOrArg)
+    {
+        $handler = new Self();
+
+        return $handler->setStream($input, $optionOrArg);
+    }
 
     /**
      * hasPath returns 'true' if the stdin handler has a path to a file.
@@ -162,7 +185,7 @@ class StdinHandler
     public function getStream()
     {
         if (!$this->hasStream()) {
-            $this->stream = fopen($this->path());
+            $this->stream = fopen($this->path(), 'r');
         }
         return $this->stream;
     }

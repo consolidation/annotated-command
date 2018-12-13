@@ -358,6 +358,32 @@ class AnnotatedCommandFactoryTest extends TestCase
         $this->assertRunCommandViaApplicationContains($command, $input, ['Too many arguments'], 1);
     }
 
+    function testCatNoDICommand()
+    {
+        $path = __DIR__ . '/fixtures/stdin.txt';
+        $selfEvidentPath = __DIR__ . '/fixtures/self-evident.txt';
+
+        $this->commandFileInstance = new \Consolidation\TestUtils\StdinCommandFile;
+        $this->commandFactory = new AnnotatedCommandFactory();
+        $commandInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'catNoDI');
+
+        $command = $this->commandFactory->createCommand($commandInfo, $this->commandFileInstance);
+
+        $this->assertInstanceOf('\Symfony\Component\Console\Command\Command', $command);
+        $this->assertEquals('cat:no-di', $command->getName());
+
+        $input = new StringInput('cat:no-di');
+        $input->setStream(fopen($path, 'r'));
+        $this->assertRunCommandViaApplicationEquals($command, $input, 'hello world');
+
+        $input = new StringInput('cat:no-di --file=' . $selfEvidentPath);
+        $input->setStream(fopen($path, 'r'));
+        $this->assertRunCommandViaApplicationEquals($command, $input, 'We hold these truths to be self-evident, that all men are created equal, that they are endowed by their Creator with certain unalienable Rights, that among these are Life, Liberty and the pursuit of Happiness.');
+
+        $input = new StringInput('cat:no-di ' . $selfEvidentPath);
+        $this->assertRunCommandViaApplicationContains($command, $input, ['Too many arguments'], 1);
+    }
+
     function testJoinCommandHelp()
     {
         $this->commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile;
