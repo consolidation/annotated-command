@@ -360,6 +360,9 @@ class AnnotatedCommandFactoryTest extends TestCase
 
     function testCatNoDICommand()
     {
+        if (!interface_exists('Symfony\Component\Console\Input\StreamableInputInterface')) {
+            $this->markTestSkipped('The "no-di" variant of StdinHandler only works on versions of Symfony that have StreamableInputInterface');
+        }
         $path = __DIR__ . '/fixtures/stdin.txt';
         $selfEvidentPath = __DIR__ . '/fixtures/self-evident.txt';
 
