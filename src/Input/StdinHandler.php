@@ -3,6 +3,7 @@
 namespace Consolidation\AnnotatedCommand\Input;
 
 use Symfony\Component\Console\Input\StreamableInputInterface;
+use Symfony\Component\Console\Input\InputInterface;
 
 /**
  * StdinHandler is a thin wrapper around php://stdin. It provides
@@ -13,6 +14,11 @@ use Symfony\Component\Console\Input\StreamableInputInterface;
  *
  *      class Example implements StdinAwareInterface
  *      {
+ *          /**
+ *           * @command cat
+ *           * @param string $file
+ *           * @default $file -
+ *           * /
  *          public function cat()
  *          {
  *               print($this->stdin()->contents());
@@ -22,21 +28,25 @@ use Symfony\Component\Console\Input\StreamableInputInterface;
  * Command that reads from stdin or file via an option:
  *
  *      /**
- *       * @command example
+ *       * @command cat
+ *       * @param string $file
+ *       * @default $file -
  *       * /
- *      public function example($options = ['source-file' => '-'])
+ *      public function cat(InputInterface $input)
  *      {
- *          $data = $this->stdin()->select($this->input, 'source-file')->contents();
+ *          $data = $this->stdin()->select($input, 'file')->contents();
  *      }
  *
- * Command that reads from stdin or file via an argument:
+ * Command that reads from stdin or file via an option:
  *
  *      /**
- *       * @command example
+ *       * @command cat
+ *       * @option string $file
+ *       * @default $file -
  *       * /
- *      public function example($file)
+ *      public function cat(InputInterface $input)
  *      {
- *          $data = $this->stdin()->select($this->input, 'file')->contents();
+ *          $data = $this->stdin()->select($input, 'file')->contents();
  *      }
  *
  * It is also possible to inject the selected stream into the input object,
@@ -120,7 +130,7 @@ class StdinHandler
      */
     public function redirect($path)
     {
-        if (!empty($path) && ($path != '-')) {
+        if ($this->pathProvided($path)) {
             $this->path = $path;
         }
 
@@ -138,7 +148,7 @@ class StdinHandler
      */
     public function select(InputInterface $input, $optionOrArg)
     {
-        $this->path = $this->getOptionOrArg($input, $optionOrArg);
+        $this->redirect($this->getOptionOrArg($input, $optionOrArg));
         if (!$this->hasPath() && ($input instanceof StreamableInputInterface)) {
             $this->stream = $input->getStream();
         }
@@ -190,6 +200,14 @@ class StdinHandler
         $this->close();
 
         return $contents;
+    }
+
+    /**
+     * Returns 'true' if a path was specfied, and that path was not '-'.
+     */
+    protected function pathProvided($path)
+    {
+        return !empty($path) && ($path != '-');
     }
 
     protected function getOptionOrArg(InputInterface $input, $optionOrArg)

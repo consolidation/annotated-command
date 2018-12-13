@@ -307,6 +307,7 @@ class AnnotatedCommandFactoryTest extends TestCase
     function testCatCommand()
     {
         $path = __DIR__ . '/fixtures/stdin.txt';
+        $selfEvidentPath = __DIR__ . '/fixtures/self-evident.txt';
         $stdinHandler = new StdinHandler();
         $stdinHandler->redirect($path);
 
@@ -322,6 +323,9 @@ class AnnotatedCommandFactoryTest extends TestCase
 
         $input = new StringInput('cat');
         $this->assertRunCommandViaApplicationEquals($command, $input, 'hello world');
+
+        $input = new StringInput('cat ' . $selfEvidentPath);
+        $this->assertRunCommandViaApplicationEquals($command, $input, 'We hold these truths to be self-evident, that all men are created equal, that they are endowed by their Creator with certain unalienable Rights, that among these are Life, Liberty and the pursuit of Happiness.');
     }
 
     function testJoinCommandHelp()

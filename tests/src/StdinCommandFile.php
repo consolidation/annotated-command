@@ -3,6 +3,7 @@ namespace Consolidation\TestUtils;
 
 use Consolidation\AnnotatedCommand\Input\StdinAwareInterface;
 use Consolidation\AnnotatedCommand\Input\StdinAwareTrait;
+use Symfony\Component\Console\Input\InputInterface;
 
 class StdinCommandFile implements StdinAwareInterface
 {
@@ -10,9 +11,11 @@ class StdinCommandFile implements StdinAwareInterface
 
     /**
      * @command cat
+     * @param string $file
+     * @default $file -
      */
-    public function cat()
+    public function cat(InputInterface $input)
     {
-        return $this->stdin()->contents();
+        return $this->stdin()->select($input, 'file')->contents();
     }
 }
