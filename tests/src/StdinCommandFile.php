@@ -18,4 +18,14 @@ class StdinCommandFile implements StdinAwareInterface
     {
         return $this->stdin()->select($input, 'file')->contents();
     }
+
+    /**
+     * @command cat:too
+     * @option string $file
+     * @default $file -
+     */
+    public function catToo(InputInterface $input)
+    {
+        return $this->stdin()->select($input, 'file')->contents();
+    }
 }

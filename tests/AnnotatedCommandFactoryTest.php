@@ -326,6 +326,36 @@ class AnnotatedCommandFactoryTest extends TestCase
 
         $input = new StringInput('cat ' . $selfEvidentPath);
         $this->assertRunCommandViaApplicationEquals($command, $input, 'We hold these truths to be self-evident, that all men are created equal, that they are endowed by their Creator with certain unalienable Rights, that among these are Life, Liberty and the pursuit of Happiness.');
+
+        $input = new StringInput('cat --file=' . $selfEvidentPath);
+        $this->assertRunCommandViaApplicationContains($command, $input, ['The "--file" option does not exist.'], 1);
+    }
+
+    function testCatTooCommand()
+    {
+        $path = __DIR__ . '/fixtures/stdin.txt';
+        $selfEvidentPath = __DIR__ . '/fixtures/self-evident.txt';
+        $stdinHandler = new StdinHandler();
+        $stdinHandler->redirect($path);
+
+        $this->commandFileInstance = new \Consolidation\TestUtils\StdinCommandFile;
+        $this->commandFileInstance->setStdinHandler($stdinHandler);
+        $this->commandFactory = new AnnotatedCommandFactory();
+        $commandInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'catToo');
+
+        $command = $this->commandFactory->createCommand($commandInfo, $this->commandFileInstance);
+
+        $this->assertInstanceOf('\Symfony\Component\Console\Command\Command', $command);
+        $this->assertEquals('cat:too', $command->getName());
+
+        $input = new StringInput('cat:too');
+        $this->assertRunCommandViaApplicationEquals($command, $input, 'hello world');
+
+        $input = new StringInput('cat:too --file=' . $selfEvidentPath);
+        $this->assertRunCommandViaApplicationEquals($command, $input, 'We hold these truths to be self-evident, that all men are created equal, that they are endowed by their Creator with certain unalienable Rights, that among these are Life, Liberty and the pursuit of Happiness.');
+
+        $input = new StringInput('cat:too ' . $selfEvidentPath);
+        $this->assertRunCommandViaApplicationContains($command, $input, ['Too many arguments'], 1);
     }
 
     function testJoinCommandHelp()
