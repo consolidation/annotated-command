@@ -36,8 +36,7 @@ class AnnotationData extends \ArrayObject
         $data = $this->offsetGet($key);
         if (is_array($data)) {
             $this->offsetSet($key, array_merge($data, $value));
-        }
-        elseif (is_scalar($data)) {
+        } elseif (is_scalar($data)) {
             $this->offsetSet($key, $data . $value);
         }
         return $this;
