@@ -468,6 +468,25 @@ If you want to use annotations, but still want access to the Symfony Command, e.
 
 It is also possible to add InputInterface and/or OutputInterface parameters to any annotated method of a command file (the parameters must go before command arguments).
 
+## Handling Standard Input
+
+Any Symfony command may use the provides StdinHandler to imlement commands that read from standard input.
+
+```php
+  /**
+   * @command example
+   * @option string $file
+   * @default $file -
+   * /
+  public function example(InputInterface $input)
+  {
+      $data = StdinHandler::selectStream($input, 'file')->contents();
+  }
+```
+This example will read all of the data available from the stdin stream into $data, or, alternately, will read the entire contents of the file specified via the `--file=/path` option.
+
+For more details, including examples of using the StdinHandle with a DI container, see the comments in [StdinHandler.php](src/Input/StdinHandler.php).
+
 ## API Usage
 
 If you would like to use Annotated Commands to build a commandline tool, it is recommended that you use [Robo as a framework](http://robo.li/framework), as it will set up all of the various command classes for you. If you would like to integrate Annotated Commands into some other framework, see the sections below.

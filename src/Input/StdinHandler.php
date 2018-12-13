@@ -55,10 +55,12 @@ use Symfony\Component\Console\Input\InputInterface;
  *
  *      /**
  *       * @command example
+ *       * @option string $file
+ *       * @default $file -
  *       * /
- *      public function example($file)
+ *      public function example(InputInterface $input)
  *      {
- *          $this->stdin()->setStream($this->input, 'file');
+ *          $this->stdin()->setStream($input, 'file');
  *      }
  *
  *
@@ -76,10 +78,12 @@ use Symfony\Component\Console\Input\InputInterface;
  *
  *      /**
  *       * @command example
+ *       * @option string $file
+ *       * @default $file -
  *       * /
- *      public function example($file)
+ *      public function example(InputInterface $input)
  *      {
- *          StdinHandler::selectStream($this->input, 'file');
+ *          $data = StdinHandler::selectStream($input, 'file')->contents();
  *      }
  *
  * To test a method that uses this technique, simply inject your stdin
