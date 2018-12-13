@@ -43,12 +43,12 @@ The rest of the parameters are arguments. Parameters with a default value are op
 class MyCommandClass
 {
     /**
-     * This is the my:cat command
+     * This is the my:echo command
      *
      * This command will concatenate two parameters. If the --flip flag
      * is provided, then the result is the concatenation of two and one.
      *
-     * @command my:cat
+     * @command my:echo
      * @param integer $one The first parameter.
      * @param integer $two The other parameter.
      * @option arr An option that takes multiple values.
@@ -57,7 +57,7 @@ class MyCommandClass
      * @usage bet alpha --flip
      *   Concatenate "alpha" and "bet".
      */
-    public function myCat($one, $two, $options = ['flip' => false])
+    public function myEcho($one, $two, $options = ['flip' => false])
     {
         if ($options['flip']) {
             return "{$two}{$one}";

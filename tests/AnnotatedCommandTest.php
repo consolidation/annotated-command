@@ -11,20 +11,20 @@ use PHPUnit\Framework\TestCase;
 
 class AnnotatedCommandTest extends TestCase
 {
-    function testMyCatCommand()
+    function testMyEchoCommand()
     {
         $command = new \Consolidation\TestUtils\ExampleAnnotatedCommand();
 
         $this->assertInstanceOf('\Symfony\Component\Console\Command\Command', $command);
-        $this->assertEquals('my:cat', $command->getName());
-        $this->assertEquals('This is the my:cat command implemented as an AnnotatedCommand subclass.', $command->getDescription());
+        $this->assertEquals('my:echo', $command->getName());
+        $this->assertEquals('This is the my:echo command implemented as an AnnotatedCommand subclass.', $command->getDescription());
         $this->assertEquals("This command will concatenate two parameters. If the --flip flag\nis provided, then the result is the concatenation of two and one.", $command->getHelp());
         $this->assertEquals('c', implode(',', $command->getAliases()));
         // Symfony Console composes the synopsis; perhaps we should not test it. Remove if this gives false failures.
-        $this->assertEquals('my:cat [--multiple MULTIPLE] [--flip] [--] <one> [<two>]', $command->getSynopsis());
-        $this->assertEquals('my:cat bet alpha --flip', implode(',', $command->getUsages()));
+        $this->assertEquals('my:echo [--multiple MULTIPLE] [--flip] [--] <one> [<two>]', $command->getSynopsis());
+        $this->assertEquals('my:echo bet alpha --flip', implode(',', $command->getUsages()));
 
-        $input = new StringInput('my:cat b alpha --multiple=t --multiple=e --flip');
+        $input = new StringInput('my:echo b alpha --multiple=t --multiple=e --flip');
         $this->assertRunCommandViaApplicationEquals($command, $input, 'alphabet');
     }
 

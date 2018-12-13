@@ -17,9 +17,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 class ExampleAnnotatedCommand extends AnnotatedCommand
 {
     /**
-     * Do the main function of the my:cat command.
+     * Do the main function of the my:echo command.
      */
-    public function myCat($one, $two = '', $multiple = [], $flip = false)
+    public function myEcho($one, $two = '', $multiple = [], $flip = false)
     {
         if ($flip) {
             return "{$two}{$one}" . implode('', array_reverse($multiple));
@@ -28,12 +28,12 @@ class ExampleAnnotatedCommand extends AnnotatedCommand
     }
 
     /**
-     * This is the my:cat command implemented as an AnnotatedCommand subclass.
+     * This is the my:echo command implemented as an AnnotatedCommand subclass.
      *
      * This command will concatenate two parameters. If the --flip flag
      * is provided, then the result is the concatenation of two and one.
      *
-     * @command my:cat
+     * @command my:echo
      * @arg string $one The first parameter.
      * @arg string $two The other parameter.
      * @default $two ''
@@ -51,7 +51,7 @@ class ExampleAnnotatedCommand extends AnnotatedCommand
         $multiple = $input->getOption('multiple');
         $flip = $input->getOption('flip');
 
-        $result = $this->myCat($one, $two, $multiple, $flip);
+        $result = $this->myEcho($one, $two, $multiple, $flip);
 
         // We could also just use $output->writeln($result) here,
         // but calling processResults enables the use of output

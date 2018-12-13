@@ -14,6 +14,7 @@ use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\OutputInterface;
+use Consolidation\AnnotatedCommand\Input\StdinHandler;
 
 use PHPUnit\Framework\TestCase;
 
@@ -266,7 +267,7 @@ class AnnotatedCommandFactoryTest extends TestCase
     {
         $this->commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile;
         $this->commandFactory = new AnnotatedCommandFactory();
-        $commandInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'myCat');
+        $commandInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'myEcho');
 
         $command = $this->commandFactory->createCommand($commandInfo, $this->commandFileInstance);
 
@@ -283,24 +284,44 @@ class AnnotatedCommandFactoryTest extends TestCase
         $this->assertTrue($annotationData->has('dynamic'));
     }
 
-    function testMyCatCommand()
+    function testMyEchoCommand()
     {
         $this->commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile;
         $this->commandFactory = new AnnotatedCommandFactory();
-        $commandInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'myCat');
+        $commandInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'myEcho');
 
         $command = $this->commandFactory->createCommand($commandInfo, $this->commandFileInstance);
 
         $this->assertInstanceOf('\Symfony\Component\Console\Command\Command', $command);
-        $this->assertEquals('my:cat', $command->getName());
-        $this->assertEquals('This is the my:cat command', $command->getDescription());
+        $this->assertEquals('my:echo', $command->getName());
+        $this->assertEquals('This is the my:echo command', $command->getDescription());
         $this->assertEquals("This command will concatenate two parameters. If the --flip flag\nis provided, then the result is the concatenation of two and one.", $command->getHelp());
         $this->assertEquals('c', implode(',', $command->getAliases()));
-        $this->assertEquals('my:cat [--flip] [--] <one> [<two>]', $command->getSynopsis());
-        $this->assertEquals('my:cat bet alpha --flip', implode(',', $command->getUsages()));
+        $this->assertEquals('my:echo [--flip] [--] <one> [<two>]', $command->getSynopsis());
+        $this->assertEquals('my:echo bet alpha --flip', implode(',', $command->getUsages()));
 
-        $input = new StringInput('my:cat bet alpha --flip');
+        $input = new StringInput('my:echo bet alpha --flip');
         $this->assertRunCommandViaApplicationEquals($command, $input, 'alphabet');
+    }
+
+    function testCatCommand()
+    {
+        $path = __DIR__ . '/fixtures/stdin.txt';
+        $stdinHandler = new StdinHandler();
+        $stdinHandler->redirect($path);
+
+        $this->commandFileInstance = new \Consolidation\TestUtils\StdinCommandFile;
+        $this->commandFileInstance->setStdinHandler($stdinHandler);
+        $this->commandFactory = new AnnotatedCommandFactory();
+        $commandInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'cat');
+
+        $command = $this->commandFactory->createCommand($commandInfo, $this->commandFileInstance);
+
+        $this->assertInstanceOf('\Symfony\Component\Console\Command\Command', $command);
+        $this->assertEquals('cat', $command->getName());
+
+        $input = new StringInput('cat');
+        $this->assertRunCommandViaApplicationEquals($command, $input, 'hello world');
     }
 
     function testJoinCommandHelp()

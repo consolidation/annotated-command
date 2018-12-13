@@ -27,7 +27,7 @@ class CommandFileDiscoveryTest extends TestCase
         $this->assertContains('./src/alpha/Inclusive/IncludedCommandFile.php', $commandFilePaths);
 
         // Make sure that there are no additional items found.
-        $this->assertEquals(4, count($commandFilePaths));
+        $this->assertEquals(5, count($commandFilePaths));
 
         // Ensure that the command file namespaces that we expected
         // to be generated all match.
@@ -68,7 +68,7 @@ class CommandFileDiscoveryTest extends TestCase
         $this->assertContains('./src/beta/BetaCommandFile.php', $commandFilePaths);
 
         // Make sure that there are no additional items found.
-        $this->assertEquals(4, count($commandFilePaths));
+        $this->assertEquals(5, count($commandFilePaths));
 
         // Ensure that the command file namespaces that we expected
         // to be generated all match.
