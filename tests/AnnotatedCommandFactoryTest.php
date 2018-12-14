@@ -324,6 +324,10 @@ class AnnotatedCommandFactoryTest extends TestCase
         $input = new StringInput('cat');
         $this->assertRunCommandViaApplicationEquals($command, $input, 'hello world');
 
+        if (DIRECTORY_SEPARATOR == '\\') {
+            $this->markTestSkipped('StdinHandler input selection not working for Windows.');
+        }
+
         $input = new StringInput('cat ' . $selfEvidentPath);
         $this->assertRunCommandViaApplicationEquals($command, $input, 'We hold these truths to be self-evident, that all men are created equal, that they are endowed by their Creator with certain unalienable Rights, that among these are Life, Liberty and the pursuit of Happiness.');
 
@@ -350,6 +354,10 @@ class AnnotatedCommandFactoryTest extends TestCase
 
         $input = new StringInput('cat:too');
         $this->assertRunCommandViaApplicationEquals($command, $input, 'hello world');
+
+        if (DIRECTORY_SEPARATOR == '\\') {
+            $this->markTestSkipped('StdinHandler input selection not working for Windows.');
+        }
 
         $input = new StringInput('cat:too --file=' . $selfEvidentPath);
         $this->assertRunCommandViaApplicationEquals($command, $input, 'We hold these truths to be self-evident, that all men are created equal, that they are endowed by their Creator with certain unalienable Rights, that among these are Life, Liberty and the pursuit of Happiness.');
@@ -378,6 +386,10 @@ class AnnotatedCommandFactoryTest extends TestCase
         $input = new StringInput('cat:no-di');
         $input->setStream(fopen($path, 'r'));
         $this->assertRunCommandViaApplicationEquals($command, $input, 'hello world');
+
+        if (DIRECTORY_SEPARATOR == '\\') {
+            $this->markTestSkipped('StdinHandler input selection not working for Windows.');
+        }
 
         $input = new StringInput('cat:no-di --file=' . $selfEvidentPath);
         $input->setStream(fopen($path, 'r'));
