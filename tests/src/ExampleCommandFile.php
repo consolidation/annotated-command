@@ -93,7 +93,7 @@ class ExampleCommandFile
     }
 
     /**
-     * This is the my:cat command
+     * This is the my:echo command
      *
      * This command will concatenate two parameters. If the --flip flag
      * is provided, then the result is the concatenation of two and one.
@@ -106,7 +106,7 @@ class ExampleCommandFile
      *   Concatenate "alpha" and "bet".
      * @arbitrary This annotation is here merely as a marker used in testing.
      */
-    public function myCat($one, $two = '', array $options = ['flip' => false])
+    public function myEcho($one, $two = '', array $options = ['flip' => false])
     {
         if ($options['flip']) {
             return "{$two}{$one}";

@@ -43,12 +43,12 @@ The rest of the parameters are arguments. Parameters with a default value are op
 class MyCommandClass
 {
     /**
-     * This is the my:cat command
+     * This is the my:echo command
      *
      * This command will concatenate two parameters. If the --flip flag
      * is provided, then the result is the concatenation of two and one.
      *
-     * @command my:cat
+     * @command my:echo
      * @param integer $one The first parameter.
      * @param integer $two The other parameter.
      * @option arr An option that takes multiple values.
@@ -57,7 +57,7 @@ class MyCommandClass
      * @usage bet alpha --flip
      *   Concatenate "alpha" and "bet".
      */
-    public function myCat($one, $two, $options = ['flip' => false])
+    public function myEcho($one, $two, $options = ['flip' => false])
     {
         if ($options['flip']) {
             return "{$two}{$one}";
@@ -467,6 +467,25 @@ The Annotated-Command project is completely agnostic to logging. If a command wi
 If you want to use annotations, but still want access to the Symfony Command, e.g. to get a reference to the helpers in order to call some legacy code, you may create an ordinary Symfony Command that extends \Consolidation\AnnotatedCommand\AnnotatedCommand, which is a \Symfony\Component\Console\Command\Command. Omit the configure method, and place your annotations on the `execute()` method.
 
 It is also possible to add InputInterface and/or OutputInterface parameters to any annotated method of a command file (the parameters must go before command arguments).
+
+## Handling Standard Input
+
+Any Symfony command may use the provides StdinHandler to imlement commands that read from standard input.
+
+```php
+  /**
+   * @command example
+   * @option string $file
+   * @default $file -
+   * /
+  public function example(InputInterface $input)
+  {
+      $data = StdinHandler::selectStream($input, 'file')->contents();
+  }
+```
+This example will read all of the data available from the stdin stream into $data, or, alternately, will read the entire contents of the file specified via the `--file=/path` option.
+
+For more details, including examples of using the StdinHandle with a DI container, see the comments in [StdinHandler.php](src/Input/StdinHandler.php).
 
 ## API Usage
 
