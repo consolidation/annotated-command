@@ -103,6 +103,7 @@ The hook **target** specifies which command or commands the hook will be attache
 
 - The command's primary name (e.g. `my:command`) or the command's method name (e.g. myCommand) will attach the hook to only that command.
 - An annotation (e.g. `@foo`) will attach the hook to any command that is annotated with the given label.
+- If the target is specified as `*`, then the hook will be attached to all commands.
 - If the target is omitted, then the hook will be attached to every command defined in the same class as the hook implementation.
 
 There are ten types of hooks in the command processing request flow:
@@ -477,7 +478,7 @@ Any Symfony command may use the provides StdinHandler to imlement commands that 
    * @command example
    * @option string $file
    * @default $file -
-   * /
+   */
   public function example(InputInterface $input)
   {
       $data = StdinHandler::selectStream($input, 'file')->contents();
