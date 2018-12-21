@@ -1,5 +1,9 @@
 # Change Log
 
+### 2.10.2 - 20 Dec 2018
+
+- Fix commands that have a @param annotation for their InputInterface/OutputInterface params (#176)
+
 ### 2.10.1 - 13 Dec 2018
 
 - Add stdin handler convenience class
