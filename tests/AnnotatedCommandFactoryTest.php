@@ -69,6 +69,43 @@ class AnnotatedCommandFactoryTest extends TestCase
         "'strict' => true"]);
     }
 
+    function testSymfony()
+    {
+        $this->commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile;
+        $this->commandFactory = new AnnotatedCommandFactory();
+        $commandInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'testSymfony');
+
+        $command = $this->commandFactory->createCommand($commandInfo, $this->commandFileInstance);
+        $this->assertEquals('test:symfony', $command->getName());
+        // TODO: switch test based on Symfony version:
+        // Symfony <4
+        // $this->assertEquals('test:symfony [--foo FOO] [--] [<a>]...', $command->getSynopsis());
+        // Symfony >=4
+        // $this->assertEquals('test:symfony [--foo FOO] [--] [<a>...]', $command->getSynopsis());
+
+        $this->assertInstanceOf('\Symfony\Component\Console\Command\Command', $command);
+
+        $input = new StringInput('help test:symfony');
+        $this->assertRunCommandViaApplicationContains($command, $input, ['A list of commandline parameters.', '--foo=FOO', '(multiple values allowed)']);
+
+        $input = new StringInput('test:symfony a b c --foo=bar --foo=baz --foo=boz');
+        $expected = <<<EOT
+The parameters passed are:
+array (
+  0 => 'a',
+  1 => 'b',
+  2 => 'c',
+)
+The options passed via --foo are:
+array (
+  0 => 'bar',
+  1 => 'baz',
+  2 => 'boz',
+)
+EOT;
+        $this->assertRunCommandViaApplicationEquals($command, $input, $expected);
+    }
+
     function testOptionDefaultValue()
     {
         $this->commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile;
