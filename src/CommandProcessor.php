@@ -255,7 +255,7 @@ class CommandProcessor implements LoggerAwareInterface
 
     public function injectIntoCommandData($commandData, $injectedClasses)
     {
-        foreach($injectedClasses as $injectedClass) {
+        foreach ($injectedClasses as $injectedClass) {
             $injectedInstance = $this->getInstanceToInject($commandData, $injectedClass);
             $commandData->injectInstance($injectedInstance);
         }

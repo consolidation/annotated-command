@@ -9,6 +9,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Consolidation\AnnotatedCommand\Help\HelpDocumentBuilder;
 
 /**
  * AnnotatedCommands are created automatically by the
@@ -152,66 +153,7 @@ class AnnotatedCommand extends Command implements HelpDocumentAlter
 
     public function helpAlter(\DomDocument $originalDom)
     {
-        $dom = new \DOMDocument('1.0', 'UTF-8');
-        $dom->appendChild($commandXML = $dom->createElement('command'));
-        $commandXML->setAttribute('id', $this->getName());
-        $commandXML->setAttribute('name', $this->getName());
-
-        // Get the original <command> element and its top-level elements.
-        $originalCommandXML = $this->getSingleElementByTagName($dom, $originalDom, 'command');
-        $originalUsagesXML = $this->getSingleElementByTagName($dom, $originalCommandXML, 'usages');
-        $originalDescriptionXML = $this->getSingleElementByTagName($dom, $originalCommandXML, 'description');
-        $originalHelpXML = $this->getSingleElementByTagName($dom, $originalCommandXML, 'help');
-        $originalArgumentsXML = $this->getSingleElementByTagName($dom, $originalCommandXML, 'arguments');
-        $originalOptionsXML = $this->getSingleElementByTagName($dom, $originalCommandXML, 'options');
-
-        // Keep only the first of the <usage> elements
-        $newUsagesXML = $dom->createElement('usages');
-        $firstUsageXML = $this->getSingleElementByTagName($dom, $originalUsagesXML, 'usage');
-        $newUsagesXML->appendChild($firstUsageXML);
-
-        // Create our own <example> elements
-        $newExamplesXML = $dom->createElement('examples');
-        foreach ($this->examples as $usage => $description) {
-            $newExamplesXML->appendChild($exampleXML = $dom->createElement('example'));
-            $exampleXML->appendChild($usageXML = $dom->createElement('usage', $usage));
-            $exampleXML->appendChild($descriptionXML = $dom->createElement('description', $description));
-        }
-
-        // Create our own <alias> elements
-        $newAliasesXML = $dom->createElement('aliases');
-        foreach ($this->getAliases() as $alias) {
-            $newAliasesXML->appendChild($dom->createElement('alias', $alias));
-        }
-
-        // Create our own <topic> elements
-        $newTopicsXML = $dom->createElement('topics');
-        foreach ($this->getTopics() as $topic) {
-            $newTopicsXML->appendChild($topicXML = $dom->createElement('topic', $topic));
-        }
-
-        // Place the different elements into the <command> element in the desired order
-        $commandXML->appendChild($newUsagesXML);
-        $commandXML->appendChild($newExamplesXML);
-        $commandXML->appendChild($originalDescriptionXML);
-        $commandXML->appendChild($originalArgumentsXML);
-        $commandXML->appendChild($originalOptionsXML);
-        $commandXML->appendChild($originalHelpXML);
-        $commandXML->appendChild($newAliasesXML);
-        $commandXML->appendChild($newTopicsXML);
-
-        return $dom;
-    }
-
-    protected function getSingleElementByTagName($dom, $parent, $tagName)
-    {
-        // There should always be exactly one '<command>' element.
-        $elements = $parent->getElementsByTagName($tagName);
-        $result = $elements->item(0);
-
-        $result = $dom->importNode($result, true);
-
-        return $result;
+        return HelpDocumentBuilder::alter($originalDom, $this);
     }
 
     protected function setCommandArguments($commandInfo)

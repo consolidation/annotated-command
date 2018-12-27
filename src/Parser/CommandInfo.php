@@ -645,7 +645,7 @@ class CommandInfo
         if ($this->lastParameterIsOptionsArray()) {
             array_pop($params);
         }
-        while(!empty($params) && ($params[0]->getClass() != null)) {
+        while (!empty($params) && ($params[0]->getClass() != null)) {
             $param = array_shift($params);
             $injectedClass = $param->getClass()->getName();
             array_unshift($this->injectedClasses, $injectedClass);
