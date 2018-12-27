@@ -14,41 +14,40 @@ class CommandData
     /** var OutputInterface */
     protected $output;
     /** var boolean */
-    protected $usesInputInterface;
-    /** var boolean */
-    protected $usesOutputInterface;
-    /** var boolean */
     protected $includeOptionsInArgs;
     /** var array */
     protected $specialDefaults = [];
+    /** @var string[] */
+    protected $injectedInstances = [];
 
     public function __construct(
         AnnotationData $annotationData,
         InputInterface $input,
-        OutputInterface $output,
-        $usesInputInterface = false,
-        $usesOutputInterface = false
+        OutputInterface $output
     ) {
         $this->annotationData = $annotationData;
         $this->input = $input;
         $this->output = $output;
-        $this->usesInputInterface = false;
-        $this->usesOutputInterface = false;
         $this->includeOptionsInArgs = true;
     }
 
     /**
-     * For internal use only; indicates that the function to be called
-     * should be passed an InputInterface &/or an OutputInterface.
-     * @param booean $usesInputInterface
-     * @param boolean $usesOutputInterface
-     * @return self
+     * For internal use only; inject an instance to be passed back
+     * to the command callback as a parameter.
      */
-    public function setUseIOInterfaces($usesInputInterface, $usesOutputInterface)
+    public function injectInstance($injectedInstance)
     {
-        $this->usesInputInterface = $usesInputInterface;
-        $this->usesOutputInterface = $usesOutputInterface;
+        array_unshift($this->injectedInstances, $injectedInstance);
         return $this;
+    }
+
+    /**
+     * Provide a reference to the instances that will be added to the
+     * beginning of the parameter list when the command callback is invoked.
+     */
+    public function injectedInstances()
+    {
+        return $this->injectedInstances;
     }
 
     /**
@@ -172,14 +171,6 @@ class CommandData
         // to the beginning.
         if ($this->input->hasArgument('command')) {
             array_shift($args);
-        }
-
-        if ($this->usesOutputInterface) {
-            array_unshift($args, $this->output());
-        }
-
-        if ($this->usesInputInterface) {
-            array_unshift($args, $this->input());
         }
 
         return $args;

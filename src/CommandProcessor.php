@@ -242,12 +242,35 @@ class CommandProcessor implements LoggerAwareInterface
     {
         $result = false;
         try {
-            $args = $commandData->getArgsAndOptions();
+            $args = array_merge(
+                $commandData->injectedInstances(),
+                $commandData->getArgsAndOptions()
+            );
             $result = call_user_func_array($commandCallback, $args);
         } catch (\Exception $e) {
             $result = $this->commandErrorForException($e);
         }
         return $result;
+    }
+
+    public function injectIntoCommandData($commandData, $injectedClasses)
+    {
+        foreach($injectedClasses as $injectedClass) {
+            $injectedInstance = $this->getInstanceToInject($commandData, $injectedClass);
+            $commandData->injectInstance($injectedInstance);
+        }
+    }
+
+    protected function getInstanceToInject(CommandData $commandData, $injectedClass)
+    {
+        switch ($injectedClass) {
+            case 'Symfony\Component\Console\Input\InputInterface':
+                return $commandData->input();
+            case 'Symfony\Component\Console\Output\OutputInterface':
+                return $commandData->output();
+        }
+
+        return null;
     }
 
     /**

@@ -32,9 +32,8 @@ class AnnotatedCommand extends Command implements HelpDocumentAlter
     protected $annotationData;
     protected $examples = [];
     protected $topics = [];
-    protected $usesInputInterface;
-    protected $usesOutputInterface;
     protected $returnType;
+    protected $injectedClasses = [];
 
     public function __construct($name = null)
     {
@@ -217,51 +216,8 @@ class AnnotatedCommand extends Command implements HelpDocumentAlter
 
     protected function setCommandArguments($commandInfo)
     {
-        $this->setUsesInputInterface($commandInfo);
-        $this->setUsesOutputInterface($commandInfo);
+        $this->injectedClasses = $commandInfo->getInjectedClasses();
         $this->setCommandArgumentsFromParameters($commandInfo);
-        return $this;
-    }
-
-    /**
-     * Check whether the first parameter is an InputInterface.
-     */
-    protected function checkUsesInputInterface($params)
-    {
-        /** @var \ReflectionParameter $firstParam */
-        $firstParam = reset($params);
-        return $firstParam && $firstParam->getClass() && $firstParam->getClass()->implementsInterface(
-            '\\Symfony\\Component\\Console\\Input\\InputInterface'
-        );
-    }
-
-    /**
-     * Determine whether this command wants to get its inputs
-     * via an InputInterface or via its command parameters
-     */
-    protected function setUsesInputInterface($commandInfo)
-    {
-        $params = $commandInfo->getParameters();
-        $this->usesInputInterface = $this->checkUsesInputInterface($params);
-        return $this;
-    }
-
-    /**
-     * Determine whether this command wants to send its output directly
-     * to the provided OutputInterface, or whether it will returned
-     * structured output to be processed by the command processor.
-     */
-    protected function setUsesOutputInterface($commandInfo)
-    {
-        $params = $commandInfo->getParameters();
-        $index = $this->checkUsesInputInterface($params) ? 1 : 0;
-        $this->usesOutputInterface =
-            (count($params) > $index) &&
-            $params[$index]->getClass() &&
-            $params[$index]->getClass()->implementsInterface(
-                '\\Symfony\\Component\\Console\\Output\\OutputInterface'
-            )
-        ;
         return $this;
     }
 
@@ -437,10 +393,10 @@ class AnnotatedCommand extends Command implements HelpDocumentAlter
             $output
         );
 
-        $commandData->setUseIOInterfaces(
-            $this->usesInputInterface,
-            $this->usesOutputInterface
-        );
+        // Fetch any classes (e.g. InputInterface / OutputInterface) that
+        // this command's callback wants passed as a parameter and inject
+        // it into the command data.
+        $this->commandProcessor()->injectIntoCommandData($commandData, $this->injectedClasses);
 
         // Allow the commandData to cache the list of options with
         // special default values ('null' and 'true'), as these will
