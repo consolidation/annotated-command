@@ -89,6 +89,11 @@ class CommandInfo
     protected $returnType;
 
     /**
+     * @var string[]
+     */
+    protected $injectedClasses = [];
+
+    /**
      * Create a new CommandInfo class for a particular method of a class.
      *
      * @param string|mixed $classNameOrInstance The name of a class, or an
@@ -201,6 +206,12 @@ class CommandInfo
     {
         $this->parseDocBlock();
         return $this->returnType;
+    }
+
+    public function getInjectedClasses()
+    {
+        $this->parseDocBlock();
+        return $this->injectedClasses;
     }
 
     public function setReturnType($returnType)
@@ -633,6 +644,11 @@ class CommandInfo
         $optionsFromParameters = $this->determineOptionsFromParameters();
         if ($this->lastParameterIsOptionsArray()) {
             array_pop($params);
+        }
+        while (!empty($params) && ($params[0]->getClass() != null)) {
+            $param = array_shift($params);
+            $injectedClass = $param->getClass()->getName();
+            array_unshift($this->injectedClasses, $injectedClass);
         }
         foreach ($params as $param) {
             $this->addParameterToResult($result, $param);
