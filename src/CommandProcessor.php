@@ -41,6 +41,8 @@ class CommandProcessor implements LoggerAwareInterface
     protected $passExceptions;
     /** @var ResultWriter */
     protected $resultWriter;
+    /** @var ParameterInjection */
+    protected $parameterInjection;
 
     public function __construct(HookManager $hookManager)
     {
@@ -59,9 +61,27 @@ class CommandProcessor implements LoggerAwareInterface
     public function resultWriter()
     {
         if (!$this->resultWriter) {
-            $this->resultWriter = new ResultWriter();
+            $this->setResultWriter(new ResultWriter());
         }
         return $this->resultWriter;
+    }
+
+    public function setResultWriter($resultWriter)
+    {
+        $this->resultWriter = $resultWriter;
+    }
+
+    public function parameterInjection()
+    {
+        if (!$this->parameterInjection) {
+            $this->setParameterInjection(new ParameterInjection());
+        }
+        return $this->parameterInjection;
+    }
+
+    public function setParameterInjection($parameterInjection)
+    {
+        $this->parameterInjection = $parameterInjection;
     }
 
     public function addPrepareFormatter(PrepareFormatter $preparer)
@@ -233,10 +253,7 @@ class CommandProcessor implements LoggerAwareInterface
     {
         $result = false;
         try {
-            $args = array_merge(
-                $commandData->injectedInstances(),
-                $commandData->getArgsAndOptions()
-            );
+            $args = $this->parameterInjection()->args($commandData);
             $result = call_user_func_array($commandCallback, $args);
         } catch (\Exception $e) {
             $result = $this->commandErrorForException($e);
@@ -246,21 +263,6 @@ class CommandProcessor implements LoggerAwareInterface
 
     public function injectIntoCommandData($commandData, $injectedClasses)
     {
-        foreach ($injectedClasses as $injectedClass) {
-            $injectedInstance = $this->getInstanceToInject($commandData, $injectedClass);
-            $commandData->injectInstance($injectedInstance);
-        }
-    }
-
-    protected function getInstanceToInject(CommandData $commandData, $injectedClass)
-    {
-        switch ($injectedClass) {
-            case 'Symfony\Component\Console\Input\InputInterface':
-                return $commandData->input();
-            case 'Symfony\Component\Console\Output\OutputInterface':
-                return $commandData->output();
-        }
-
-        return null;
+        $this->parameterInjection()->injectIntoCommandData($commandData, $injectedClasses);
     }
 }

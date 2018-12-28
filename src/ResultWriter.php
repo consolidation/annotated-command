@@ -60,6 +60,7 @@ class ResultWriter
         // ExitCodeInterface, then use that as the exit code. If a status code
         // dispatcher returns a non-zero result, then we will never print a
         // result.
+        $status = null;
         if ($result instanceof ExitCodeInterface) {
             $status = $result->getExitCode();
         } elseif (isset($statusCodeDispatcher)) {
