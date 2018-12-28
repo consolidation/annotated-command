@@ -169,6 +169,9 @@ class CommandProcessor implements LoggerAwareInterface
             return $validated;
         }
 
+        // Once we have validated the optins, create the formatter options.
+        $this->createFormatterOptions($commandData);
+
         $replaceDispatcher = new ReplaceCommandHookDispatcher($this->hookManager(), $names);
         if ($this->logger) {
             $replaceDispatcher->setLogger($this->logger);
@@ -186,6 +189,22 @@ class CommandProcessor implements LoggerAwareInterface
     {
         $processDispatcher = new ProcessResultHookDispatcher($this->hookManager(), $names);
         return $processDispatcher->process($result, $commandData);
+    }
+
+    /**
+     * Create a FormatterOptions object for use in writing the formatted output.
+     * @param CommandData $commandData
+     * @return FormatterOptions
+     */
+    protected function createFormatterOptions($commandData)
+    {
+        $options = $commandData->input()->getOptions();
+        $formatterOptions = new FormatterOptions($commandData->annotationData()->getArrayCopy(), $options);
+        foreach ($this->prepareOptionsList as $preparer) {
+            $preparer->prepare($commandData, $formatterOptions);
+        }
+        $commandData->setFormatterOptions($formatterOptions);
+        return $formatterOptions;
     }
 
     /**
@@ -324,7 +343,7 @@ class CommandProcessor implements LoggerAwareInterface
      */
     protected function writeUsingFormatter(OutputInterface $output, $structuredOutput, CommandData $commandData, $status = 0)
     {
-        $formatterOptions = $this->createFormatterOptions($commandData);
+        $formatterOptions = $commandData->formatterOptions();
         $format = $this->getFormat($formatterOptions);
         $this->formatterManager->write(
             $output,
@@ -333,21 +352,6 @@ class CommandProcessor implements LoggerAwareInterface
             $formatterOptions
         );
         return $status;
-    }
-
-    /**
-     * Create a FormatterOptions object for use in writing the formatted output.
-     * @param CommandData $commandData
-     * @return FormatterOptions
-     */
-    protected function createFormatterOptions($commandData)
-    {
-        $options = $commandData->input()->getOptions();
-        $formatterOptions = new FormatterOptions($commandData->annotationData()->getArrayCopy(), $options);
-        foreach ($this->prepareOptionsList as $preparer) {
-            $preparer->prepare($commandData, $formatterOptions);
-        }
-        return $formatterOptions;
     }
 
     /**

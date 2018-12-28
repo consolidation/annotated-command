@@ -1,6 +1,7 @@
 <?php
 namespace Consolidation\AnnotatedCommand;
 
+use Consolidation\OutputFormatters\Options\FormatterOptions;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -19,6 +20,8 @@ class CommandData
     protected $specialDefaults = [];
     /** @var string[] */
     protected $injectedInstances = [];
+    /** @var FormatterOptions */
+    protected $formatterOptions;
 
     public function __construct(
         AnnotationData $annotationData,
@@ -63,6 +66,16 @@ class CommandData
     public function annotationData()
     {
         return $this->annotationData;
+    }
+
+    public function formatterOptions()
+    {
+        return $this->formatterOptions;
+    }
+
+    public function setFormatterOptions($formatterOptions)
+    {
+        $this->formatterOptions = $formatterOptions;
     }
 
     public function input()
