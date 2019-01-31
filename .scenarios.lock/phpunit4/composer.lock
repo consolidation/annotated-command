@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "723b5d626d913974b37f32f832bc72d9",
+    "content-hash": "3bc1df70645d80d8cf1dc2fce04595ed",
     "packages": [
         {
             "name": "consolidation/output-formatters",
@@ -170,16 +170,16 @@
         },
         {
             "name": "symfony/console",
-            "version": "v2.8.47",
+            "version": "v2.8.49",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/console.git",
-                "reference": "48ed63767c4add573fb3e9e127d3426db27f78e8"
+                "reference": "cbcf4b5e233af15cd2bbd50dee1ccc9b7927dc12"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/console/zipball/48ed63767c4add573fb3e9e127d3426db27f78e8",
-                "reference": "48ed63767c4add573fb3e9e127d3426db27f78e8",
+                "url": "https://api.github.com/repos/symfony/console/zipball/cbcf4b5e233af15cd2bbd50dee1ccc9b7927dc12",
+                "reference": "cbcf4b5e233af15cd2bbd50dee1ccc9b7927dc12",
                 "shasum": ""
             },
             "require": {
@@ -227,20 +227,20 @@
             ],
             "description": "Symfony Console Component",
             "homepage": "https://symfony.com",
-            "time": "2018-10-30T14:26:34+00:00"
+            "time": "2018-11-20T15:55:20+00:00"
         },
         {
             "name": "symfony/debug",
-            "version": "v2.8.47",
+            "version": "v2.8.49",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/debug.git",
-                "reference": "6a198c52b662fa825382f5e65c0c4a56bdaca98e"
+                "reference": "74251c8d50dd3be7c4ce0c7b862497cdc641a5d0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/debug/zipball/6a198c52b662fa825382f5e65c0c4a56bdaca98e",
-                "reference": "6a198c52b662fa825382f5e65c0c4a56bdaca98e",
+                "url": "https://api.github.com/repos/symfony/debug/zipball/74251c8d50dd3be7c4ce0c7b862497cdc641a5d0",
+                "reference": "74251c8d50dd3be7c4ce0c7b862497cdc641a5d0",
                 "shasum": ""
             },
             "require": {
@@ -284,20 +284,20 @@
             ],
             "description": "Symfony Debug Component",
             "homepage": "https://symfony.com",
-            "time": "2018-10-30T16:24:01+00:00"
+            "time": "2018-11-11T11:18:13+00:00"
         },
         {
             "name": "symfony/event-dispatcher",
-            "version": "v2.8.47",
+            "version": "v2.8.49",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/event-dispatcher.git",
-                "reference": "76494bc38ff38d90d01913d23b5271acd4d78dd3"
+                "reference": "a77e974a5fecb4398833b0709210e3d5e334ffb0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/event-dispatcher/zipball/76494bc38ff38d90d01913d23b5271acd4d78dd3",
-                "reference": "76494bc38ff38d90d01913d23b5271acd4d78dd3",
+                "url": "https://api.github.com/repos/symfony/event-dispatcher/zipball/a77e974a5fecb4398833b0709210e3d5e334ffb0",
+                "reference": "a77e974a5fecb4398833b0709210e3d5e334ffb0",
                 "shasum": ""
             },
             "require": {
@@ -344,20 +344,20 @@
             ],
             "description": "Symfony EventDispatcher Component",
             "homepage": "https://symfony.com",
-            "time": "2018-10-20T23:16:31+00:00"
+            "time": "2018-11-21T14:20:20+00:00"
         },
         {
             "name": "symfony/finder",
-            "version": "v2.8.47",
+            "version": "v2.8.49",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/finder.git",
-                "reference": "5ebb438d1aabe9dba93099dd06e0500f97817a6e"
+                "reference": "1444eac52273e345d9b95129bf914639305a9ba4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/finder/zipball/5ebb438d1aabe9dba93099dd06e0500f97817a6e",
-                "reference": "5ebb438d1aabe9dba93099dd06e0500f97817a6e",
+                "url": "https://api.github.com/repos/symfony/finder/zipball/1444eac52273e345d9b95129bf914639305a9ba4",
+                "reference": "1444eac52273e345d9b95129bf914639305a9ba4",
                 "shasum": ""
             },
             "require": {
@@ -393,7 +393,7 @@
             ],
             "description": "Symfony Finder Component",
             "homepage": "https://symfony.com",
-            "time": "2018-09-21T12:46:38+00:00"
+            "time": "2018-11-11T11:18:13+00:00"
         },
         {
             "name": "symfony/polyfill-mbstring",
@@ -512,16 +512,16 @@
         },
         {
             "name": "g1a/composer-test-scenarios",
-            "version": "3.0.0",
+            "version": "3.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/g1a/composer-test-scenarios.git",
-                "reference": "2a7156f1572898888ea50ad1d48a6b4d3f9fbf78"
+                "reference": "224531e20d13a07942a989a70759f726cd2df9a1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/g1a/composer-test-scenarios/zipball/2a7156f1572898888ea50ad1d48a6b4d3f9fbf78",
-                "reference": "2a7156f1572898888ea50ad1d48a6b4d3f9fbf78",
+                "url": "https://api.github.com/repos/g1a/composer-test-scenarios/zipball/224531e20d13a07942a989a70759f726cd2df9a1",
+                "reference": "224531e20d13a07942a989a70759f726cd2df9a1",
                 "shasum": ""
             },
             "require": {
@@ -560,7 +560,7 @@
                 }
             ],
             "description": "Useful scripts for testing multiple sets of Composer dependencies.",
-            "time": "2018-11-22T05:10:20+00:00"
+            "time": "2018-11-27T05:58:39+00:00"
         },
         {
             "name": "phpdocumentor/reflection-docblock",
@@ -1560,16 +1560,16 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v2.8.47",
+            "version": "v2.8.49",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/yaml.git",
-                "reference": "0e16589861f192dbffb19b06683ce3ef58f7f99d"
+                "reference": "02c1859112aa779d9ab394ae4f3381911d84052b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/yaml/zipball/0e16589861f192dbffb19b06683ce3ef58f7f99d",
-                "reference": "0e16589861f192dbffb19b06683ce3ef58f7f99d",
+                "url": "https://api.github.com/repos/symfony/yaml/zipball/02c1859112aa779d9ab394ae4f3381911d84052b",
+                "reference": "02c1859112aa779d9ab394ae4f3381911d84052b",
                 "shasum": ""
             },
             "require": {
@@ -1606,7 +1606,7 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
-            "time": "2018-10-02T16:27:16+00:00"
+            "time": "2018-11-11T11:18:13+00:00"
         }
     ],
     "aliases": [],
@@ -1615,7 +1615,7 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=5.4.0"
+        "php": ">=5.4.5"
     },
     "platform-dev": [],
     "platform-overrides": {
