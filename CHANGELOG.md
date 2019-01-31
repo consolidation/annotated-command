@@ -1,6 +1,10 @@
 # Change Log
 
-### 2.11.0
+### 2.11.1 - 31 Jan 2019
+
+- Cache injected classes (#182)
+
+### 2.11.0 - 27 Jan 2019
 
 - Make injection of InputInterface / OutputInterface general-purpose (#179)
 
