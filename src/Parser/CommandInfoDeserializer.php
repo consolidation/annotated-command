@@ -45,6 +45,7 @@ class CommandInfoDeserializer
             ->setDescription($info_array['description'])
             ->replaceExampleUsages($info_array['example_usages'])
             ->setReturnType($info_array['return_type'])
+            ->setInjectedClasses($info_array['injected_classes'])
             ;
 
         $this->constructDefaultsWithDescriptions($commandInfo->arguments(), (array)$info_array['arguments']);
