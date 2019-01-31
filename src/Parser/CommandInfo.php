@@ -20,7 +20,7 @@ class CommandInfo
     /**
      * Serialization schema version. Incremented every time the serialization schema changes.
      */
-    const SERIALIZATION_SCHEMA_VERSION = 3;
+    const SERIALIZATION_SCHEMA_VERSION = 4;
 
     /**
      * @var \ReflectionMethod
@@ -212,6 +212,12 @@ class CommandInfo
     {
         $this->parseDocBlock();
         return $this->injectedClasses;
+    }
+
+    public function setInjectedClasses($injectedClasses)
+    {
+        $this->injectedClasses = $injectedClasses;
+        return $this;
     }
 
     public function setReturnType($returnType)
