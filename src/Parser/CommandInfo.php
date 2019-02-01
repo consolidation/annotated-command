@@ -323,12 +323,9 @@ class CommandInfo
      */
     public function addAnnotation($name, $content)
     {
-        // Convert to an array and merge if there are multiple
-        // instances of the same annotation defined.
-        if (isset($this->otherAnnotations[$name])) {
-            $content = array_merge((array) $this->otherAnnotations[$name], (array)$content);
-        }
-        $this->otherAnnotations[$name] = $content;
+        $values = $this->getAnnotationList($name);
+        $values[] = $content;
+        $this->otherAnnotations[$name] = $values;
     }
 
     /**
