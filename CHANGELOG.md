@@ -1,5 +1,9 @@
 # Change Log
 
+### 2.11.2 - 1 Feb 2019
+
+- Fix handling of old caches from 2.11.1 that introduced upgrade errors.
+
 ### 2.11.1 - 31 Jan 2019
 
 - Cache injected classes (#182)
