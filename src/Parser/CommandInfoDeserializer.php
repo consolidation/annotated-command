@@ -29,7 +29,7 @@ class CommandInfoDeserializer
             isset($cache['method_name']) &&
             isset($cache['mtime']) &&
             ($cache['schema'] > 0) &&
-            ($cache['schema'] <= CommandInfo::SERIALIZATION_SCHEMA_VERSION) &&
+            ($cache['schema'] == CommandInfo::SERIALIZATION_SCHEMA_VERSION) &&
             self::cachedMethodExists($cache);
     }
 
@@ -82,6 +82,7 @@ class CommandInfoDeserializer
             'parameters' => [],
             'arguments' => [],
             'options' => [],
+            'injected_classes' => [],
             'mtime' => 0,
         ];
     }
