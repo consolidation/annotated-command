@@ -76,10 +76,8 @@ class ExampleCommandFile
      * the usual "parameter arguments".
      *
      * @param InputInterface $input
-     * @arg array $a A list of commandline parameters.
-     * @option foo
-     * @default a []
-     * @default foo []
+     * @arg array $a A list of commandline parameters. Default: []
+     * @option foo Default: []
      */
     public function testSymfony(InputInterface $input, OutputInterface $output)
     {
