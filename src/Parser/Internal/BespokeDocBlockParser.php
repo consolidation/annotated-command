@@ -137,7 +137,20 @@ class BespokeDocBlockParser
     {
         $variableName = $this->commandInfo->findMatchingOption($name);
         $description = static::removeLineBreaks($description);
+        list($description, $defaultValue) = $this->splitOutDefault($description);
         $set->add($variableName, $description);
+        if ($defaultValue !== null) {
+            $set->setDefaultValue($variableName, $defaultValue);
+        }
+    }
+
+    protected function splitOutDefault($description)
+    {
+        if (!preg_match('#(.*)(Default: *)(.*)#', trim($description), $matches)) {
+            return [$description, null];
+        }
+
+        return [trim($matches[1]), $this->interpretDefaultValue(trim($matches[3]))];
     }
 
     /**
