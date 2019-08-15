@@ -17,6 +17,7 @@ use Consolidation\AnnotatedCommand\AnnotationData;
 use Consolidation\AnnotatedCommand\CommandData;
 use Consolidation\AnnotatedCommand\CommandError;
 use Consolidation\AnnotatedCommand\Hooks\Dispatchers\CommandEventHookDispatcher;
+use Symfony\Component\EventDispatcher\LegacyEventDispatcherProxy;
 
 /**
  * Manage named callback hooks
@@ -136,19 +137,19 @@ class HookManager implements EventSubscriberInterface
 
     public function addPreCommandEventDispatcher(EventDispatcherInterface $eventDispatcher, $name = '*')
     {
-        $this->hooks[$name][self::PRE_COMMAND_EVENT][] = $eventDispatcher;
+        $this->hooks[$name][self::PRE_COMMAND_EVENT][] = LegacyEventDispatcherProxy::decorate($eventDispatcher);
         return $this;
     }
 
     public function addCommandEventDispatcher(EventDispatcherInterface $eventDispatcher, $name = '*')
     {
-        $this->hooks[$name][self::COMMAND_EVENT][] = $eventDispatcher;
+        $this->hooks[$name][self::COMMAND_EVENT][] = LegacyEventDispatcherProxy::decorate($eventDispatcher);
         return $this;
     }
 
     public function addPostCommandEventDispatcher(EventDispatcherInterface $eventDispatcher, $name = '*')
     {
-        $this->hooks[$name][self::POST_COMMAND_EVENT][] = $eventDispatcher;
+        $this->hooks[$name][self::POST_COMMAND_EVENT][] = LegacyEventDispatcherProxy::decorate($eventDispatcher);
         return $this;
     }
 
