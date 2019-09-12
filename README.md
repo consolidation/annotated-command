@@ -131,7 +131,7 @@ There are ten types of hooks in the command processing request flow:
 - [Command](#command-hook)
    - @pre-command
    - @command
-   - @command-init
+   - @post-command
 - [Process](#process-hook)
    - @pre-process
    - @process
