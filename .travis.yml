@@ -1,4 +1,5 @@
 language: php
+dist: trusty
 
 branches:
   # Only test the master branch and SemVer tags.
