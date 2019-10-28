@@ -22,7 +22,7 @@ class AnnotatedCommandTest extends TestCase
         $this->assertEquals('c', implode(',', $command->getAliases()));
         // Symfony Console composes the synopsis; perhaps we should not test it. Remove if this gives false failures.
         $this->assertEquals('my:echo [--multiple MULTIPLE] [--flip] [--] <one> [<two>]', $command->getSynopsis());
-        $this->assertEquals('my:echo bet alpha --flip', implode(',', $command->getUsages()));
+        $this->assertEquals('my:echo bet alpha --flip Concatenate "alpha" and "bet".', implode(',', $command->getUsages()));
 
         $input = new StringInput('my:echo b alpha --multiple=t --multiple=e --flip');
         $this->assertRunCommandViaApplicationEquals($command, $input, 'alphabet');

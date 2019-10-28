@@ -1,5 +1,9 @@
 # Change Log
 
+### MASTER
+
+- Added usage descriptions to help output. (#193)
+
 ### 2.12.0 - 8 Mar 2019
 
 - Allow annotated args and options to specify their default values in their descriptions. (#186)

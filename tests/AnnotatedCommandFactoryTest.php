@@ -291,7 +291,7 @@ EOT;
         $this->assertEquals("This command will add one and two. If the --negate flag\nis provided, then the result is negated.", $command->getHelp());
         $this->assertEquals('arithmatic', implode(',', $command->getAliases()));
         $this->assertEquals('test:arithmatic [--negate] [--unused [UNUSED]] [--] <one> [<two>]', $command->getSynopsis());
-        $this->assertEquals('test:arithmatic 2 2 --negate', implode(',', $command->getUsages()));
+        $this->assertEquals('test:arithmatic 2 2 --negate Add two plus two and then negate.', implode(',', $command->getUsages()));
 
         $input = new StringInput('arithmatic 2 3 --negate');
         $this->assertRunCommandViaApplicationEquals($command, $input, '-5');
@@ -335,7 +335,7 @@ EOT;
         $this->assertEquals("This command will concatenate two parameters. If the --flip flag\nis provided, then the result is the concatenation of two and one.", $command->getHelp());
         $this->assertEquals('c', implode(',', $command->getAliases()));
         $this->assertEquals('my:echo [--flip] [--] <one> [<two>]', $command->getSynopsis());
-        $this->assertEquals('my:echo bet alpha --flip', implode(',', $command->getUsages()));
+        $this->assertEquals('my:echo bet alpha --flip Concatenate "alpha" and "bet".', implode(',', $command->getUsages()));
 
         $input = new StringInput('my:echo bet alpha --flip');
         $this->assertRunCommandViaApplicationEquals($command, $input, 'alphabet');
@@ -457,7 +457,7 @@ EOT;
         // TODO: Extra whitespace character if there are no options et. al. in the
         // usage. This is uncommon, and the defect is invisible. Maybe find it someday.
         $actualUsages = implode(',', $command->getUsages());
-        $this->assertEquals('my:join a b,my:join ', $actualUsages);
+        $this->assertEquals('my:join a b Join a and b to produce "a,b",my:join  Example with no parameters or options', $actualUsages);
 
         $input = new StringInput('my:join bet alpha --flip --repeat=2');
         $this->assertRunCommandViaApplicationEquals($command, $input, 'alphabetalphabet');
@@ -499,7 +499,7 @@ EOT;
         $this->assertEquals("This command will concatenate two parameters.", $command->getHelp());
         $this->assertEquals('nope', implode(',', $command->getAliases()));
         $this->assertEquals('command:with-no-options <one> [<two>]', $command->getSynopsis());
-        $this->assertEquals('command:with-no-options alpha bet', implode(',', $command->getUsages()));
+        $this->assertEquals('command:with-no-options alpha bet Concatenate "alpha" and "bet".', implode(',', $command->getUsages()));
 
         $input = new StringInput('command:with-no-options something');
         $this->assertRunCommandViaApplicationEquals($command, $input, 'somethingdefault');
