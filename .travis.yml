@@ -18,6 +18,10 @@ matrix:
     - php: 7.0
     - php: 5.6
       env: 'SCENARIO=phpunit4'
+    - php: 5.5
+      env: 'SCENARIO=phpunit4'
+    - php: 5.4
+      env: 'SCENARIO=symfony2 DEPENDENCIES=lowest'
 
 sudo: false
 
