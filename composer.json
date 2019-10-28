@@ -19,12 +19,12 @@
         }
     },
     "require": {
-        "php": ">=5.5.9",
+        "php": ">=5.4.5",
         "consolidation/output-formatters": "^3.4",
         "psr/log": "^1",
-        "symfony/console": "^3|^4",
-        "symfony/event-dispatcher": "^3|^4",
-        "symfony/finder": "^3|^4"
+        "symfony/console": "^2.8|^3|^4",
+        "symfony/event-dispatcher": "^2.5|^3|^4",
+        "symfony/finder": "^2.5|^3|^4"
     },
     "require-dev": {
         "phpunit/phpunit": "^6",
@@ -65,6 +65,25 @@
                     }
                 }
             },
+            "symfony2": {
+                "require": {
+                    "symfony/console": "^2.8"
+                },
+                "require-dev": {
+                    "phpunit/phpunit": "^4.8.36"
+                },
+                "remove": [
+                    "php-coveralls/php-coveralls"
+                ],
+                "config": {
+                    "platform": {
+                        "php": "5.4.8"
+                    }
+                },
+                "scenario-options": {
+                    "create-lockfile": "false"
+                }
+            },
             "phpunit4": {
                 "require-dev": {
                     "phpunit/phpunit": "^4.8.36"
@@ -74,7 +93,7 @@
                 ],
                 "config": {
                     "platform": {
-                        "php": "5.5.9"
+                        "php": "5.4.8"
                     }
                 }
             }
