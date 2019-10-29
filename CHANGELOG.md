@@ -1,5 +1,9 @@
 # Change Log
 
+### 4.0.0 - 29 Oct 2019
+
+- Compatible with the 2.x branch, but removes support for old PHP versions and requires Symfony 4.
+
 ### 2.12.0 - 8 Mar 2019
 
 - Allow annotated args and options to specify their default values in their descriptions. (#186)

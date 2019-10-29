@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "dca96d6552ac03790a41e478b175225c",
+    "content-hash": "6af7c088e1515a96bf12e8f4438ddc04",
     "packages": [
         {
             "name": "consolidation/output-formatters",
-            "version": "dev-master",
+            "version": "4.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/consolidation/output-formatters.git",
-                "reference": "fa89f6fe2f71a112d02798e3e9c1627bf9e498b7"
+                "reference": "8e747762963ab48912fb75fc24dbe39175f47057"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/consolidation/output-formatters/zipball/fa89f6fe2f71a112d02798e3e9c1627bf9e498b7",
-                "reference": "fa89f6fe2f71a112d02798e3e9c1627bf9e498b7",
+                "url": "https://api.github.com/repos/consolidation/output-formatters/zipball/8e747762963ab48912fb75fc24dbe39175f47057",
+                "reference": "8e747762963ab48912fb75fc24dbe39175f47057",
                 "shasum": ""
             },
             "require": {
@@ -59,7 +59,7 @@
                 }
             ],
             "description": "Format text by applying transformations provided by plug-in formatters.",
-            "time": "2019-10-29T08:34:46+00:00"
+            "time": "2019-10-29T13:39:04+00:00"
         },
         {
             "name": "dflydev/dot-access-data",
@@ -2674,9 +2674,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "consolidation/output-formatters": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
