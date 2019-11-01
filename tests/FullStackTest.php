@@ -1,7 +1,6 @@
 <?php
 namespace Consolidation\AnnotatedCommand;
 
-use Consolidation\AnnotatedCommand\AnnotationData;
 use Consolidation\AnnotatedCommand\CommandData;
 use Consolidation\AnnotatedCommand\CommandProcessor;
 use Consolidation\AnnotatedCommand\Hooks\AlterResultInterface;
@@ -14,16 +13,11 @@ use Consolidation\AnnotatedCommand\Options\AlterOptionsCommandEvent;
 use Consolidation\AnnotatedCommand\Parser\CommandInfo;
 use Consolidation\OutputFormatters\FormatterManager;
 use Consolidation\TestUtils\TestTerminal;
-use Symfony\Component\Console\Application;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\BufferedOutput;
-use Symfony\Component\Console\Output\OutputInterface;
 use Consolidation\TestUtils\ApplicationWithTerminalWidth;
 use Consolidation\AnnotatedCommand\Options\PrepareTerminalWidthOption;
 use Consolidation\AnnotatedCommand\Events\CustomEventAwareInterface;
-use Consolidation\AnnotatedCommand\Events\CustomEventAwareTrait;
 use PHPUnit\Framework\TestCase;
 
 /**

@@ -3,24 +3,10 @@ namespace Consolidation\AnnotatedCommand;
 
 use Consolidation\AnnotatedCommand\Help\HelpCommand;
 
-use Consolidation\AnnotatedCommand\AnnotationData;
-use Consolidation\AnnotatedCommand\CommandData;
-use Consolidation\AnnotatedCommand\CommandProcessor;
-use Consolidation\AnnotatedCommand\Hooks\AlterResultInterface;
-use Consolidation\AnnotatedCommand\Hooks\ExtractOutputInterface;
-use Consolidation\AnnotatedCommand\Hooks\HookManager;
-use Consolidation\AnnotatedCommand\Hooks\ProcessResultInterface;
-use Consolidation\AnnotatedCommand\Hooks\StatusDeterminerInterface;
-use Consolidation\AnnotatedCommand\Hooks\ValidatorInterface;
 use Consolidation\AnnotatedCommand\Options\AlterOptionsCommandEvent;
-use Consolidation\AnnotatedCommand\Parser\CommandInfo;
 use Consolidation\OutputFormatters\FormatterManager;
-use Symfony\Component\Console\Application;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\BufferedOutput;
-use Symfony\Component\Console\Output\OutputInterface;
 use Consolidation\TestUtils\ApplicationWithTerminalWidth;
 use Consolidation\AnnotatedCommand\Options\PrepareTerminalWidthOption;
 use PHPUnit\Framework\TestCase;
