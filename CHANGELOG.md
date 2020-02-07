@@ -1,5 +1,9 @@
 # Change Log
 
+### 4.1.0 - 6 Feb 2020
+
+- Test with PHP 7.4.
+
 ### 4.0.0 - 29 Oct 2019
 
 - Compatible with the 2.x branch, but removes support for old PHP versions and requires Symfony 4.
