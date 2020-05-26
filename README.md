@@ -152,7 +152,7 @@ In addition to these, there are two more hooks available:
 - [Replace Command](#replace-command-hook)
    - @replace-command
 
-The "pre" and "post" varieties of these hooks, where avalable, give more flexibility vis-a-vis hook ordering (and for consistency). Within one type of hook, the running order is undefined and not guaranteed. Note that many validate, process and alter hooks may run, but the first status or extract hook that successfully returns a result will halt processing of further hooks of the same type.
+The "pre" and "post" varieties of these hooks, where available, give more flexibility vis-a-vis hook ordering (and for consistency). Within one type of hook, the running order is undefined and not guaranteed. Note that many validate, process and alter hooks may run, but the first status or extract hook that successfully returns a result will halt processing of further hooks of the same type.
 
 Each hook has an interface that defines its calling conventions; however, any callable may be used when registering a hook, which is convenient if versions of PHP prior to 7.0 (with no anonymous classes) need to be supported.
 
