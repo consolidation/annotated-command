@@ -20,15 +20,15 @@
     },
     "require": {
         "php": ">=7.1.3",
-        "consolidation/output-formatters": "^4.1",
+        "consolidation/output-formatters": "^4.1.1",
         "psr/log": "^1|^2",
-        "symfony/console": "^4|^5",
-        "symfony/event-dispatcher": "^4|^5",
-        "symfony/finder": "^4|^5"
+        "symfony/console": "^4.4.8|^5",
+        "symfony/event-dispatcher": "^4.4.8|^5",
+        "symfony/finder": "^4.4.8|^5"
     },
     "require-dev": {
         "g1a/composer-test-scenarios": "^3",
-        "php-coveralls/php-coveralls": "^1",
+        "php-coveralls/php-coveralls": "^2.2",
         "phpunit/phpunit": "^6",
         "squizlabs/php_codesniffer": "^3"
     },
@@ -36,7 +36,7 @@
         "optimize-autoloader": true,
         "sort-packages": true,
         "platform": {
-            "php": "7.1.3"
+            "php": "7.2.28"
         }
     },
     "scripts": {
@@ -58,6 +58,11 @@
             "symfony4": {
                 "require": {
                     "symfony/console": "^4.0"
+                },
+                "config": {
+                    "platform": {
+                        "php": "7.1.3"
+                    }
                 }
             }
         },
