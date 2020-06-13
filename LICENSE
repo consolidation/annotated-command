@@ -22,4 +22,5 @@ symfony/event-dispatcher-contracts  v1.1.7   MIT
 symfony/finder                      v4.4.10  MIT
 symfony/polyfill-mbstring           v1.17.0  MIT
 symfony/polyfill-php73              v1.17.0  MIT
+symfony/polyfill-php80              v1.17.0  MIT
 symfony/service-contracts           v1.1.8   MIT
