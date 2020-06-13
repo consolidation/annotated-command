@@ -16,10 +16,10 @@ consolidation/output-formatters     4.1.1    MIT
 dflydev/dot-access-data             v1.1.0   MIT
 psr/container                       1.0.0    MIT
 psr/log                             1.1.3    MIT
-symfony/console                     v4.4.8   MIT
-symfony/event-dispatcher            v4.4.8   MIT
+symfony/console                     v4.4.10  MIT
+symfony/event-dispatcher            v4.4.10  MIT
 symfony/event-dispatcher-contracts  v1.1.7   MIT
-symfony/finder                      v4.4.8   MIT
+symfony/finder                      v4.4.10  MIT
 symfony/polyfill-mbstring           v1.17.0  MIT
 symfony/polyfill-php73              v1.17.0  MIT
 symfony/service-contracts           v1.1.8   MIT
