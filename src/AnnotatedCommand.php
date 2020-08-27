@@ -364,5 +364,4 @@ class AnnotatedCommand extends Command implements HelpDocumentAlter
     {
         InjectionHelper::injectIntoCallbackObject($this->commandCallback, $input, $output);
     }
-
 }

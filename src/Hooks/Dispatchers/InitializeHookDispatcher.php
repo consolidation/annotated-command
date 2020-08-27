@@ -2,9 +2,10 @@
 
 namespace Consolidation\AnnotatedCommand\Hooks\Dispatchers;
 
-use Consolidation\AnnotatedCommand\Hooks\HookManager;
 use Consolidation\AnnotatedCommand\AnnotationData;
+use Consolidation\AnnotatedCommand\Hooks\HookManager;
 use Consolidation\AnnotatedCommand\Hooks\InitializeHookInterface;
+use Consolidation\AnnotatedCommand\InjectionHelper;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 

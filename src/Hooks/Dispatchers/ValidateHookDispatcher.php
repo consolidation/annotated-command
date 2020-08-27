@@ -7,6 +7,7 @@ use Consolidation\AnnotatedCommand\CommandData;
 use Consolidation\AnnotatedCommand\CommandError;
 use Consolidation\AnnotatedCommand\Hooks\HookManager;
 use Consolidation\AnnotatedCommand\Hooks\ValidatorInterface;
+use Consolidation\AnnotatedCommand\InjectionHelper;
 
 /**
  * Call hooks

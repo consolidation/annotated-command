@@ -6,7 +6,7 @@ use Symfony\Component\Console\Input\InputAwareInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-public class InjectionHelper
+class InjectionHelper
 {
     /**
      * Inject $input and $output into the command instance if it is set up to receive them.
@@ -16,7 +16,7 @@ public class InjectionHelper
      */
     public static function injectIntoCallbackObject($callback, InputInterface $input, OutputInterface $output = null)
     {
-        $callbackObject = $this->recoverCallbackObject($callback);
+        $callbackObject = static::recoverCallbackObject($callback);
         if (!$callbackObject) {
             return;
         }

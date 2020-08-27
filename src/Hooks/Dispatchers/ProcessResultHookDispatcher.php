@@ -6,6 +6,7 @@ use Consolidation\AnnotatedCommand\AnnotationData;
 use Consolidation\AnnotatedCommand\CommandData;
 use Consolidation\AnnotatedCommand\Hooks\HookManager;
 use Consolidation\AnnotatedCommand\Hooks\ProcessResultInterface;
+use Consolidation\AnnotatedCommand\InjectionHelper;
 
 /**
  * Call hooks

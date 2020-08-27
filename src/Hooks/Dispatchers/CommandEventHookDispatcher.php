@@ -2,13 +2,14 @@
 
 namespace Consolidation\AnnotatedCommand\Hooks\Dispatchers;
 
+use Consolidation\AnnotatedCommand\AnnotatedCommand;
 use Consolidation\AnnotatedCommand\Hooks\HookManager;
+use Consolidation\AnnotatedCommand\InjectionHelper;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\Console\Event\ConsoleCommandEvent;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Consolidation\AnnotatedCommand\AnnotatedCommand;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
  * Call hooks
