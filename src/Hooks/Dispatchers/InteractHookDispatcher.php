@@ -31,6 +31,7 @@ class InteractHookDispatcher extends HookDispatcher
 
     protected function callInteractor($interactor, $input, $output, AnnotationData $annotationData)
     {
+        InjectionHelper::injectIntoCallbackObject($interactor, $input, $output);
         if ($interactor instanceof InteractorInterface) {
             return $interactor->interact($input, $output, $annotationData);
         }

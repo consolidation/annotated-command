@@ -360,37 +360,9 @@ class AnnotatedCommand extends Command implements HelpDocumentAlter
      * @param callable $commandCallback
      * @param CommandData $commandData
      */
-    protected function injectIntoCommandfileInstance(InputInterface $input, OutputInterface $output)
+    public function injectIntoCommandfileInstance(InputInterface $input, OutputInterface $output)
     {
-        $commandfileInstance = $this->recoverCommandfileInstance();
-        if (!$commandfileInstance) {
-            return;
-        }
-
-        if ($commandfileInstance instanceof InputAwareInterface) {
-            $commandfileInstance->setInput($input);
-        }
-        if ($commandfileInstance instanceof OutputAwareInterface) {
-            $commandfileInstance->setOutput($output);
-        }
+        InjectionHelper::injectIntoCallbackObject($this->commandCallback, $input, $output);
     }
 
-    /**
-     * If the command callback is a method of an object, return the object.
-     *
-     * @param callable $commandCallback
-     * @return object|bool
-     */
-    protected function recoverCommandfileInstance()
-    {
-        if (!is_array($this->commandCallback)) {
-            return false;
-        }
-
-        if (!is_object($this->commandCallback[0])) {
-            return false;
-        }
-
-        return $this->commandCallback[0];
-    }
 }

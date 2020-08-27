@@ -30,6 +30,7 @@ class InitializeHookDispatcher extends HookDispatcher implements InitializeHookI
 
     protected function callInitializeHook($provider, $input, AnnotationData $annotationData)
     {
+        InjectionHelper::injectIntoCallbackObject($provider, $input);
         if ($provider instanceof InitializeHookInterface) {
             return $provider->initialize($input, $annotationData);
         }

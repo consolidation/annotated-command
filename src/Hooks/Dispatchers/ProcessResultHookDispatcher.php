@@ -38,6 +38,7 @@ class ProcessResultHookDispatcher extends HookDispatcher implements ProcessResul
 
     protected function callProcessor($processor, $result, CommandData $commandData)
     {
+        InjectionHelper::injectIntoCallbackObject($processor, $commandData->input(), $commandData->output());
         $processed = null;
         if ($processor instanceof ProcessResultInterface) {
             $processed = $processor->process($result, $commandData);

@@ -36,6 +36,7 @@ class ValidateHookDispatcher extends HookDispatcher implements ValidatorInterfac
 
     protected function callValidator($validator, CommandData $commandData)
     {
+        InjectionHelper::injectIntoCallbackObject($validator, $commandData->input(), $commandData->output());
         if ($validator instanceof ValidatorInterface) {
             return $validator->validate($commandData);
         }
