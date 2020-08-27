@@ -1,5 +1,9 @@
 # Change Log
 
+### 4.2.0 - 27 August 2020
+
+- Inject $input and $output into the command instance if it is set up to receive them. (#207)
+
 ### 4.1.1 - 27 May 2020
 
 - Fix bugs with Symfony 5. (#204)
