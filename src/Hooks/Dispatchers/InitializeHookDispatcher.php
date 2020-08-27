@@ -2,9 +2,10 @@
 
 namespace Consolidation\AnnotatedCommand\Hooks\Dispatchers;
 
-use Consolidation\AnnotatedCommand\Hooks\HookManager;
 use Consolidation\AnnotatedCommand\AnnotationData;
+use Consolidation\AnnotatedCommand\Hooks\HookManager;
 use Consolidation\AnnotatedCommand\Hooks\InitializeHookInterface;
+use Consolidation\AnnotatedCommand\InjectionHelper;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 
@@ -30,6 +31,7 @@ class InitializeHookDispatcher extends HookDispatcher implements InitializeHookI
 
     protected function callInitializeHook($provider, $input, AnnotationData $annotationData)
     {
+        InjectionHelper::injectIntoCallbackObject($provider, $input);
         if ($provider instanceof InitializeHookInterface) {
             return $provider->initialize($input, $annotationData);
         }

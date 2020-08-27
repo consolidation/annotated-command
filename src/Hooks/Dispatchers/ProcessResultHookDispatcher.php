@@ -6,6 +6,7 @@ use Consolidation\AnnotatedCommand\AnnotationData;
 use Consolidation\AnnotatedCommand\CommandData;
 use Consolidation\AnnotatedCommand\Hooks\HookManager;
 use Consolidation\AnnotatedCommand\Hooks\ProcessResultInterface;
+use Consolidation\AnnotatedCommand\InjectionHelper;
 
 /**
  * Call hooks
@@ -38,6 +39,7 @@ class ProcessResultHookDispatcher extends HookDispatcher implements ProcessResul
 
     protected function callProcessor($processor, $result, CommandData $commandData)
     {
+        InjectionHelper::injectIntoCallbackObject($processor, $commandData->input(), $commandData->output());
         $processed = null;
         if ($processor instanceof ProcessResultInterface) {
             $processed = $processor->process($result, $commandData);
