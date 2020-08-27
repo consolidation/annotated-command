@@ -253,7 +253,6 @@ class CommandProcessor implements LoggerAwareInterface
     {
         $result = false;
         try {
-            $this->injectIntoCommandInstance($commandCallback, $commandData);
             $args = $this->parameterInjection()->args($commandData);
             $result = call_user_func_array($commandCallback, $args);
         } catch (\Exception $e) {
@@ -262,54 +261,8 @@ class CommandProcessor implements LoggerAwareInterface
         return $result;
     }
 
-    /**
-     * Use the parameter injection manager to provide injected classes to command data.
-     *
-     * @param CommandData $commandData
-     * @param array $injectedClasses
-     */
     public function injectIntoCommandData($commandData, $injectedClasses)
     {
         $this->parameterInjection()->injectIntoCommandData($commandData, $injectedClasses);
-    }
-
-    /**
-     * Inject $input and $output into the command instance if it is set up to receive them.
-     *
-     * @param callable $commandCallback
-     * @param CommandData $commandData
-     */
-    protected function injectIntoCommandInstance($commandCallback, CommandData $commandData)
-    {
-        $commandInstance = $this->recoverObject($commandCallback);
-        if (!$commandInstance) {
-            return;
-        }
-
-        if ($commandInstance instanceof InputAwareInterface) {
-            $commandInstance->setInput($commandData->input());
-        }
-        if ($commandInstance instanceof OutputAwareInterface) {
-            $commandInstance->setInput($commandData->output());
-        }
-    }
-
-    /**
-     * If the command callback is a method of an object, return the object.
-     *
-     * @param callable $commandCallback
-     * @return object|bool
-     */
-    protected function recoverObject($commandCallback)
-    {
-        if (!is_array($commandCallback)) {
-            return false;
-        }
-
-        if (!is_object($commandCallback[0])) {
-            return false;
-        }
-
-        return $commandCallback[0];
     }
 }
