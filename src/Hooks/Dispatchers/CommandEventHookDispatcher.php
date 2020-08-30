@@ -4,7 +4,8 @@ namespace Consolidation\AnnotatedCommand\Hooks\Dispatchers;
 
 use Consolidation\AnnotatedCommand\AnnotatedCommand;
 use Consolidation\AnnotatedCommand\Hooks\HookManager;
-use Consolidation\AnnotatedCommand\InjectionHelper;
+use Consolidation\AnnotatedCommand\State\State;
+use Consolidation\AnnotatedCommand\State\StateHelper;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\Console\Event\ConsoleCommandEvent;
@@ -21,13 +22,8 @@ class CommandEventHookDispatcher extends HookDispatcher
      */
     public function callCommandEventHooks(ConsoleCommandEvent $event)
     {
-        $command = $event->getCommand();
         $input = $event->getInput();
         $output = $event->getOutput();
-
-        if ($command instanceof AnnotatedCommand) {
-            $command->injectIntoCommandfileInstance($input, $output);
-        }
 
         $hooks = [
             HookManager::PRE_COMMAND_EVENT,
@@ -40,8 +36,9 @@ class CommandEventHookDispatcher extends HookDispatcher
                 $commandEvent->dispatch($event, ConsoleEvents::COMMAND);
             }
             if (is_callable($commandEvent)) {
-                InjectionHelper::injectIntoCallbackObject($commandEvent, $input, $output);
+                $state = StateHelper::injectIntoCallbackObject($commandEvent, $input, $output);
                 $commandEvent($event);
+                $state->restore();
             }
         }
     }
