@@ -1,6 +1,13 @@
 # Change Log
 
+### 4.2.1 - 30 August 2020
+
+- Give command handlers the ability to save and restore their state (#208)
+- Do not inject $input and $output into the command instance unless it supports saving and restoring state.
+
 ### 4.2.0 - 27 August 2020
+
+DEPRECATED RELEASE. Do not use.
 
 - Inject $input and $output into the command instance if it is set up to receive them. (#207)
 
