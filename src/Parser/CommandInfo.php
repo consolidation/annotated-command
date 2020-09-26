@@ -680,7 +680,7 @@ class CommandInfo
             if (!$this->isAssoc($defaultValue)) {
                 $result->setDefaultValue($param->name, $defaultValue);
             }
-        } elseif ($param->isArray()) {
+        } elseif ($param->getType() && $param->getType()->getName() === 'array') {
             $result->setDefaultValue($param->name, []);
         }
     }
