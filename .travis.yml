@@ -10,7 +10,6 @@ branches:
 
 matrix:
   include:
-    - 'nightly'
     - php: 7.4
       env: 'DEPENDENCIES=highest'
     - php: 7.4
