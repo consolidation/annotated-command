@@ -639,7 +639,7 @@ class CommandInfo
 
     /**
      * Examine the parameters of the method for this command, and
-     * build a list of commandline arguements for them.
+     * build a list of commandline arguments for them.
      *
      * @return array
      */
@@ -651,9 +651,9 @@ class CommandInfo
         if ($this->lastParameterIsOptionsArray()) {
             array_pop($params);
         }
-        while (!empty($params) && ($params[0]->getClass() != null)) {
+        while (!empty($params) && ($params[0]->getType() != null) && !($params[0]->getType()->isBuiltin())) {
             $param = array_shift($params);
-            $injectedClass = $param->getClass()->getName();
+            $injectedClass = $param->getType()->getName();
             array_unshift($this->injectedClasses, $injectedClass);
         }
         foreach ($params as $param) {
@@ -670,8 +670,8 @@ class CommandInfo
     protected function addParameterToResult($result, $param)
     {
         // Commandline arguments must be strings, so ignore any
-        // parameter that is typehinted to any non-primative class.
-        if ($param->getClass() != null) {
+        // parameter that is typehinted to any non-primitive class.
+        if ($param->getType() && !$param->getType()->isBuiltin()) {
             return;
         }
         $result->add($param->name);
@@ -680,7 +680,7 @@ class CommandInfo
             if (!$this->isAssoc($defaultValue)) {
                 $result->setDefaultValue($param->name, $defaultValue);
             }
-        } elseif ($param->isArray()) {
+        } elseif ($param->getType() && $param->getType()->getName() === 'array') {
             $result->setDefaultValue($param->name, []);
         }
     }
