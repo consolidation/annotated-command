@@ -1,5 +1,11 @@
 # Change Log
 
+### 4.2.2 - 30 September 2020
+
+- PHP 8 / Composer 2 support (#210)
+- Add @ignored-command annotation. (#211)
+- Address deprecation of ReflectionType::getClass() (#209)
+
 ### 4.2.1 - 30 August 2020
 
 - Give command handlers the ability to save and restore their state (#208)
