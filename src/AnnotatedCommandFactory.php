@@ -241,23 +241,24 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
         return $this->dataStore;
     }
 
-    protected function createCommandInfoListFromClass($classNameOrInstance, $cachedCommandInfoList)
+    protected function createCommandInfoListFromClass($commandFileInstance, $cachedCommandInfoList)
     {
         $commandInfoList = [];
 
         // Ignore special functions, such as __construct and __call, which
         // can never be commands.
         $commandMethodNames = array_filter(
-            get_class_methods($classNameOrInstance) ?: [],
-            function ($m) use ($classNameOrInstance) {
-                $reflectionMethod = new \ReflectionMethod($classNameOrInstance, $m);
+            get_class_methods($commandFileInstance) ?: [],
+            function ($m) use ($commandFileInstance) {
+                $reflectionMethod = new \ReflectionMethod($commandFileInstance, $m);
                 return !$reflectionMethod->isStatic() && !preg_match('#^_#', $m);
             }
         );
 
         foreach ($commandMethodNames as $commandMethodName) {
             if (!array_key_exists($commandMethodName, $cachedCommandInfoList)) {
-                $commandInfo = CommandInfo::create($classNameOrInstance, $commandMethodName);
+                $commandInfo = CommandInfo::create($commandFileInstance, $commandMethodName);
+                $this->alterCommandInfo($commandInfo, $commandFileInstance);
                 if (!static::isCommandOrHookMethod($commandInfo, $this->getIncludeAllPublicMethods())) {
                     $commandInfo->invalidate();
                 }
@@ -268,9 +269,11 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
         return $commandInfoList;
     }
 
-    public function createCommandInfo($classNameOrInstance, $commandMethodName)
+    public function createCommandInfo($commandFileInstance, $commandMethodName)
     {
-        return CommandInfo::create($classNameOrInstance, $commandMethodName);
+        $commandInfo = CommandInfo::create($commandFileInstance, $commandMethodName);
+        $this->alterCommandInfo($commandInfo, $commandFileInstance);
+        return $commandInfo;
     }
 
     public function createCommandsFromClassInfo($commandInfoList, $commandFileInstance, $includeAllPublicMethods = null)
@@ -318,6 +321,10 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
     {
         // Ignore everything labeled @hook
         if (static::isHookMethod($commandInfo)) {
+            return false;
+        }
+        // Ignore everything labeled @ignored-command
+        if ($commandInfo->hasAnnotation('ignored-command')) {
             return false;
         }
         // Include everything labeled @command
@@ -400,7 +407,6 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
 
     public function createCommand(CommandInfo $commandInfo, $commandFileInstance)
     {
-        $this->alterCommandInfo($commandInfo, $commandFileInstance);
         $command = new AnnotatedCommand($commandInfo->getName());
         $commandCallback = [$commandFileInstance, $commandInfo->getMethodName()];
         $command->setCommandCallback($commandCallback);

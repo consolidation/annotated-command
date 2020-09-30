@@ -538,4 +538,11 @@ class ExampleCommandFile
     {
         return "Arg is $arg, options[help] is " . var_export($options['help'], true) . "\n";
     }
+
+    /**
+     * @ignored-command
+     */
+    public function ignoredCommand()
+    {
+    }
 }

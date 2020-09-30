@@ -153,6 +153,15 @@ EOT;
         $this->assertRunCommandViaApplicationEquals($command, $input, "Arg is test, options[help] is false");
     }
 
+    function testIgnoredCommand()
+    {
+        $this->commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile;
+        $this->commandFactory = new AnnotatedCommandFactory();
+
+        $commandList = $this->commandFactory->createCommandsFromClass($this->commandFileInstance);
+        $this->assertArrayNotHasKey('ignoredCommand', $commandList);
+    }
+
     function testOptionWithOptionalValue()
     {
         $this->commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile;
@@ -308,6 +317,7 @@ EOT;
 
         $this->commandFactory->addCommandInfoAlterer(new ExampleCommandInfoAlterer());
 
+        $commandInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'myEcho');
         $command = $this->commandFactory->createCommand($commandInfo, $this->commandFileInstance);
 
         $annotationData = $command->getAnnotationData();
