@@ -1,5 +1,9 @@
 # Change Log
 
+### 4.2.3 - 3 October 2020
+
+- Add ability to ignore methods using regular expressions. (#212)
+
 ### 4.2.2 - 30 September 2020
 
 - PHP 8 / Composer 2 support (#210)
