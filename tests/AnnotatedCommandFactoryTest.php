@@ -162,6 +162,18 @@ EOT;
         $this->assertArrayNotHasKey('ignoredCommand', $commandList);
     }
 
+    function testIgnoredCommandByRegex()
+    {
+        $this->commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile;
+        $this->commandFactory = new AnnotatedCommandFactory();
+
+        $commandList = $this->commandFactory->createCommandsFromClass($this->commandFileInstance);
+        $this->assertArrayHasKey('ignoredCommandByRegex', $commandList);
+        $this->commandFactory->addIgnoredCommandsRegexp('/ignored.ommand.y.egex/');
+        $commandList = $this->commandFactory->createCommandsFromClass($this->commandFileInstance);
+        $this->assertArrayNotHasKey('ignoredCommandByRegex', $commandList);
+    }
+
     function testOptionWithOptionalValue()
     {
         $this->commandFileInstance = new \Consolidation\TestUtils\ExampleCommandFile;

@@ -43,6 +43,9 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
     /** var SimpleCacheInterface */
     protected $dataStore;
 
+    /** var string[] */
+    protected $ignoredCommandsRegexps = [];
+
     public function __construct()
     {
         $this->dataStore = new NullCache();
@@ -110,6 +113,18 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
     public function addListernerCallback(callable $listener)
     {
         $this->addListener(new CommandCreationListener($listener));
+        return $this;
+    }
+
+    /**
+     * Add a regular expresion used to match methods names
+     * that will not be part of the final set of commands.
+     *
+     * @param string $regex
+     */
+    public function addIgnoredCommandsRegexp(string $regex)
+    {
+        $this->ignoredCommandsRegexps[] = $regex;
         return $this;
     }
 
@@ -286,7 +301,7 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
             $commandInfoList,
             $commandFileInstance,
             function ($commandInfo) use ($includeAllPublicMethods) {
-                return static::isCommandMethod($commandInfo, $includeAllPublicMethods);
+                return $this->isMethodRecognizedAsCommand($commandInfo, $includeAllPublicMethods);
             }
         );
     }
@@ -302,6 +317,46 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
         );
     }
 
+    protected function isMethodRecognizedAsCommand($commandInfo, $includeAllPublicMethods)
+    {
+        // Ignore everything labeled @hook
+        if ($this->isMethodRecognizedAsHook($commandInfo)) {
+            return false;
+        }
+        // Ignore everything labeled @ignored-command
+        if ($commandInfo->hasAnnotation('ignored-command')) {
+            return false;
+        }
+        // Include everything labeled @command
+        if ($commandInfo->hasAnnotation('command')) {
+            return true;
+        }
+        // Skip anything that has a missing or invalid name.
+        $commandName = $commandInfo->getName();
+        if (empty($commandName) || preg_match('#[^a-zA-Z0-9:_-]#', $commandName)) {
+            return false;
+        }
+        // Skip anything named like an accessor ('get' or 'set')
+        if (preg_match('#^(get[A-Z]|set[A-Z])#', $commandInfo->getMethodName())) {
+            return false;
+        }
+
+        // Skip based on the configured regular expresions
+        foreach ($this->ignoredCommandsRegexps as $regex) {
+            if (preg_match($regex, $commandInfo->getMethodName())) {
+                return false;
+            }
+        }
+
+        // Default to the setting of 'include all public methods'.
+        return $includeAllPublicMethods;
+    }
+
+    protected function isMethodRecognizedAsHook($commandInfo)
+    {
+        return $commandInfo->hasAnnotation('hook');
+    }
+
     protected function filterCommandInfoList($commandInfoList, callable $commandSelector)
     {
         return array_filter($commandInfoList, $commandSelector);
@@ -312,11 +367,13 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
         return static::isHookMethod($commandInfo) || static::isCommandMethod($commandInfo, $includeAllPublicMethods);
     }
 
+    // Deprecated: avoid using the isHookMethod in favor of the protected non-static isMethodRecognizedAsHook
     public static function isHookMethod($commandInfo)
     {
         return $commandInfo->hasAnnotation('hook');
     }
 
+    // Deprecated: avoid using the isCommandMethod in favor of the protected non-static isMethodRecognizedAsCommand
     public static function isCommandMethod($commandInfo, $includeAllPublicMethods)
     {
         // Ignore everything labeled @hook
