@@ -545,4 +545,8 @@ class ExampleCommandFile
     public function ignoredCommand()
     {
     }
+
+    public function ignoredCommandByRegex()
+    {
+    }
 }
