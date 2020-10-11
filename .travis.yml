@@ -6,6 +6,7 @@ branches:
   only:
     - master
     - 2.x
+    - 1.x
     - '/^[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+.*$/'
 
 matrix:
