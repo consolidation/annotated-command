@@ -1,5 +1,9 @@
 # Change Log
 
+### 2.12.1 - 10 Oct 2020
+
+- Allow symfony/finder 5 (#213)
+
 ### 2.12.0 - 8 Mar 2019
 
 - Allow annotated args and options to specify their default values in their descriptions. (#186)
