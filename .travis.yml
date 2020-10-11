@@ -10,6 +10,8 @@ branches:
 matrix:
   include:
     - php: 7.2
+      env: 'SCENARIO=finder5 DEPENDENCIES=highest'
+    - php: 7.2
       env: 'SCENARIO=symfony4 DEPENDENCIES=highest'
     - php: 7.1
       env: 'SCENARIO=symfony4'

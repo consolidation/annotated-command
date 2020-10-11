@@ -19,21 +19,22 @@
         }
     },
     "require": {
-        "symfony/console": "^2.8",
+        "symfony/finder": "^5",
         "php": ">=5.4.5",
         "consolidation/output-formatters": "dev-finder5",
         "psr/log": "^1",
-        "symfony/event-dispatcher": "^2.5|^3|^4",
-        "symfony/finder": "^2.5|^3|^4|^5"
+        "symfony/console": "^2.8|^3|^4",
+        "symfony/event-dispatcher": "^2.5|^3|^4"
     },
     "require-dev": {
-        "phpunit/phpunit": "^4.8.36",
+        "phpunit/phpunit": "^6",
+        "php-coveralls/php-coveralls": "^1",
         "g1a/composer-test-scenarios": "^3",
         "squizlabs/php_codesniffer": "^2.7"
     },
     "config": {
         "platform": {
-            "php": "5.4.8"
+            "php": "7.2.5"
         },
         "optimize-autoloader": true,
         "sort-packages": true,
