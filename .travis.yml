@@ -5,10 +5,14 @@ branches:
   # Only test the master branch and SemVer tags.
   only:
     - master
+    - 2.x
+    - 1.x
     - '/^[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+.*$/'
 
 matrix:
   include:
+    - php: 7.2
+      env: 'SCENARIO=finder5 DEPENDENCIES=highest'
     - php: 7.2
       env: 'SCENARIO=symfony4 DEPENDENCIES=highest'
     - php: 7.1
