@@ -1,5 +1,9 @@
 # Change Log
 
+### 4.2.4 - 10 December 2020
+
+- PHP 8
+
 ### 4.2.3 - 3 October 2020
 
 - Add ability to ignore methods using regular expressions. (#212)

@@ -2,11 +2,10 @@
 
 Initialize Symfony Console commands from annotated command class methods.
 
-[![Travis CI](https://travis-ci.org/consolidation/annotated-command.svg?branch=main)](https://travis-ci.org/consolidation/annotated-command)
-[![Windows CI](https://ci.appveyor.com/api/projects/status/c2c4lcf43ux4c30p?svg=true)](https://ci.appveyor.com/project/greg-1-anderson/annotated-command)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/consolidation/annotated-command/badges/quality-score.png?b=main)](https://scrutinizer-ci.com/g/consolidation/annotated-command/?branch=main)
-[![Coverage Status](https://coveralls.io/repos/github/consolidation/annotated-command/badge.svg?branch=main)](https://coveralls.io/github/consolidation/annotated-command?branch=main)
-[![License](https://poser.pugx.org/consolidation/annotated-command/license)](https://packagist.org/packages/consolidation/annotated-command)
+[![ci](https://github.com/consolidation/annotated-command/workflows/CI/badge.svg)](https://travis-ci.org/consolidation/annotated-command)
+[![scrutinizer](https://scrutinizer-ci.com/g/consolidation/annotated-command/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/consolidation/annotated-command/?branch=master)
+[![codecov](https://codecov.io/gh/consolidation/annotated-command/branch/main/graph/badge.svg?token=CAaB7ofhxx)](https://codecov.io/gh/consolidation/annotated-command)
+[![license](https://poser.pugx.org/consolidation/annotated-command/license)](https://packagist.org/packages/consolidation/annotated-command)
 
 ## Component Status
 
