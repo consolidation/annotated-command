@@ -97,6 +97,7 @@ array (
   2 => 'boz',
 )
 EOT;
+
         $this->assertRunCommandViaApplicationEquals($command, $input, $expected);
     }
 
@@ -1116,8 +1117,10 @@ EOT;
     function assertRunCommandViaApplicationContains($command, $input, $containsList, $expectedStatusCode = 0)
     {
         list($statusCode, $commandOutput) = $this->runCommandViaApplication($command, $input);
+        $commandOutput = preg_replace('#\r\n#ms', "\n", $commandOutput);
 
         foreach ($containsList as $contains) {
+            $contains = preg_replace('#\r\n#ms', "\n", $contains);
             $this->assertStringContainsString($contains, $commandOutput);
         }
         $this->assertEquals($expectedStatusCode, $statusCode);
