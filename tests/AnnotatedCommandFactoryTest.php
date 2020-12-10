@@ -27,7 +27,8 @@ class AnnotatedCommandFactoryTest extends TestCase
         $this->assertEquals('fibonacci', $command->getName());
         $this->assertEquals('fibonacci [--graphic] [--] <start> <steps>', $command->getSynopsis());
         $this->assertEquals('Calculate the fibonacci sequence between two numbers.', $command->getDescription());
-        $this->assertEquals("Graphic output will look like
+
+        $expectedHelp = "Graphic output will look like
 +----+---+-------------+
 |    |   |             |
 |    |-+-|             |
@@ -35,7 +36,13 @@ class AnnotatedCommandFactoryTest extends TestCase
 |        |             |
 |        |             |
 |        |             |
-+--------+-------------+", $command->getHelp());
++--------+-------------+";
+        $actualHelp = $command->getHelp()
+
+        $expectedHelp = preg_replace('#\r\n#ms', "\n", $expectedHelp);
+        $actualHelp = preg_replace('#\r\n#ms', "\n", $actualHelp);
+
+        $this->assertEquals($expectedHelp, $actualHelp);
 
         $this->assertInstanceOf('\Symfony\Component\Console\Command\Command', $command);
 
