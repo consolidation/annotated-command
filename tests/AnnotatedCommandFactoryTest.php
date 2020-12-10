@@ -1130,6 +1130,9 @@ EOT;
     {
         list($statusCode, $commandOutput) = $this->runCommandViaApplication($command, $input);
 
+        $expectedOutput = preg_replace('#\r\n#ms', "\n", $expectedOutput);
+        $commandOutput = preg_replace('#\r\n#ms', "\n", $commandOutput);
+
         $this->assertEquals($expectedOutput, $commandOutput);
         $this->assertEquals($expectedStatusCode, $statusCode);
     }

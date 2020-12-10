@@ -89,6 +89,7 @@ class HelpTest extends TestCase
 
     function simplifyWhitespace($data)
     {
+        $data = preg_replace('#\r\n#ms', "\n", $data);
         return trim(preg_replace('#\s+$#m', '', $data));
     }
 
