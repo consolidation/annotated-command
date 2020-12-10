@@ -159,10 +159,7 @@ jobs:
         run: composer update --no-ansi --no-interaction --no-progress
 
       - name: Run tests with phpunit
-        run: |
-          composer lint
-          vendor/bin/phpunit
-          composer cs
+        run: vendor/bin/phpunit
       
       - name: Publish code coverage to Codecov
         if: matrix.codecov == true
