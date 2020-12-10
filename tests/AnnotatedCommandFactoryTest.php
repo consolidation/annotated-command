@@ -1118,7 +1118,7 @@ EOT;
         list($statusCode, $commandOutput) = $this->runCommandViaApplication($command, $input);
 
         foreach ($containsList as $contains) {
-            $this->assertContains($contains, $commandOutput);
+            $this->assertStringContainsString($contains, $commandOutput);
         }
         $this->assertEquals($expectedStatusCode, $statusCode);
     }

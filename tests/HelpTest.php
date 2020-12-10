@@ -19,7 +19,7 @@ class HelpTest extends TestCase
     protected $application;
     protected $commandFactory;
 
-    function setup()
+    function setup(): void
     {
         $this->application = new ApplicationWithTerminalWidth('TestApplication', '0.0.0');
         $this->commandFactory = new AnnotatedCommandFactory();
