@@ -27,7 +27,8 @@ class AnnotatedCommandFactoryTest extends TestCase
         $this->assertEquals('fibonacci', $command->getName());
         $this->assertEquals('fibonacci [--graphic] [--] <start> <steps>', $command->getSynopsis());
         $this->assertEquals('Calculate the fibonacci sequence between two numbers.', $command->getDescription());
-        $this->assertEquals("Graphic output will look like
+
+        $expectedHelp = "Graphic output will look like
 +----+---+-------------+
 |    |   |             |
 |    |-+-|             |
@@ -35,7 +36,13 @@ class AnnotatedCommandFactoryTest extends TestCase
 |        |             |
 |        |             |
 |        |             |
-+--------+-------------+", $command->getHelp());
++--------+-------------+";
+        $actualHelp = $command->getHelp();
+
+        $expectedHelp = preg_replace('#\r\n#ms', "\n", $expectedHelp);
+        $actualHelp = preg_replace('#\r\n#ms', "\n", $actualHelp);
+
+        $this->assertEquals($expectedHelp, $actualHelp);
 
         $this->assertInstanceOf('\Symfony\Component\Console\Command\Command', $command);
 
@@ -97,6 +104,7 @@ array (
   2 => 'boz',
 )
 EOT;
+
         $this->assertRunCommandViaApplicationEquals($command, $input, $expected);
     }
 
@@ -1116,9 +1124,11 @@ EOT;
     function assertRunCommandViaApplicationContains($command, $input, $containsList, $expectedStatusCode = 0)
     {
         list($statusCode, $commandOutput) = $this->runCommandViaApplication($command, $input);
+        $commandOutput = preg_replace('#\r\n#ms', "\n", $commandOutput);
 
         foreach ($containsList as $contains) {
-            $this->assertContains($contains, $commandOutput);
+            $contains = preg_replace('#\r\n#ms', "\n", $contains);
+            $this->assertStringContainsString($contains, $commandOutput);
         }
         $this->assertEquals($expectedStatusCode, $statusCode);
     }
@@ -1126,6 +1136,9 @@ EOT;
     function assertRunCommandViaApplicationEquals($command, $input, $expectedOutput, $expectedStatusCode = 0)
     {
         list($statusCode, $commandOutput) = $this->runCommandViaApplication($command, $input);
+
+        $expectedOutput = preg_replace('#\r\n#ms', "\n", $expectedOutput);
+        $commandOutput = preg_replace('#\r\n#ms', "\n", $commandOutput);
 
         $this->assertEquals($expectedOutput, $commandOutput);
         $this->assertEquals($expectedStatusCode, $statusCode);

@@ -28,7 +28,7 @@ class FullStackTest extends TestCase
     protected $application;
     protected $commandFactory;
 
-    function setup() {
+    function setup(): void {
         $this->application = new ApplicationWithTerminalWidth('TestApplication', '0.0.0');
         $this->commandFactory = new AnnotatedCommandFactory();
         $alterOptionsEventManager = new AlterOptionsCommandEvent($this->application);
@@ -357,17 +357,17 @@ EOT;
         sort($allHookPhasesForExampleTable);
         $this->assertEquals('alter,option', implode(',', $allHookPhasesForExampleTable));
 
-        $this->assertContains('alterFormattersChinese', var_export($allHooksForExampleTable, true));
+        $this->assertStringContainsString('alterFormattersChinese', var_export($allHooksForExampleTable, true));
 
         $alterHooksForExampleTable = $this->callProtected($hookManager, 'getHooks', [['example:table'], 'alter']);
-        $this->assertContains('alterFormattersKanji', var_export($alterHooksForExampleTable, true));
+        $this->assertStringContainsString('alterFormattersKanji', var_export($alterHooksForExampleTable, true));
 
         $allHooksForAnyCommand = $allRegisteredHooks['*'];
         $allHookPhasesForAnyCommand = array_keys($allHooksForAnyCommand);
         sort($allHookPhasesForAnyCommand);
         $this->assertEquals('alter', implode(',', $allHookPhasesForAnyCommand));
 
-        $this->assertContains('alterFormattersKanji', var_export($allHooksForAnyCommand, true));
+        $this->assertStringContainsString('alterFormattersKanji', var_export($allHooksForAnyCommand, true));
 
         // Help should have the information from the hooks in the 'beta' folder
         $this->assertRunCommandViaApplicationContains('help example:table',
@@ -451,16 +451,18 @@ EOT;
         $commandOutput = $this->simplifyWhitespace($commandOutput);
 
         foreach ($containsList as $expectedToContain) {
-            $this->assertContains($this->simplifyWhitespace($expectedToContain), $commandOutput);
+            $this->assertStringContainsString($this->simplifyWhitespace($expectedToContain), $commandOutput);
         }
         foreach ($doesNotContainList as $expectedToNotContain) {
-            $this->assertNotContains($this->simplifyWhitespace($expectedToNotContain), $commandOutput);
+            $this->assertStringNotContainsString($this->simplifyWhitespace($expectedToNotContain), $commandOutput);
         }
         $this->assertEquals($expectedStatusCode, $statusCode);
     }
 
     function simplifyWhitespace($data)
     {
+        $data = preg_replace('#\r\n#ms', "\n", $data);
+
         return trim(preg_replace('#\s+$#m', '', $data));
     }
 
