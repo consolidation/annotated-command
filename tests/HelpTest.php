@@ -137,7 +137,7 @@ class HelpTest extends TestCase
       <defaults/>
     </option>
     <option name="--help" shortcut="-h" accept_value="0" is_value_required="0" is_multiple="0">
-      <description>Display this help message</description>
+      <description>Display help for the given command. When no command is given display help for the &lt;info&gt;list&lt;/info&gt; command</description>
     </option>
     <option name="--quiet" shortcut="-q" accept_value="0" is_value_required="0" is_multiple="0">
       <description>Do not output any message</description>
@@ -234,7 +234,7 @@ EOT;
             "accept_value": "0",
             "is_value_required": "0",
             "is_multiple": "0",
-            "description": "Display this help message"
+            "description": "Display help for the given command. When no command is given display help for the list command"
         },
         "quiet": {
             "name": "--quiet",
