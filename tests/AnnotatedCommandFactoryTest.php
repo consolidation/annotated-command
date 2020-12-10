@@ -37,7 +37,7 @@ class AnnotatedCommandFactoryTest extends TestCase
 |        |             |
 |        |             |
 +--------+-------------+";
-        $actualHelp = $command->getHelp()
+        $actualHelp = $command->getHelp();
 
         $expectedHelp = preg_replace('#\r\n#ms', "\n", $expectedHelp);
         $actualHelp = preg_replace('#\r\n#ms', "\n", $actualHelp);
