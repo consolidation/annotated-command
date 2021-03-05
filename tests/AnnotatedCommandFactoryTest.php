@@ -1,6 +1,7 @@
 <?php
 namespace Consolidation\AnnotatedCommand;
 
+use Composer\InstalledVersions;
 use Consolidation\AnnotatedCommand\Hooks\HookManager;
 use Consolidation\AnnotatedCommand\Options\AlterOptionsCommandEvent;
 use Consolidation\TestUtils\ExampleCommandInfoAlterer;
@@ -444,7 +445,15 @@ EOT;
         $this->assertRunCommandViaApplicationEquals($command, $input, 'We hold these truths to be self-evident, that all men are created equal, that they are endowed by their Creator with certain unalienable Rights, that among these are Life, Liberty and the pursuit of Happiness.');
 
         $input = new StringInput('cat:too ' . $selfEvidentPath);
-        $this->assertRunCommandViaApplicationContains($command, $input, ['No arguments expected'], 1);
+
+        $symfonyConsoleVersion = ltrim(InstalledVersions::getPrettyVersion('symfony/console'), 'v');
+        if (version_compare($symfonyConsoleVersion, '5.2.0', '>=')) {
+            $expectedMessage = 'No arguments expected for';
+        } else {
+            $expectedMessage = 'Too many arguments';
+        }
+
+        $this->assertRunCommandViaApplicationContains($command, $input, [$expectedMessage], 1);
     }
 
     function testCatNoDICommand()
@@ -476,8 +485,15 @@ EOT;
         $input->setStream(fopen($path, 'r'));
         $this->assertRunCommandViaApplicationEquals($command, $input, 'We hold these truths to be self-evident, that all men are created equal, that they are endowed by their Creator with certain unalienable Rights, that among these are Life, Liberty and the pursuit of Happiness.');
 
+        $symfonyConsoleVersion = ltrim(InstalledVersions::getPrettyVersion('symfony/console'), 'v');
+        if (version_compare($symfonyConsoleVersion, '5.2.0', '>=')) {
+            $expectedMessage = 'No arguments expected for';
+        } else {
+            $expectedMessage = 'Too many arguments';
+        }
+
         $input = new StringInput('cat:no-di ' . $selfEvidentPath);
-        $this->assertRunCommandViaApplicationContains($command, $input, ['No arguments expected'], 1);
+        $this->assertRunCommandViaApplicationContains($command, $input, [$expectedMessage], 1);
     }
 
     function testJoinCommandHelp()

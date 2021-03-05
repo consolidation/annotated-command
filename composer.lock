@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b7913c9b64642c1a511bf3c575ee71c7",
+    "content-hash": "8eb11d19677fdc0bb675df442a2b5c1b",
     "packages": [
         {
             "name": "consolidation/output-formatters",
@@ -3150,7 +3150,9 @@
     "platform": {
         "php": ">=7.1.3"
     },
-    "platform-dev": [],
+    "platform-dev": {
+        "composer-runtime-api": "^2.0"
+    },
     "platform-overrides": {
         "php": "7.2.28"
     },

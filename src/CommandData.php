@@ -101,7 +101,7 @@ class CommandData
     {
         // We cannot tell the difference between '--foo' (an option without
         // a value) and the absence of '--foo' when the option has an optional
-        // value, and the current vallue of the option is 'null' using only
+        // value, and the current value of the option is 'null' using only
         // the public methods of InputInterface. We'll try to figure out
         // which is which by other means here.
         $options = $this->getAdjustedOptions();
