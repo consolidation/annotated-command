@@ -424,7 +424,7 @@ EOT;
         $this->assertRunCommandViaApplicationEquals($command, $input, 'We hold these truths to be self-evident, that all men are created equal, that they are endowed by their Creator with certain unalienable Rights, that among these are Life, Liberty and the pursuit of Happiness.');
 
         $input = new StringInput('cat:too ' . $selfEvidentPath);
-        $this->assertRunCommandViaApplicationContains($command, $input, ['Too many arguments'], 1);
+        $this->assertRunCommandViaApplicationContains($command, $input, ['No arguments expected'], 1);
     }
 
     function testCatNoDICommand()
@@ -457,7 +457,7 @@ EOT;
         $this->assertRunCommandViaApplicationEquals($command, $input, 'We hold these truths to be self-evident, that all men are created equal, that they are endowed by their Creator with certain unalienable Rights, that among these are Life, Liberty and the pursuit of Happiness.');
 
         $input = new StringInput('cat:no-di ' . $selfEvidentPath);
-        $this->assertRunCommandViaApplicationContains($command, $input, ['Too many arguments'], 1);
+        $this->assertRunCommandViaApplicationContains($command, $input, ['No arguments expected'], 1);
     }
 
     function testJoinCommandHelp()
