@@ -17,7 +17,7 @@ Symfony Console provides a set of classes that are widely used to implement comm
 
 Extant commandline tools that utilize this technique include:
 
-- [Robo](https://github.com/consolidation/Robo)
+- [Robo](https://github.com/consolidation/robo)
 - [wp-cli](https://github.com/wp-cli/wp-cli)
 - [Pantheon Terminus](https://github.com/pantheon-systems/terminus)
 
