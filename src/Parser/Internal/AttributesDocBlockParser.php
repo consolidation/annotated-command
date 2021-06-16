@@ -26,55 +26,54 @@ class AttributesDocBlockParser
     {
         $attributes = $this->reflection->getAttributes();
         foreach ($attributes as $attribute) {
-            print $attribute->getName() . "\n"; 
             if ($attribute->getName() === self::COMMAND_ATTRIBUTE_CLASS_NAME) {
                 foreach ($attribute->getArguments() as $argName => $argValue) {
                     switch ($argName) {
-                    case 'name':
-                        $this->commandInfo->setName($argValue);
-                        break;
-                    case 'description':
-                        $this->commandInfo->setDescription($argValue);
-                        break;
-                    case 'help':
-                        $this->commandInfo->setHelp($argValue);
-                        break;
-                    case 'aliases':
-                        $this->commandInfo->setAliases($argValue);
-                        break;
-                    case 'usage':
-                        $this->commandInfo->setExampleUsage(key($argValue), array_pop($argValue));
-                        break;
-                    case 'options':
-                        $set = $this->commandInfo->options();
-                        foreach ($argValue as $name => $option) {
-                            $variableName = $this->commandInfo->findMatchingOption($name);
-                            $description = trim(preg_replace('#[ \t\n\r]+#', ' ', $option['description']));
-                            list($description, $defaultValue) = $this->splitOutDefault($description);
-                            $set->add($variableName, $description);
-                            if ($defaultValue !== null) {
-                                $set->setDefaultValue($variableName, $defaultValue);
+                        case 'name':
+                            $this->commandInfo->setName($argValue);
+                            break;
+                        case 'description':
+                            $this->commandInfo->setDescription($argValue);
+                            break;
+                        case 'help':
+                            $this->commandInfo->setHelp($argValue);
+                            break;
+                        case 'aliases':
+                            $this->commandInfo->setAliases($argValue);
+                            break;
+                        case 'usage':
+                            $this->commandInfo->setExampleUsage(key($argValue), array_pop($argValue));
+                            break;
+                        case 'options':
+                            $set = $this->commandInfo->options();
+                            foreach ($argValue as $name => $option) {
+                                $variableName = $this->commandInfo->findMatchingOption($name);
+                                $description = trim(preg_replace('#[ \t\n\r]+#', ' ', $option['description']));
+                                list($description, $defaultValue) = $this->splitOutDefault($description);
+                                $set->add($variableName, $description);
+                                if ($defaultValue !== null) {
+                                    $set->setDefaultValue($variableName, $defaultValue);
+                                }
                             }
-                        }
-                        break;
-                    case 'params':
-                        $set = $this->commandInfo->arguments();
-                        foreach ($argValue as $name => $param) {
-                            $variableName = $this->commandInfo->findMatchingOption($name);
-                            $description = trim(preg_replace('#[ \t\n\r]+#', ' ', $param['description']));
-                            list($description, $defaultValue) = $this->splitOutDefault($description);
-                            $set->add($variableName, $description);
-                            if ($defaultValue !== null) {
-                                $set->setDefaultValue($variableName, $defaultValue);
+                            break;
+                        case 'params':
+                            $set = $this->commandInfo->arguments();
+                            foreach ($argValue as $name => $param) {
+                                $variableName = $this->commandInfo->findMatchingOption($name);
+                                $description = trim(preg_replace('#[ \t\n\r]+#', ' ', $param['description']));
+                                list($description, $defaultValue) = $this->splitOutDefault($description);
+                                $set->add($variableName, $description);
+                                if ($defaultValue !== null) {
+                                    $set->setDefaultValue($variableName, $defaultValue);
+                                }
                             }
-                        }
-                        break;
-                    default:
-                        foreach ($argValue as $name => $annotation) {
-                            foreach ($annotation as $value) {
-                                $this->commandInfo->addAnnotation($name, $value);
+                            break;
+                        default:
+                            foreach ($argValue as $name => $annotation) {
+                                foreach ($annotation as $value) {
+                                    $this->commandInfo->addAnnotation($name, $value);
+                                }
                             }
-                        }
                     }
                 }
             }
