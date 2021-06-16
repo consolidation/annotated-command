@@ -59,7 +59,7 @@ class ExampleAttributesCommandFile
             'one' => ['description' => 'The first number to add.'],
             'two' => ['description' => 'The other number to add.']
         ],
-        annotations: ['dup' => ['one', 'two']]
+        custom: ['dup' => ['one', 'two']]
     )]
     public function testArithmatic($one, $two = 2, array $options = ['negate' => false, 'unused' => 'bob'])
     {
