@@ -2,6 +2,7 @@
 namespace Consolidation\AnnotatedCommand\Parser\Internal;
 
 use Consolidation\AnnotatedCommand\Parser\CommandInfo;
+use function get_class_methods;
 
 /**
  * Create an appropriate CommandDocBlockParser.
@@ -15,7 +16,9 @@ class CommandDocBlockParserFactory
 
     private static function create(CommandInfo $commandInfo, \ReflectionMethod $reflection)
     {
-        $attributes = $reflection->getAttributes();
+        if (in_array('getAttributes', get_class_methods($reflection))) {
+          $attributes = $reflection->getAttributes();
+        }
         if (empty($attributes)) {
             return new BespokeDocBlockParser($commandInfo, $reflection);
         } else {
