@@ -17,7 +17,7 @@ class CommandDocBlockParserFactory
     private static function create(CommandInfo $commandInfo, \ReflectionMethod $reflection)
     {
         if (in_array('getAttributes', get_class_methods($reflection))) {
-          $attributes = $reflection->getAttributes();
+            $attributes = $reflection->getAttributes();
         }
         if (empty($attributes)) {
             return new BespokeDocBlockParser($commandInfo, $reflection);
