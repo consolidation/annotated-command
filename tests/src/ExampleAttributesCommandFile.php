@@ -34,7 +34,7 @@ class ExampleAttributesCommandFile
         usage: ['bet alpha --flip' => 'Concatenate "alpha" and "bet".'],
         options: [
             'flip' => [
-                'description' => 'Whether or not the second parameter should come first in the result.'
+                'description' => 'Whether or not the second parameter should come first in the result. Default: false'
             ]
         ]
     )]
@@ -53,11 +53,11 @@ class ExampleAttributesCommandFile
         aliases: ['arithmatic'],
         usage: ['2 2 --negate' => 'Add two plus two and then negate.'],
         options: [
-            'negate' => ['description' => 'Whether or not the result should be negated.']
+            'negate' => ['description' => 'Whether or not the result should be negated. Default: false']
         ],
         params: [
             'one' => ['description' => 'The first number to add.'],
-            'two' => ['description' => 'The other number to add.']
+            'two' => ['description' => 'The other number to add. Default: 2']
         ],
         custom: ['dup' => ['one', 'two']]
     )]
