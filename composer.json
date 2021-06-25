@@ -44,7 +44,7 @@
         "unit": "SHELL_INTERACTIVE=true phpunit --colors=always",
         "lint": [
             "find src -name '*.php' -print0 | xargs -0 -n1 php -l",
-            "find tests/src -name '*.php' -print0 | xargs -0 -n1 php -l"
+            "find tests/src -name '*.php' -and ! -name 'ExampleAttributesCommandFile.php' -print0 | xargs -0 -n1 php -l"
         ],
         "test": [
             "@lint",
