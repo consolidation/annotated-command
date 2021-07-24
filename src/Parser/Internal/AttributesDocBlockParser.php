@@ -31,6 +31,8 @@ class AttributesDocBlockParser
                     switch ($argName) {
                         case 'name':
                             $this->commandInfo->setName($argValue);
+                            // Make sure this method is recognized as a command.
+                            $this->commandInfo->addAnnotation('command', $argValue);
                             break;
                         case 'description':
                             $this->commandInfo->setDescription($argValue);
