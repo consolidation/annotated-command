@@ -31,11 +31,9 @@ class ExampleAttributesCommandFile
         description: 'This is the my:echo command',
         help: "This command will concatenate two parameters. If the --flip flag\nis provided, then the result is the concatenation of two and one.",
         aliases: ['c'],
-        usage: ['bet alpha --flip' => 'Concatenate "alpha" and "bet".'],
+        usages: ['bet alpha --flip' => 'Concatenate "alpha" and "bet".'],
         options: [
-            'flip' => [
-                'description' => 'Whether or not the second parameter should come first in the result. Default: false'
-            ]
+            'flip' => 'Whether or not the second parameter should come first in the result. Default: false',
         ]
     )]
     public function myEcho($one, $two = '', array $options = ['flip' => false])
@@ -51,13 +49,15 @@ class ExampleAttributesCommandFile
         description: 'This is the test:arithmatic command',
         help: "This command will add one and two. If the --negate flag\nis provided, then the result is negated.",
         aliases: ['arithmatic'],
-        usage: ['2 2 --negate' => 'Add two plus two and then negate.'],
+        usages: [
+            '2 2 --negate' => 'Add two plus two and then negate.'
+        ],
         options: [
-            'negate' => ['description' => 'Whether or not the result should be negated. Default: false']
+            'negate' => 'Whether or not the result should be negated.',
         ],
         params: [
-            'one' => ['description' => 'The first number to add.'],
-            'two' => ['description' => 'The other number to add. Default: 2']
+            'one' => 'The first number to add.',
+            'two' => 'The other number to add.'
         ],
         custom: ['dup' => ['one', 'two']]
     )]

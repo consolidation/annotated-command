@@ -46,31 +46,25 @@ class AttributesDocBlockParser
                         case 'aliases':
                             $this->commandInfo->setAliases($argValue);
                             break;
-                        case 'usage':
-                            $this->commandInfo->setExampleUsage(key($argValue), array_pop($argValue));
+                        case 'usages':
+                            foreach ($argValue as $name => $description) {
+                                $this->commandInfo->setExampleUsage($name, $description);
+                            }
                             break;
                         case 'options':
                             $set = $this->commandInfo->options();
-                            foreach ($argValue as $name => $option) {
+                            foreach ($argValue as $name => $description) {
                                 $variableName = $this->commandInfo->findMatchingOption($name);
-                                $description = trim(preg_replace('#[ \t\n\r]+#', ' ', $option['description']));
-                                list($description, $defaultValue) = $this->splitOutDefault($description);
+                                // $description = trim(preg_replace('#[ \t\n\r]+#', ' ', $description));
                                 $set->add($variableName, $description);
-                                if ($defaultValue !== null) {
-                                    $set->setDefaultValue($variableName, $defaultValue);
-                                }
                             }
                             break;
                         case 'params':
                             $set = $this->commandInfo->arguments();
-                            foreach ($argValue as $name => $param) {
+                            foreach ($argValue as $name => $description) {
                                 $variableName = $this->commandInfo->findMatchingOption($name);
-                                $description = trim(preg_replace('#[ \t\n\r]+#', ' ', $param['description']));
-                                list($description, $defaultValue) = $this->splitOutDefault($description);
+                                // $description = trim(preg_replace('#[ \t\n\r]+#', ' ', $description));
                                 $set->add($variableName, $description);
-                                if ($defaultValue !== null) {
-                                    $set->setDefaultValue($variableName, $defaultValue);
-                                }
                             }
                             break;
                         default:
@@ -83,18 +77,6 @@ class AttributesDocBlockParser
                 }
             }
         }
-    }
-
-    /**
-     * @todo Copied from BespokeDocBlockParser, refactor for reuse.
-     */
-    protected function splitOutDefault($description)
-    {
-        if (!preg_match('#(.*)(Default: *)(.*)#', trim($description), $matches)) {
-            return [$description, null];
-        }
-
-        return [trim($matches[1]), $this->interpretDefaultValue(trim($matches[3]))];
     }
 
     /**
