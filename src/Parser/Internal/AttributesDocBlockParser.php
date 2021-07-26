@@ -29,6 +29,11 @@ class AttributesDocBlockParser
             if ($attribute->getName() === self::COMMAND_ATTRIBUTE_CLASS_NAME) {
                 foreach ($attribute->getArguments() as $argName => $argValue) {
                     switch ($argName) {
+                        case 'command':
+                        case 'hook':
+                            $this->commandInfo->setName($argValue);
+                            $this->commandInfo->addAnnotation($argName, $argValue);
+                            break;
                         case 'name':
                             $this->commandInfo->setName($argValue);
                             break;
