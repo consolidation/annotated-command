@@ -1,6 +1,6 @@
 # Consolidation\AnnotatedCommand
 
-Initialize Symfony Console commands from annotated command class methods.
+Initialize Symfony Console commands from annotated/attributed command class methods.
 
 [![ci](https://github.com/consolidation/annotated-command/workflows/CI/badge.svg)](https://travis-ci.org/consolidation/annotated-command)
 [![scrutinizer](https://scrutinizer-ci.com/g/consolidation/annotated-command/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/consolidation/annotated-command/?branch=master)
@@ -64,6 +64,27 @@ class MyCommandClass
         return "{$one}{$two}";
     }
 }
+```
+ or via PHP 8 attributes.
+
+```php
+#[CommandLineAttributes(
+        name: 'my:echo',
+        description: 'This is the my:echo command',
+        help: "This command will concatenate two parameters. If the --flip flag\nis provided, then the result is the concatenation of two and one.",
+        aliases: ['c'],
+        usages: ['bet alpha --flip' => 'Concatenate "alpha" and "bet".'],
+        options: [
+            'flip' => 'Whether or not the second parameter should come first in the result. Default: false',
+        ]
+    )]
+    public function myEcho($one, $two = '', array $options = ['flip' => false])
+    {
+        if ($options['flip']) {
+            return "{$two}{$one}";
+        }
+        return "{$one}{$two}";
+    }
 ```
 ## Option Default Values
 
