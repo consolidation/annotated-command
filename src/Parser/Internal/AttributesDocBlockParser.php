@@ -9,7 +9,7 @@ use Consolidation\AnnotatedCommand\Parser\CommandInfo;
  */
 class AttributesDocBlockParser
 {
-    const COMMAND_ATTRIBUTE_CLASS_NAME = "Consolidation\AnnotatedCommand\CommandLineAttributes";
+    const COMMAND_ATTRIBUTE_CLASS_NAME = Consolidation\AnnotatedCommand\CommandLineAttributes::class;
 
     protected $commandInfo;
     protected $reflection;
@@ -26,7 +26,9 @@ class AttributesDocBlockParser
     {
         $attributes = $this->reflection->getAttributes();
         foreach ($attributes as $attribute) {
-            if ($attribute->getName() === self::COMMAND_ATTRIBUTE_CLASS_NAME) {
+            // Command classes may declare a custom Attribute name (e.g. DrushCommands).
+            $commandAttributeClassName = $this->reflection->getDeclaringClass()->getStaticPropertyValue('commandAttributeClassName', self::COMMAND_ATTRIBUTE_CLASS_NAME);
+            if ($attribute->getName() === $commandAttributeClassName) {
                 foreach ($attribute->getArguments() as $argName => $argValue) {
                     switch ($argName) {
                         case 'command':
@@ -68,9 +70,17 @@ class AttributesDocBlockParser
                             }
                             break;
                         default:
+                            if (is_scalar($argValue)) {
+                                $argValue = [$argName => [$argValue]];
+                            }
                             foreach ($argValue as $name => $annotation) {
                                 foreach ($annotation as $value) {
                                     $this->commandInfo->addAnnotation($name, $value);
+                                    // Variables can't have dashes so set a dash variant if needed.
+                                    // Ex: validate_entity_load => validate-entity-load.
+                                    if (strpos($argName, '_') !== 0) {
+                                        $this->commandInfo->addAnnotation(str_replace('_', '-', $name), $value);
+                                    }
                                 }
                             }
                     }

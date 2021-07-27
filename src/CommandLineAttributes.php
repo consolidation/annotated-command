@@ -9,29 +9,31 @@ class CommandLineAttributes
     /**
      * CommandLineAttributes constructor.
      *
-     * @param string $command
+     * @param $command
      *   The command's name.
-     * @param string $hook
+     * @param $hook
      *   The command's name.
-     * @param array $custom
+     * @param $custom
      *   Custom name/value pairs that may be used by command(s).
-     * @param string $name
+     * @param $name
      *   The name of the command. Usually use 'command' or 'hook' instead of 'name'.
-     * @param string $description
+     * @param $description
      *   One sentence describing the command or hook
-     * @param string $help
+     * @param $help
      *   A multi-sentence help text about the item.
-     * @param array $aliases
+     * @param $hidden
+     *   Hide this method from help's command list.
+     * @param $aliases
      *   A simple array of topic names.
-     * @param array $usages
+     * @param $usages
      *   An array of use examples and descriptions.
-     * @param array $options
+     * @param $options
      *   An array of name -> description pairs.
-     * @param array $params
+     * @param $params
      *   An array of name -> description pairs.
-     * @param string $topic
+     * @param $topic
      *   Indicate that a command is a help topic.
-     * @param array $topics
+     * @param $topics
      *   A simple list of applicable help topics.
      */
     public function __construct(
@@ -41,6 +43,7 @@ class CommandLineAttributes
         public ?string $description,
         public ?string $help,
         public ?string $hook,
+        public ?bool $hidden,
         public ?string $name,
         public ?array $options,
         public ?array $params,
