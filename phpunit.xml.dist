@@ -14,6 +14,9 @@
   <filter>
     <whitelist processUncoveredFilesFromWhitelist="true">
       <directory suffix=".php">src</directory>
+      <exclude>
+        <file>src/CommandLineAttributes.php</file>
+      </exclude>
     </whitelist>
   </filter>
 </phpunit>

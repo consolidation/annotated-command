@@ -35,18 +35,18 @@ class CommandLineAttributes
      *   A simple list of applicable help topics.
      */
     public function __construct(
-        // Keep these params in alphabetic order for easier scanning in IDE.
-        public array $aliases = [],
-        public string $command = '',
-        public array $custom,
-        public string $description  = '',
-        public string $help = '',
-        public string $hook  = '',
-        public string $name  = '',
-        public array $options = [],
-        public array $params = [],
-        public string $topic = '',
-        public array $topics = [],
-        public array $usages  = [],
-    ) {}
+        public ?array $aliases,
+        public ?string $command,
+        public ?array $custom,
+        public ?string $description,
+        public ?string $help,
+        public ?string $hook,
+        public ?string $name,
+        public ?array $options,
+        public ?array $params,
+        public ?string $topic,
+        public ?array $topics,
+        public ?array $usages,
+    ) {
+    }
 }
