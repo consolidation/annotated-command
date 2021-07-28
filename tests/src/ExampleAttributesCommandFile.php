@@ -27,14 +27,15 @@ class ExampleAttributesCommandFile
     }
 
     #[CommandLineAttributes(
-        name: 'my:echo',
+        command: 'my:echo',
         description: 'This is the my:echo command',
         help: "This command will concatenate two parameters. If the --flip flag\nis provided, then the result is the concatenation of two and one.",
         aliases: ['c'],
         usages: ['bet alpha --flip' => 'Concatenate "alpha" and "bet".'],
         options: [
             'flip' => 'Whether or not the second parameter should come first in the result. Default: false',
-        ]
+        ],
+        hidden: false
     )]
     public function myEcho($one, $two = '', array $options = ['flip' => false])
     {
@@ -45,7 +46,7 @@ class ExampleAttributesCommandFile
     }
 
     #[CommandLineAttributes(
-        name: 'test:arithmatic',
+        command: 'test:arithmatic',
         description: 'This is the test:arithmatic command',
         help: "This command will add one and two. If the --negate flag\nis provided, then the result is negated.",
         aliases: ['arithmatic'],
