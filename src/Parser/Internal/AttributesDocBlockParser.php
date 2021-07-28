@@ -1,6 +1,7 @@
 <?php
 namespace Consolidation\AnnotatedCommand\Parser\Internal;
 
+use Consolidation\AnnotatedCommand\CommandLineAttributes;
 use Consolidation\AnnotatedCommand\Parser\CommandInfo;
 
 /**
@@ -9,7 +10,7 @@ use Consolidation\AnnotatedCommand\Parser\CommandInfo;
  */
 class AttributesDocBlockParser
 {
-    const COMMAND_ATTRIBUTE_CLASS_NAME = Consolidation\AnnotatedCommand\CommandLineAttributes::class;
+    const COMMAND_ATTRIBUTE_CLASS_NAME = CommandLineAttributes::class;
 
     protected $commandInfo;
     protected $reflection;
@@ -57,7 +58,6 @@ class AttributesDocBlockParser
                             $set = $this->commandInfo->options();
                             foreach ($argValue as $name => $description) {
                                 $variableName = $this->commandInfo->findMatchingOption($name);
-                                // $description = trim(preg_replace('#[ \t\n\r]+#', ' ', $description));
                                 $set->add($variableName, $description);
                             }
                             break;
@@ -65,7 +65,6 @@ class AttributesDocBlockParser
                             $set = $this->commandInfo->arguments();
                             foreach ($argValue as $name => $description) {
                                 $variableName = $this->commandInfo->findMatchingOption($name);
-                                // $description = trim(preg_replace('#[ \t\n\r]+#', ' ', $description));
                                 $set->add($variableName, $description);
                             }
                             break;
@@ -78,7 +77,7 @@ class AttributesDocBlockParser
                                     $this->commandInfo->addAnnotation($name, $value);
                                     // Variables can't have dashes so set a dash variant if needed.
                                     // Ex: validate_entity_load => validate-entity-load.
-                                    if (strpos($argName, '_') !== 0) {
+                                    if (strpos($argName, '_') !== FALSE) {
                                         $this->commandInfo->addAnnotation(str_replace('_', '-', $name), $value);
                                     }
                                 }
