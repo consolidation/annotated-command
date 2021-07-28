@@ -77,7 +77,7 @@ class AttributesDocBlockParser
                                     $this->commandInfo->addAnnotation($name, $value);
                                     // Variables can't have dashes so set a dash variant if needed.
                                     // Ex: validate_entity_load => validate-entity-load.
-                                    if (strpos($argName, '_') !== FALSE) {
+                                    if (strpos($argName, '_') !== false) {
                                         $this->commandInfo->addAnnotation(str_replace('_', '-', $name), $value);
                                     }
                                 }
