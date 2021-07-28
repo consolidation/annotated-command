@@ -13,13 +13,9 @@ class AttributesCommandFactoryTest extends TestCase
     protected $commandFileInstance;
     protected $commandFactory;
 
-    function setUp(): void
-    {
-        if (version_compare(PHP_VERSION, '8.0.0') === -1) {
-            $this->markTestSkipped('Attribute parsing requires PHP version 8.x.');
-        }
-    }
-
+    /**
+     * @requires PHP >= 8.0
+     */
     function testMyEchoCommand()
     {
         $this->commandFileInstance = new \Consolidation\TestUtils\ExampleAttributesCommandFile;
