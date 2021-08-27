@@ -56,9 +56,9 @@ class MyCommandClass
      * @usage bet alpha --flip
      *   Concatenate "alpha" and "bet".
      */
-    public function myEcho($one, $two, $options = ['flip' => false])
+    public function myEcho($one, $two, $flip = false)
     {
-        if ($options['flip']) {
+        if ($flip) {
             return "{$two}{$one}";
         }
         return "{$one}{$two}";
