@@ -65,9 +65,8 @@ jobs:
           mkdir -p tools
           composer --working-dir=tools require roave/backward-compatibility-check:^5
 
-      # TODO: Remove 'echo' once 5.0.0 tag lands
       - name: Run roave/backward-compatibility-check
-        run: echo ./tools/vendor/bin/roave-backward-compatibility-check --from=5.0.0 | true
+        run: ./tools/vendor/bin/roave-backward-compatibility-check --from=4.3.0
 
   tests:
     name: Tests

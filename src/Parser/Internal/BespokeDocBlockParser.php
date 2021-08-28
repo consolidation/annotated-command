@@ -133,6 +133,28 @@ class BespokeDocBlockParser
         $this->commandInfo->addOptionDescription($matches['variable'], static::removeLineBreaks($matches['description']));
     }
 
+    // @deprecated No longer called, only here for backwards compatibility (no clients should use "internal" classes anyway)
+    protected function addOptionOrArgumentTag($tag, DefaultsWithDescriptions $set, $name, $description)
+    {
+        $variableName = $this->commandInfo->findMatchingOption($name);
+        $description = static::removeLineBreaks($description);
+        list($description, $defaultValue) = $this->splitOutDefault($description);
+        $set->add($variableName, $description);
+        if ($defaultValue !== null) {
+            $set->setDefaultValue($variableName, $defaultValue);
+        }
+    }
+
+    // @deprecated No longer called, only here for backwards compatibility (no clients should use "internal" classes anyway)
+    protected function splitOutDefault($description)
+    {
+        if (!preg_match('#(.*)(Default: *)(.*)#', trim($description), $matches)) {
+            return [$description, null];
+        }
+
+        return [trim($matches[1]), $this->interpretDefaultValue(trim($matches[3]))];
+    }
+
     /**
      * Store the data from a @default annotation in our argument or option store,
      * as appropriate.
@@ -301,6 +323,24 @@ class BespokeDocBlockParser
         }
 
         return $this->optionParamName;
+    }
+
+    // @deprecated No longer called, only here for backwards compatibility (no clients should use "internal" classes anyway)
+    protected function interpretDefaultValue($defaultValue)
+    {
+        $defaults = [
+            'null' => null,
+            'true' => true,
+            'false' => false,
+            "''" => '',
+            '[]' => [],
+        ];
+        foreach ($defaults as $defaultName => $defaultTypedValue) {
+            if ($defaultValue == $defaultName) {
+                return $defaultTypedValue;
+            }
+        }
+        return $defaultValue;
     }
 
     /**
