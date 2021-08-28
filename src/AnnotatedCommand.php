@@ -39,6 +39,7 @@ class AnnotatedCommand extends Command implements HelpDocumentAlter
     protected $topics = [];
     protected $returnType;
     protected $injectedClasses = [];
+    protected $parameterMap = [];
 
     public function __construct($name = null)
     {
@@ -139,6 +140,7 @@ class AnnotatedCommand extends Command implements HelpDocumentAlter
         if (method_exists($this, 'setHidden')) {
             $this->setHidden($commandInfo->getHidden());
         }
+        $this->parameterMap = $commandInfo->getParameterMap();
         return $this;
     }
 
@@ -346,7 +348,8 @@ class AnnotatedCommand extends Command implements HelpDocumentAlter
         $commandData = new CommandData(
             $this->annotationData,
             $input,
-            $output
+            $output,
+            $this->parameterMap
         );
 
         // Fetch any classes (e.g. InputInterface / OutputInterface) that
