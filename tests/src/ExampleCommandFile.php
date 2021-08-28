@@ -133,6 +133,27 @@ class ExampleCommandFile
     }
 
     /**
+     * This is the improved version of the my:echo command
+     *
+     * This command will concatenate two parameters. If the --flip flag
+     * is provided, then the result is the concatenation of two and one.
+     *
+     * @command improved:echo
+     * @param array $args Variable arguments.
+     * @option flip Whether or not the second parameter should come first in the result.
+     * @aliases c
+     * @usage bet alpha --flip
+     *   Concatenate "alpha" and "bet".
+     */
+    public function improvedEcho(array $args, $flip = false)
+    {
+        if ($flip) {
+            $args = array_reverse($args);
+        }
+        return implode('', $args);
+    }
+
+    /**
      * @command my:repeat
      */
     public function myRepeat($one, $two = '', array $options = ['repeat' => 1])

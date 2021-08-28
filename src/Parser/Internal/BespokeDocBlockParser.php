@@ -119,7 +119,7 @@ class BespokeDocBlockParser
         if ($matches['variable'] == $this->optionParamName()) {
             return;
         }
-        $this->addOptionOrArgumentTag($tag, $this->commandInfo->arguments(), $matches['variable'], $matches['description']);
+        $this->commandInfo->addArgumentDescription($matches['variable'], static::removeLineBreaks($matches['description']));
     }
 
     /**
@@ -130,27 +130,7 @@ class BespokeDocBlockParser
         if (!$tag->hasVariable($matches)) {
             throw new \Exception('Could not determine option name from tag ' . (string)$tag);
         }
-        $this->addOptionOrArgumentTag($tag, $this->commandInfo->options(), $matches['variable'], $matches['description']);
-    }
-
-    protected function addOptionOrArgumentTag($tag, DefaultsWithDescriptions $set, $name, $description)
-    {
-        $variableName = $this->commandInfo->findMatchingOption($name);
-        $description = static::removeLineBreaks($description);
-        list($description, $defaultValue) = $this->splitOutDefault($description);
-        $set->add($variableName, $description);
-        if ($defaultValue !== null) {
-            $set->setDefaultValue($variableName, $defaultValue);
-        }
-    }
-
-    protected function splitOutDefault($description)
-    {
-        if (!preg_match('#(.*)(Default: *)(.*)#', trim($description), $matches)) {
-            return [$description, null];
-        }
-
-        return [trim($matches[1]), $this->interpretDefaultValue(trim($matches[3]))];
+        $this->commandInfo->addOptionDescription($matches['variable'], static::removeLineBreaks($matches['description']));
     }
 
     /**
@@ -163,7 +143,7 @@ class BespokeDocBlockParser
             throw new \Exception('Could not determine parameter name for default value from tag ' . (string)$tag);
         }
         $variableName = $matches['variable'];
-        $defaultValue = $this->interpretDefaultValue($matches['description']);
+        $defaultValue = DefaultValueFromString::fromString($matches['description'])->value();
         if ($this->commandInfo->arguments()->exists($variableName)) {
             $this->commandInfo->arguments()->setDefaultValue($variableName, $defaultValue);
             return;
@@ -321,23 +301,6 @@ class BespokeDocBlockParser
         }
 
         return $this->optionParamName;
-    }
-
-    protected function interpretDefaultValue($defaultValue)
-    {
-        $defaults = [
-            'null' => null,
-            'true' => true,
-            'false' => false,
-            "''" => '',
-            '[]' => [],
-        ];
-        foreach ($defaults as $defaultName => $defaultTypedValue) {
-            if ($defaultValue == $defaultName) {
-                return $defaultTypedValue;
-            }
-        }
-        return $defaultValue;
     }
 
     /**

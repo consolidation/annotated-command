@@ -30,14 +30,43 @@ This library provides routines to produce the Symfony\Component\Console\Command\
 This is a library intended to be used in some other project.  Require from your composer.json file:
 ```
     "require": {
-        "consolidation/annotated-command": "^2"
+        "consolidation/annotated-command": "^4"
     },
 ```
 
 ## Example Annotated Command Class
-The public methods of the command class define its commands, and the parameters of each method define its arguments and options. The command options, if any, are declared as the last parameter of the methods. The options will be passed in as an associative array; the default options of the last parameter should list the options recognized by the command.
+The public methods of the command class define its commands, and the parameters of each method define its arguments and options. If a parameter has a corresponding "@option" annotation in the docblock, then it is an option; otherwise, it is an argument.
 
-The rest of the parameters are arguments. Parameters with a default value are optional; those without a default value are required.
+```php
+class MyCommandClass
+{
+    /**
+     * This is the my:echo command
+     *
+     * This command will concatenate two parameters. If the --flip flag
+     * is provided, then the result is the concatenation of two and one.
+     *
+     * @command my:echo
+     * @param string $one The first parameter.
+     * @param string $two The other parameter.
+     * @param bool $flip The "flip" option
+     * @option flip Whether or not the second parameter should come first in the result.
+     * @aliases c
+     * @usage bet alpha --flip
+     *   Concatenate "alpha" and "bet".
+     */
+    public function myEcho($one, $two, $flip = false)
+    {
+        if ($flip) {
+            return "{$two}{$one}";
+        }
+        return "{$one}{$two}";
+    }
+}
+```
+
+### Legacy Annotated Command Methods
+The legacy method for declaring commands is still supported. When using the legacy method, the command options, if any, are declared as the last parameter of the methods. The options will be passed in as an associative array; the default options of the last parameter should list the options recognized by the command.  The rest of the parameters are arguments. Parameters with a default value are optional; those without a default value are required.
 ```php
 class MyCommandClass
 {
@@ -50,7 +79,7 @@ class MyCommandClass
      * @command my:echo
      * @param integer $one The first parameter.
      * @param integer $two The other parameter.
-     * @option arr An option that takes multiple values.
+     * @param array $options An option that takes multiple values.
      * @option flip Whether or not the second parameter should come first in the result.
      * @aliases c
      * @usage bet alpha --flip
@@ -65,7 +94,6 @@ class MyCommandClass
     }
 }
 ```
-## Option Default Values
 
 The `$options` array must be an associative array whose key is the name of the option, and whose value is one of:
 
@@ -491,7 +519,7 @@ $commandProcessor->parameterInjection()->register('Symfony\Component\Console\Sty
 
 ## Handling Standard Input
 
-Any Symfony command may use the provides StdinHandler to imlement commands that read from standard input.
+Any Symfony command may use the provided StdinHandler to imlement commands that read from standard input.
 
 ```php
   /**
