@@ -47,6 +47,26 @@ class ExampleAttributesCommandFile
     }
 
     #[CommandLineAttributes(
+        name: 'improved:echo',
+        description: 'This is the improved:echo command',
+        help: "This command will concatenate two parameters. If the --flip flag\nis provided, then the result is the concatenation of two and one.",
+        aliases: ['c'],
+        usage: ['bet alpha --flip' => 'Concatenate "alpha" and "bet".'],
+        options: [
+            'flip' => [
+                'description' => 'Whether or not the second parameter should come first in the result. Default: false'
+            ]
+        ]
+    )]
+    public function improvedEcho(array $args, $flip = false)
+    {
+        if ($flip) {
+            $args = array_reverse($args);
+        }
+        return implode(' ', $args);
+    }
+
+    #[CommandLineAttributes(
         name: 'test:arithmatic',
         description: 'This is the test:arithmatic command',
         help: "This command will add one and two. If the --negate flag\nis provided, then the result is negated.",

@@ -47,25 +47,15 @@ class AttributesDocBlockParser
                         case 'options':
                             $set = $this->commandInfo->options();
                             foreach ($argValue as $name => $option) {
-                                $variableName = $this->commandInfo->findMatchingOption($name);
                                 $description = trim(preg_replace('#[ \t\n\r]+#', ' ', $option['description']));
-                                list($description, $defaultValue) = $this->splitOutDefault($description);
-                                $set->add($variableName, $description);
-                                if ($defaultValue !== null) {
-                                    $set->setDefaultValue($variableName, $defaultValue);
-                                }
+                                $this->commandInfo->addOptionDescription($name, $description);
                             }
                             break;
                         case 'params':
                             $set = $this->commandInfo->arguments();
                             foreach ($argValue as $name => $param) {
-                                $variableName = $this->commandInfo->findMatchingOption($name);
                                 $description = trim(preg_replace('#[ \t\n\r]+#', ' ', $param['description']));
-                                list($description, $defaultValue) = $this->splitOutDefault($description);
-                                $set->add($variableName, $description);
-                                if ($defaultValue !== null) {
-                                    $set->setDefaultValue($variableName, $defaultValue);
-                                }
+                                $this->commandInfo->addArgumentDescription($name, $description);
                             }
                             break;
                         default:
