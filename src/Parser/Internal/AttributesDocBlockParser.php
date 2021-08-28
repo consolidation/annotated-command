@@ -69,36 +69,4 @@ class AttributesDocBlockParser
             }
         }
     }
-
-    /**
-     * @todo Copied from BespokeDocBlockParser, refactor for reuse.
-     */
-    protected function splitOutDefault($description)
-    {
-        if (!preg_match('#(.*)(Default: *)(.*)#', trim($description), $matches)) {
-            return [$description, null];
-        }
-
-        return [trim($matches[1]), $this->interpretDefaultValue(trim($matches[3]))];
-    }
-
-    /**
-     * @todo Copied from BespokeDocBlockParser, refactor for reuse.
-     */
-    protected function interpretDefaultValue($defaultValue)
-    {
-        $defaults = [
-            'null' => null,
-            'true' => true,
-            'false' => false,
-            "''" => '',
-            '[]' => [],
-        ];
-        foreach ($defaults as $defaultName => $defaultTypedValue) {
-            if ($defaultValue == $defaultName) {
-                return $defaultTypedValue;
-            }
-        }
-        return $defaultValue;
-    }
 }
