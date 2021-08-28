@@ -4,6 +4,7 @@ namespace Consolidation\AnnotatedCommand\Parser;
 use Symfony\Component\Console\Input\InputOption;
 use Consolidation\AnnotatedCommand\Parser\Internal\CommandDocBlockParser;
 use Consolidation\AnnotatedCommand\Parser\Internal\CommandDocBlockParserFactory;
+use Consolidation\AnnotatedCommand\Parser\Internal\DefaultValueFromString;
 use Consolidation\AnnotatedCommand\AnnotationData;
 
 /**
@@ -94,6 +95,11 @@ class CommandInfo
     protected $injectedClasses = [];
 
     /**
+     * @var bool[]
+     */
+    protected $parameterMap = [];
+
+    /**
      * Create a new CommandInfo class for a particular method of a class.
      *
      * @param string|mixed $classNameOrInstance The name of a class, or an
@@ -144,6 +150,11 @@ class CommandInfo
         // Set up a default name for the command from the method name.
         // This can be overridden via @command or @name annotations.
         $this->name = $this->convertName($methodName);
+
+        // To start with, $this->options will contain the values from the final
+        // `$options = ['name' => 'default'], and arguments will be everything else.
+        // When we process the annotations / attributes, if we find an "option" which
+        // appears in the 'arguments' section, then we will move it.
         $this->options = new DefaultsWithDescriptions($this->determineOptionsFromParameters(), false);
         $this->arguments = $this->determineAgumentClassifications();
     }
@@ -200,6 +211,11 @@ class CommandInfo
     public function invalidate()
     {
         $this->name = '';
+    }
+
+    public function getParameterMap()
+    {
+        return $this->parameterMap;
     }
 
     public function getReturnType()
@@ -601,6 +617,40 @@ class CommandInfo
         return $this->findOptionAmongAlternatives($optionName);
     }
 
+    public function addArgumentDescription($name, $description)
+    {
+        $this->addOptionOrArgumentDescription($this->arguments(), $name, $description);
+    }
+
+    public function addOptionDescription($name, $description)
+    {
+        $variableName = $this->findMatchingOption($name);
+        if ($this->arguments()->exists($variableName)) {
+            $existingArg = $this->arguments()->removeMatching($variableName);
+            // One of our parameters is an option, not an argument. Flag it so that we can inject the right value when needed.
+            $this->parameterMap[$variableName] = true;
+        }
+        $this->addOptionOrArgumentDescription($this->options(), $variableName, $description);
+    }
+
+    protected function addOptionOrArgumentDescription(DefaultsWithDescriptions $set, $variableName, $description)
+    {
+        list($description, $defaultValue) = $this->splitOutDefault($description);
+        $set->add($variableName, $description);
+        if ($defaultValue !== null) {
+            $set->setDefaultValue($variableName, $defaultValue);
+        }
+    }
+
+    protected function splitOutDefault($description)
+    {
+        if (!preg_match('#(.*)(Default: *)(.*)#', trim($description), $matches)) {
+            return [$description, null];
+        }
+
+        return [trim($matches[1]), DefaultValueFromString::fromString(trim($matches[3]))->value()];
+    }
+
     /**
      * @param string $optionName
      * @return string
@@ -657,6 +707,7 @@ class CommandInfo
             array_unshift($this->injectedClasses, $injectedClass);
         }
         foreach ($params as $param) {
+            $this->parameterMap[$param->name] = false;
             $this->addParameterToResult($result, $param);
         }
         return $result;
