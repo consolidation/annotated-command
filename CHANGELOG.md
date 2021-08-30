@@ -1,5 +1,9 @@
 # Change Log
 
+### 4.3.1 - 29 August 2021
+
+- Fix bc break in 4.3.0. (#232)
+
 ### 4.3.0 - 27 August 2021
 
 - Allow options to be passed in as regular method parameters. (#224)
