@@ -56,16 +56,16 @@ class AttributesDocBlockParser
                             break;
                         case 'options':
                             $set = $this->commandInfo->options();
-                            foreach ($argValue as $name => $description) {
-                                $variableName = $this->commandInfo->findMatchingOption($name);
-                                $set->add($variableName, $description);
+                            foreach ($argValue as $name => $option) {
+                                $description = trim(preg_replace('#[ \t\n\r]+#', ' ', $option['description']));
+                                $this->commandInfo->addOptionDescription($name, $description);
                             }
                             break;
                         case 'params':
                             $set = $this->commandInfo->arguments();
-                            foreach ($argValue as $name => $description) {
-                                $variableName = $this->commandInfo->findMatchingOption($name);
-                                $set->add($variableName, $description);
+                            foreach ($argValue as $name => $param) {
+                                $description = trim(preg_replace('#[ \t\n\r]+#', ' ', $param['description']));
+                                $this->commandInfo->addArgumentDescription($name, $description);
                             }
                             break;
                         default:
@@ -86,25 +86,5 @@ class AttributesDocBlockParser
                 }
             }
         }
-    }
-
-    /**
-     * @todo Copied from BespokeDocBlockParser, refactor for reuse.
-     */
-    protected function interpretDefaultValue($defaultValue)
-    {
-        $defaults = [
-            'null' => null,
-            'true' => true,
-            'false' => false,
-            "''" => '',
-            '[]' => [],
-        ];
-        foreach ($defaults as $defaultName => $defaultTypedValue) {
-            if ($defaultValue == $defaultName) {
-                return $defaultTypedValue;
-            }
-        }
-        return $defaultValue;
     }
 }

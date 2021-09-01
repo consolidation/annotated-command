@@ -85,6 +85,22 @@ class DefaultsWithDescriptions
     }
 
     /**
+     * Remove a matching entry, if it exists.
+     *
+     * @param string $key The key of the value to remove
+     * @return string The value of the removed item, or empty
+     */
+    public function removeMatching($key)
+    {
+        if (!array_key_exists($key, $this->values)) {
+            return '';
+        }
+        $result = $this->values[$key];
+        unset($this->values[$key]);
+        return $result;
+    }
+
+    /**
      * Get the description of one entry.
      *
      * @param string $key The key of the item.

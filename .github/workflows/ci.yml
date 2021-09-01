@@ -35,40 +35,38 @@ jobs:
 
       - name: Run linter
         run: composer lint
-#
-# TODO: uncomment this block once the 5.0.0 tag lands.
-#
-# backward-compatibility:
-#   name: Backward Compatibility
-#
-#   runs-on: ubuntu-latest
-#
-#   steps:
-#     - name: Checkout
-#       uses: actions/checkout@v2
-#       with:
-#         fetch-depth: 0
-#
-#     - name: Fetch tags
-#       run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
-#
-#     - name: Install PHP with extensions
-#       uses: shivammathur/setup-php@v2
-#       with:
-#         php-version: 7.4
-#         coverage: none
-#         extensions: intl
-#
-#     - name: Install dependencies
-#       run: composer install --no-ansi --no-interaction --no-progress
-#
-#     - name: Install roave/backward-compatibility-check
-#       run: |
-#         mkdir -p tools
-#         composer --working-dir=tools require roave/backward-compatibility-check:^5
-#
-#     - name: Run roave/backward-compatibility-check
-#       run: ./tools/vendor/bin/roave-backward-compatibility-check --from=5.0.0 | true
+
+  backward-compatibility:
+    name: Backward Compatibility
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Fetch tags
+        run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
+
+      - name: Install PHP with extensions
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 7.4
+          coverage: none
+          extensions: intl
+
+      - name: Install dependencies
+        run: composer install --no-ansi --no-interaction --no-progress
+
+      - name: Install roave/backward-compatibility-check
+        run: |
+          mkdir -p tools
+          composer --working-dir=tools require roave/backward-compatibility-check:^5
+
+      - name: Run roave/backward-compatibility-check
+        run: ./tools/vendor/bin/roave-backward-compatibility-check --from=4.3.0
 
   tests:
     name: Tests

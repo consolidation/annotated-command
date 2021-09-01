@@ -36,6 +36,26 @@ class AttributesCommandFactoryTest extends TestCase
         $this->assertRunCommandViaApplicationEquals($command, $input, 'alphabet');
     }
 
+    function testImprovedEchoCommand()
+    {
+        $this->commandFileInstance = new \Consolidation\TestUtils\ExampleAttributesCommandFile;
+        $this->commandFactory = new AnnotatedCommandFactory();
+        $commandInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'improvedEcho');
+
+        $command = $this->commandFactory->createCommand($commandInfo, $this->commandFileInstance);
+
+        $this->assertInstanceOf('\Symfony\Component\Console\Command\Command', $command);
+        $this->assertEquals('improved:echo', $command->getName());
+        $this->assertEquals('This is the improved:echo command', $command->getDescription());
+        $this->assertEquals("This command will concatenate two parameters. If the --flip flag\nis provided, then the result is the concatenation of two and one.", $command->getHelp());
+        $this->assertEquals('c', implode(',', $command->getAliases()));
+        $this->assertEquals('improved:echo [--flip] [--] [<args>...]', $command->getSynopsis());
+        $this->assertEquals('improved:echo bet alpha --flip', implode(',', $command->getUsages()));
+
+        $input = new StringInput('improved:echo thing other the and that this --flip');
+        $this->assertRunCommandViaApplicationEquals($command, $input, 'this that and the other thing');
+    }
+
     function assertRunCommandViaApplicationEquals($command, $input, $expectedOutput, $expectedStatusCode = 0)
     {
         list($statusCode, $commandOutput) = $this->runCommandViaApplication($command, $input);
