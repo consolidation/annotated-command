@@ -50,11 +50,11 @@ class ExampleAttributesCommandFile
         description: 'This is the improved:echo command',
         help: "This command will concatenate two parameters. If the --flip flag\nis provided, then the result is the concatenation of two and one.",
         aliases: ['c'],
-        usage: ['bet alpha --flip' => 'Concatenate "alpha" and "bet".'],
+        usages: ['bet alpha --flip' => 'Concatenate "alpha" and "bet".'],
         options: [
             'flip' => [
                 'description' => 'Whether or not the second parameter should come first in the result. Default: false'
-            ]
+            ],
         ]
     )]
     public function improvedEcho(array $args, $flip = false)
@@ -71,10 +71,12 @@ class ExampleAttributesCommandFile
         help: "This command will add one and two. If the --negate flag\nis provided, then the result is negated.",
         aliases: ['arithmatic'],
         usages: [
-            '2 2 --negate' => 'Add two plus two and then negate.'
+            '2 2 --negate' => 'Add two plus two and then negate.',
         ],
         options: [
-            'negate' => 'Whether or not the result should be negated.',
+            'negate' => [
+                'description' => 'Whether or not the result should be negated.',
+            ],
         ],
         params: [
             'one' => 'The first number to add.',

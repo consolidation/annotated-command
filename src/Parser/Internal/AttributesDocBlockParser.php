@@ -57,14 +57,14 @@ class AttributesDocBlockParser
                         case 'options':
                             $set = $this->commandInfo->options();
                             foreach ($argValue as $name => $option) {
-                                $description = trim(preg_replace('#[ \t\n\r]+#', ' ', $option['description']));
+                                $description = trim(preg_replace('#[ \t\n\r]+#', ' ', is_array($option) ? $option['description'] : $option));
                                 $this->commandInfo->addOptionDescription($name, $description);
                             }
                             break;
                         case 'params':
                             $set = $this->commandInfo->arguments();
                             foreach ($argValue as $name => $param) {
-                                $description = trim(preg_replace('#[ \t\n\r]+#', ' ', $param['description']));
+                                $description = trim(preg_replace('#[ \t\n\r]+#', ' ', is_array($param) ? $param['description'] : $param));
                                 $this->commandInfo->addArgumentDescription($name, $description);
                             }
                             break;
