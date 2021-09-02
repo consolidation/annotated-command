@@ -36,6 +36,9 @@ class AttributesCommandFactoryTest extends TestCase
         $this->assertRunCommandViaApplicationEquals($command, $input, 'alphabet');
     }
 
+    /**
+     * @requires PHP >= 8.0
+     */
     function testImprovedEchoCommand()
     {
         $this->commandFileInstance = new \Consolidation\TestUtils\ExampleAttributesCommandFile;
