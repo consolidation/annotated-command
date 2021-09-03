@@ -6,7 +6,7 @@ use Attribute;
 use Consolidation\AnnotatedCommand\Parser\CommandInfo;
 
 #[Attribute(Attribute::TARGET_METHOD)]
-class Topic implements AttributeInterface
+class Topics implements AttributeInterface
 {
     /**
      * @param string[] $topics
@@ -16,7 +16,7 @@ class Topic implements AttributeInterface
      */
     public function __construct(
         public ?array $topics,
-        public ?bool $is_topic,
+        public bool $is_topic = false,
     ) {
     }
 
