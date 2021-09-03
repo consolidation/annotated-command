@@ -13,10 +13,13 @@ class Name implements AttributeInterface
      *  The name of the command or hook.
      * @param string[] $aliases
      *   An array of alternative names for this item.
+     * @param bool $is_hook,
+     *   Is the item a hook (i.e. not a command).
      */
     public function __construct(
         public string $name,
         public ?array $aliases,
+        public bool $is_hook = false
     ) {
     }
 
