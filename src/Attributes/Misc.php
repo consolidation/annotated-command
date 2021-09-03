@@ -20,6 +20,6 @@ class Misc implements AttributeInterface
     public static function handle(\ReflectionAttribute $attribute, CommandInfo $commandInfo)
     {
         $args = $attribute->getArguments();
-        $commandInfo->AddAnnotation(key($args['data']), current($args['data']), );
+        $commandInfo->AddAnnotation(key($args['data']), current($args['data']));
     }
 }
