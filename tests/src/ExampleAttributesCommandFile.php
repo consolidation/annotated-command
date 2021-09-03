@@ -1,7 +1,7 @@
 <?php
 namespace Consolidation\TestUtils;
 
-use Consolidation\AnnotatedCommand\CommandLineAttributes;
+use Consolidation\AnnotatedCommand\Attributes as CLI;
 
 /**
  * Test file used in the Annotation Factory tests.  It is also
@@ -26,17 +26,17 @@ class ExampleAttributesCommandFile
         $this->output = $output;
     }
 
-    #[CommandLineAttributes(
-        command: 'my:echo',
+    #[CLI\Command(
+        name: 'my:echo',
         description: 'This is the my:echo command',
         help: "This command will concatenate two parameters. If the --flip flag\nis provided, then the result is the concatenation of two and one.",
-        aliases: ['c'],
-        usages: ['bet alpha --flip' => 'Concatenate "alpha" and "bet".'],
-        options: [
-            'flip' => 'Whether or not the second parameter should come first in the result. Default: false',
-        ],
         hidden: false
     )]
+    #[CLI\Param(name: 'one', description: 'The first parameter')]
+    #[CLI\Param(name: 'two', description: 'The other parameter')]
+    #[CLI\Option(name: 'flip', description: 'Whether or not the second parameter should come first in the result.')]
+    #[CLI\Aliases(aliases: ['c'])]
+    #[CLI\Usage(command: 'bet alpha --flip', description: 'Concatenate "alpha" and "bet".')]
     public function myEcho($one, $two = '', array $options = ['flip' => false])
     {
         if ($options['flip']) {
@@ -45,18 +45,15 @@ class ExampleAttributesCommandFile
         return "{$one}{$two}";
     }
 
-    #[CommandLineAttributes(
+    #[CLI\Command(
         name: 'improved:echo',
         description: 'This is the improved:echo command',
         help: "This command will concatenate two parameters. If the --flip flag\nis provided, then the result is the concatenation of two and one.",
-        aliases: ['c'],
-        usages: ['bet alpha --flip' => 'Concatenate "alpha" and "bet".'],
-        options: [
-            'flip' => [
-                'description' => 'Whether or not the second parameter should come first in the result. Default: false'
-            ],
-        ]
     )]
+    #[CLI\Param(name: 'args', description: 'Any number of arguments separated by spaces.')]
+    #[CLI\Option(name: 'flip', description: 'Whether or not the second parameter should come first in the result.')]
+    #[CLI\Aliases(aliases: ['c'])]
+    #[CLI\Usage(command: 'bet alpha --flip', description: 'Concatenate "alpha" and "bet".')]
     public function improvedEcho(array $args, $flip = false)
     {
         if ($flip) {
@@ -65,25 +62,17 @@ class ExampleAttributesCommandFile
         return implode(' ', $args);
     }
 
-    #[CommandLineAttributes(
+    #[CLI\Command(
         name: 'test:arithmatic',
         description: 'This is the test:arithmatic command',
         help: "This command will add one and two. If the --negate flag\nis provided, then the result is negated.",
-        aliases: ['arithmatic'],
-        usages: [
-            '2 2 --negate' => 'Add two plus two and then negate.',
-        ],
-        options: [
-            'negate' => [
-                'description' => 'Whether or not the result should be negated.',
-            ],
-        ],
-        params: [
-            'one' => 'The first number to add.',
-            'two' => 'The other number to add.'
-        ],
-        custom: ['dup' => ['one', 'two']]
     )]
+    #[CLI\Param(name: 'one', description: 'The first number to add.')]
+    #[CLI\Param(name: 'two', description: 'The other number to add.')]
+    #[CLI\Option(name: 'negate', description: 'Whether or not the result should be negated.')]
+    #[CLI\Aliases(aliases: ['arithmatic'])]
+    #[CLI\Usage(command: '2 2 --negate', description: 'Add two plus two and then negate.')]
+    #[CLI\Misc(data: ['dup' => ['one', 'two']])]
     public function testArithmatic($one, $two = 2, array $options = ['negate' => false, 'unused' => 'bob'])
     {
         $result = $one + $two;
