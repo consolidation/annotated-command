@@ -9,13 +9,13 @@ use Consolidation\AnnotatedCommand\Parser\CommandInfo;
 class Usage implements AttributeInterface
 {
     /**
-     * @param $command
+     * @param $name
      *   The example command.
      * @param $description
      *   A one line description.
      */
     public function __construct(
-        public string $command,
+        public string $name,
         public ?string $description
     ) {
     }
@@ -23,6 +23,6 @@ class Usage implements AttributeInterface
     public static function handle(\ReflectionAttribute $attribute, CommandInfo $commandInfo)
     {
         $args = $attribute->getArguments();
-        $commandInfo->setExampleUsage($args['command'], @$args['description']);
+        $commandInfo->setExampleUsage($args['name'], @$args['description']);
     }
 }

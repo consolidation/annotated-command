@@ -9,8 +9,6 @@ use Consolidation\AnnotatedCommand\Parser\CommandInfo;
 class Command implements AttributeInterface
 {
     /**
-     * @param $name
-     *   The name of the command or hook.
      * @param $description
      *   A one line description.
      * @param $help
@@ -23,7 +21,6 @@ class Command implements AttributeInterface
      *   Should this command show up in the list of topics.
      */
     public function __construct(
-        public string $name,
         public ?string $description,
         public ?string $help,
         public ?bool $hidden = false,
@@ -35,9 +32,6 @@ class Command implements AttributeInterface
     public static function handle(\ReflectionAttribute $attribute, CommandInfo $commandInfo)
     {
         $args = $attribute->getArguments();
-        $commandInfo->setName($args['name']);
-        $annotation_name = isset($args['is_hook']) ? 'hook' : 'command';
-        $commandInfo->addAnnotation($annotation_name, $args['name']);
         $commandInfo->setDescription(@$args['description']);
         $commandInfo->setHelp(@$args['help']);
         $commandInfo->setHidden(@$args['is_hidden']);

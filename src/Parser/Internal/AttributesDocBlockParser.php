@@ -1,6 +1,7 @@
 <?php
 namespace Consolidation\AnnotatedCommand\Parser\Internal;
 
+use Consolidation\AnnotatedCommand\Attributes\AttributeInterface;
 use Consolidation\AnnotatedCommand\Parser\CommandInfo;
 
 /**
@@ -28,7 +29,9 @@ class AttributesDocBlockParser
     {
         $attributes = $this->reflection->getAttributes();
         foreach ($attributes as $attribute) {
-            call_user_func([$attribute->getName(), 'handle'], $attribute, $this->commandInfo);
+            if (in_array(AttributeInterface::class, class_implements($attribute->getName()))) {
+                call_user_func([$attribute->getName(), 'handle'], $attribute, $this->commandInfo);
+            }
         }
     }
 }
