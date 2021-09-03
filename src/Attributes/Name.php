@@ -18,7 +18,7 @@ class Name implements AttributeInterface
      */
     public function __construct(
         public string $name,
-        public ?array $aliases,
+        public array $aliases = [],
         public bool $is_hook = false
     ) {
     }
@@ -29,6 +29,6 @@ class Name implements AttributeInterface
         $commandInfo->setName($args['name']);
         $annotation_name = isset($args['is_hook']) ? 'hook' : 'command';
         $commandInfo->addAnnotation($annotation_name, $args['name']);
-        $commandInfo->setAliases($args['aliases']);
+        $commandInfo->setAliases(@$args['aliases']);
     }
 }
