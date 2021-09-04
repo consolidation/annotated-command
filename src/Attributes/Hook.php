@@ -6,20 +6,17 @@ use Attribute;
 use Consolidation\AnnotatedCommand\Parser\CommandInfo;
 
 #[Attribute(Attribute::TARGET_METHOD)]
-class Name implements AttributeInterface
+class Hook implements AttributeInterface
 {
     /**
      * @param $name
      *  The name of the command or hook.
-     * @param string[] $aliases
-     *   An array of alternative names for this item.
-     * @param bool $is_hook,
-     *   Is the item a hook (i.e. not a command).
+     * @param $target
+     *   Specifies which command(s) the hook will be attached to.
      */
     public function __construct(
         public string $name,
-        public array $aliases = [],
-        public bool $isHook = false
+        public ?string $target
     ) {
     }
 
@@ -27,8 +24,6 @@ class Name implements AttributeInterface
     {
         $args = $attribute->getArguments();
         $commandInfo->setName($args['name']);
-        $annotation_name = isset($args['isHook']) ? 'hook' : 'command';
-        $commandInfo->addAnnotation($annotation_name, $args['name']);
-        $commandInfo->setAliases($args['aliases'] ?? []);
+        $commandInfo->addAnnotation('hook', $args['name'] . ' ' . $args['target']);
     }
 }

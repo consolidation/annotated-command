@@ -26,7 +26,7 @@ class ExampleAttributesCommandFile
         $this->output = $output;
     }
 
-    #[CLI\Name(name: 'my:echo', aliases: ['c'])]
+    #[CLI\Command(name: 'my:echo', aliases: ['c'])]
     #[CLI\Help(description: 'This is the my:echo command', synopsis: "This command will concatenate two parameters. If the --flip flag\nis provided, then the result is the concatenation of two and one.",)]
     #[CLI\Param(name: 'one', description: 'The first parameter')]
     #[CLI\Param(name: 'two', description: 'The other parameter')]
@@ -40,7 +40,7 @@ class ExampleAttributesCommandFile
         return "{$one}{$two}";
     }
 
-    #[CLI\Name(name: 'improved:echo', aliases: ['c'])]
+    #[CLI\Command(name: 'improved:echo', aliases: ['c'])]
     #[CLI\Help(description: 'This is the improved:echo command', synopsis: "This command will concatenate two parameters. If the --flip flag\nis provided, then the result is the concatenation of two and one.",)]
     #[CLI\Param(name: 'args', description: 'Any number of arguments separated by spaces.')]
     #[CLI\Option(name: 'flip', description: 'Whether or not the second parameter should come first in the result.')]
@@ -53,7 +53,7 @@ class ExampleAttributesCommandFile
         return implode(' ', $args);
     }
 
-    #[CLI\Name(name: 'test:arithmatic', aliases: ['arithmatic'])]
+    #[CLI\Command(name: 'test:arithmatic', aliases: ['arithmatic'])]
     #[CLI\Help(description: 'This is the test:arithmatic command', synopsis: "This command will add one and two. If the --negate flag\nis provided, then the result is negated.",)]
     #[CLI\Param(name: 'one', description: 'The first number to add.')]
     #[CLI\Param(name: 'two', description: 'The other number to add.')]
