@@ -17,8 +17,8 @@
     </whitelist>
   </filter>
   <coverage>
-    <exlude>
+    <exclude>
       <directory suffix=".php">src/Attributes</directory>
-    </exlude>
+    </exclude>
   </coverage>
 </phpunit>
