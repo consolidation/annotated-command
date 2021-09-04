@@ -14,11 +14,9 @@
   <filter>
     <whitelist processUncoveredFilesFromWhitelist="true">
       <directory suffix=".php">src</directory>
+      <exclude>
+        <directory suffix=".php">src/Attributes</directory>
+      </exclude>
     </whitelist>
   </filter>
-  <coverage>
-    <exclude>
-      <directory suffix=".php">src/Attributes</directory>
-    </exclude>
-  </coverage>
 </phpunit>
