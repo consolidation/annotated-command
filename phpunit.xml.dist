@@ -16,4 +16,9 @@
       <directory suffix=".php">src</directory>
     </whitelist>
   </filter>
+  <coverage>
+    <exlude>
+      <directory suffix=".php">src/Attributes</directory>
+    </exlude>
+  </coverage>
 </phpunit>
