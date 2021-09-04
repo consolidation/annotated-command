@@ -11,19 +11,19 @@ class Topics implements AttributeInterface
     /**
      * @param string[] $topics
      *   An array of topics that are related to this command.
-     * @param $is_topic
+     * @param $isTopic
      *   This command should appear on the list of topics.
      */
     public function __construct(
         public ?array $topics,
-        public bool $is_topic = false,
+        public bool $isTopic = false,
     ) {
     }
 
     public static function handle(\ReflectionAttribute $attribute, CommandInfo $commandInfo)
     {
         $args = $attribute->getArguments();
-        $commandInfo->addAnnotation('topics', @$args['topics']);
-        // @todo handle $is_topic
+        $commandInfo->addAnnotation('topics', $args['topics'] ?? []);
+        $commandInfo->addAnnotation('topic', $args['is_topic'] ?? false);
     }
 }
