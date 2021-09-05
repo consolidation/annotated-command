@@ -71,4 +71,12 @@ class ExampleAttributesCommandFile
         // return a the result as a string so that it will be printed.
         return "$result";
     }
+
+    // Declare a hook with a target.
+    #[CLI\Hook(type: 'post-command', target: 'test:arithmatic')]
+    #[CLI\Help(description: 'Add a text after test:arithmatic command')]
+    public function postArithmatic()
+    {
+        $this->output->writeln('HOOKED');
+    }
 }

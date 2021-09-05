@@ -9,13 +9,13 @@ use Consolidation\AnnotatedCommand\Parser\CommandInfo;
 class Hook implements AttributeInterface
 {
     /**
-     * @param $name
-     *  The name of the command or hook.
+     * @param $type
+     *  When during the command lifecycle this hook will be called (e.g. validate).
      * @param $target
      *   Specifies which command(s) the hook will be attached to.
      */
     public function __construct(
-        public string $name,
+        public string $type,
         public ?string $target
     ) {
     }
@@ -24,6 +24,6 @@ class Hook implements AttributeInterface
     {
         $args = $attribute->getArguments();
         $commandInfo->setName($args['name']);
-        $commandInfo->addAnnotation('hook', $args['name'] . ' ' . $args['target']);
+        $commandInfo->addAnnotation('hook', $args['type'] . ' ' . $args['target']);
     }
 }
