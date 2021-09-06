@@ -65,6 +65,24 @@ class MyCommandClass
 }
 ```
 
+or via PHP 8 attributes.
+
+```php
+    #[CLI\Name(name: 'my:echo', aliases: ['c'])]
+    #[CLI\Help(description: 'This is the my:echo command', synopsis: "This command will concatenate two parameters. If the --flip flag\nis provided, then the result is the concatenation of two and one.",)]
+    #[CLI\Param(name: 'one', description: 'The first parameter')]
+    #[CLI\Param(name: 'two', description: 'The other parameter')]
+    #[CLI\Option(name: 'flip', description: 'Whether or not the second parameter should come first in the result.')]
+    #[CLI\Usage(name: 'bet alpha --flip', description: 'Concatenate "alpha" and "bet".')]
+    public function myEcho($one, $two = '', array $options = ['flip' => false])
+    {
+        if ($options['flip']) {
+            return "{$two}{$one}";
+        }
+        return "{$one}{$two}";
+    }
+```
+
 ### Legacy Annotated Command Methods
 The legacy method for declaring commands is still supported. When using the legacy method, the command options, if any, are declared as the last parameter of the methods. The options will be passed in as an associative array; the default options of the last parameter should list the options recognized by the command.  The rest of the parameters are arguments. Parameters with a default value are optional; those without a default value are required.
 ```php
@@ -93,23 +111,6 @@ class MyCommandClass
         return "{$one}{$two}";
     }
 }
-```
- or via PHP 8 attributes.
-
-```php
-    #[CLI\Name(name: 'my:echo', aliases: ['c'])]
-    #[CLI\Help(description: 'This is the my:echo command', synopsis: "This command will concatenate two parameters. If the --flip flag\nis provided, then the result is the concatenation of two and one.",)]
-    #[CLI\Param(name: 'one', description: 'The first parameter')]
-    #[CLI\Param(name: 'two', description: 'The other parameter')]
-    #[CLI\Option(name: 'flip', description: 'Whether or not the second parameter should come first in the result.')]
-    #[CLI\Usage(name: 'bet alpha --flip', description: 'Concatenate "alpha" and "bet".')]
-    public function myEcho($one, $two = '', array $options = ['flip' => false])
-    {
-        if ($options['flip']) {
-            return "{$two}{$one}";
-        }
-        return "{$one}{$two}";
-    }
 ```
 ## Option Default Values
 
