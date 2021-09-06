@@ -2,6 +2,7 @@
 namespace Consolidation\TestUtils;
 
 use Consolidation\AnnotatedCommand\Attributes as CLI;
+use Consolidation\AnnotatedCommand\Hooks\HookManager;
 
 /**
  * Test file used in the Annotation Factory tests.  It is also
@@ -73,7 +74,7 @@ class ExampleAttributesCommandFile
     }
 
     // Declare a hook with a target.
-    #[CLI\Hook(type: 'post-command', target: 'test:arithmatic')]
+    #[CLI\Hook(type: HookManager::POST_COMMAND_HOOK, target: 'test:arithmatic')]
     #[CLI\Help(description: 'Add a text after test:arithmatic command')]
     public function postArithmatic()
     {

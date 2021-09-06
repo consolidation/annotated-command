@@ -3,7 +3,9 @@
 namespace Consolidation\AnnotatedCommand\Attributes;
 
 use Attribute;
+use Consolidation\AnnotatedCommand\Hooks\HookManager;
 use Consolidation\AnnotatedCommand\Parser\CommandInfo;
+use JetBrains\PhpStorm\ExpectedValues;
 
 #[Attribute(Attribute::TARGET_METHOD)]
 class Hook implements AttributeInterface
@@ -15,7 +17,7 @@ class Hook implements AttributeInterface
      *   Specifies which command(s) the hook will be attached to.
      */
     public function __construct(
-        public string $type,
+        #[ExpectedValues(valuesFromClass: HookManager::class)] public string $type,
         public ?string $target
     ) {
     }
