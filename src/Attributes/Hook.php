@@ -23,7 +23,7 @@ class Hook implements AttributeInterface
     public static function handle(\ReflectionAttribute $attribute, CommandInfo $commandInfo)
     {
         $args = $attribute->getArguments();
-        $commandInfo->setName($args['target']);
-        $commandInfo->addAnnotation('hook', $args['type'] . ' ' . $args['target']);
+        $commandInfo->setName($args['target'] ?? '');
+        $commandInfo->addAnnotation('hook', $args['type'] . ' ' . $args['target'] ?? '');
     }
 }
