@@ -3,6 +3,7 @@ namespace Consolidation\TestUtils;
 
 use Consolidation\AnnotatedCommand\Attributes as CLI;
 use Consolidation\AnnotatedCommand\Hooks\HookManager;
+use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 
 /**
  * Test file used in the Annotation Factory tests.  It is also
@@ -79,5 +80,17 @@ class ExampleAttributesCommandFile
     public function postArithmatic()
     {
         $this->output->writeln('HOOKED');
+    }
+
+    // Exercise table formatter options.
+    #[CLI\Command(name: 'birds')]
+    #[CLI\FieldLabels(labels: ['name' => 'Name', 'color' => 'Color'])]
+    public function birds(): RowsOfFields|null
+    {
+        $rows = [
+            ['Bluebird' => 'blue'],
+            ['Cardinal' => 'red'],
+        ];
+        return new RowsOfFields($rows);
     }
 }

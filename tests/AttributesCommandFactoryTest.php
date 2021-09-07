@@ -2,6 +2,7 @@
 namespace Consolidation\AnnotatedCommand;
 
 use Consolidation\AnnotatedCommand\Options\AlterOptionsCommandEvent;
+use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\BufferedOutput;
@@ -57,6 +58,18 @@ class AttributesCommandFactoryTest extends TestCase
 
         $input = new StringInput('improved:echo thing other the and that this --flip');
         $this->assertRunCommandViaApplicationEquals($command, $input, 'this that and the other thing');
+    }
+
+    /**
+     * @requires PHP >= 8.0
+     */
+    function testBirdsCommand()
+    {
+        $this->commandFileInstance = new \Consolidation\TestUtils\ExampleAttributesCommandFile;
+        $this->commandFactory = new AnnotatedCommandFactory();
+        $commandInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'birds');
+        $command = $this->commandFactory->createCommand($commandInfo, $this->commandFileInstance);
+        $this->assertEquals(RowsOfFields::class, $command->getReturnType());
     }
 
     function assertRunCommandViaApplicationEquals($command, $input, $expectedOutput, $expectedStatusCode = 0)

@@ -33,5 +33,9 @@ class AttributesDocBlockParser
                 call_user_func([$attribute->getName(), 'handle'], $attribute, $this->commandInfo);
             }
         }
+        // Use any return type declaration.
+        if ($type = $this->reflection->getReturnType()) {
+            $this->commandInfo->setReturnType($type->getName());
+        }
     }
 }
