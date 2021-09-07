@@ -20,6 +20,6 @@ class DefaultFields implements AttributeInterface
     public static function handle(\ReflectionAttribute $attribute, CommandInfo $commandInfo)
     {
         $args = $attribute->getArguments();
-        $commandInfo->addAnnotation($args['default-fields'], $args['fields']);
+        $commandInfo->addAnnotation('default-fields', $args['fields']);
     }
 }
