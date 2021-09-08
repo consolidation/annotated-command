@@ -33,9 +33,5 @@ class AttributesDocBlockParser
                 call_user_func([$attribute->getName(), 'handle'], $attribute, $this->commandInfo);
             }
         }
-        // Use the method's return type declaration. Takes precedence over @return in case of an annotated command.
-        if ($this->reflection->hasReturnType()) {
-            $this->commandInfo->setReturnType($this->reflection->getReturnType()->getName());
-        }
     }
 }

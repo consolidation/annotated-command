@@ -82,10 +82,11 @@ class ExampleAttributesCommandFile
         $this->output->writeln('HOOKED');
     }
 
-    // Exercise table formatter options.
+    // Exercise table formatter options and Union return type.
     #[CLI\Command(name: 'birds')]
     #[CLI\FieldLabels(labels: ['name' => 'Name', 'color' => 'Color'])]
-    public function birds(): RowsOfFields|null
+    #[CLI\DefaultFields(fields: ['color'])]
+    public function birds(): RowsOfFields|int
     {
         $rows = [
             ['Bluebird' => 'blue'],
