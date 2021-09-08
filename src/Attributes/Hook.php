@@ -8,7 +8,7 @@ use Consolidation\AnnotatedCommand\Parser\CommandInfo;
 use JetBrains\PhpStorm\ExpectedValues;
 
 #[Attribute(Attribute::TARGET_METHOD)]
-class Hook implements AttributeInterface
+class Hook
 {
     /**
      * @param $type

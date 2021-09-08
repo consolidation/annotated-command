@@ -6,7 +6,7 @@ use Attribute;
 use Consolidation\AnnotatedCommand\Parser\CommandInfo;
 
 #[Attribute(Attribute::TARGET_METHOD)]
-class Command implements AttributeInterface
+class Command
 {
     /**
      * @param $name

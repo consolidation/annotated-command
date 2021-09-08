@@ -6,7 +6,7 @@ use Attribute;
 use Consolidation\AnnotatedCommand\Parser\CommandInfo;
 
 #[Attribute(Attribute::TARGET_METHOD | Attribute::IS_REPEATABLE)]
-class Param implements AttributeInterface
+class Param
 {
     /**
      * @param $name

@@ -6,7 +6,7 @@ use Attribute;
 use Consolidation\AnnotatedCommand\Parser\CommandInfo;
 
 #[Attribute(Attribute::TARGET_METHOD)]
-class FieldLabels implements AttributeInterface
+class FieldLabels
 {
     /**
      * @param $labels

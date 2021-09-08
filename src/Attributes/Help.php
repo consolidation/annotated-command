@@ -6,7 +6,7 @@ use Attribute;
 use Consolidation\AnnotatedCommand\Parser\CommandInfo;
 
 #[Attribute(Attribute::TARGET_METHOD)]
-class Help implements AttributeInterface
+class Help
 {
     /**
      * @param $description

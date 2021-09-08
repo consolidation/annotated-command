@@ -6,7 +6,7 @@ use Attribute;
 use Consolidation\AnnotatedCommand\Parser\CommandInfo;
 
 #[Attribute(Attribute::TARGET_METHOD)]
-class Topics implements AttributeInterface
+class Topics
 {
     /**
      * @param string[] $topics

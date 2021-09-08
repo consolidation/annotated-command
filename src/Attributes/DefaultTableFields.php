@@ -6,7 +6,7 @@ use Attribute;
 use Consolidation\AnnotatedCommand\Parser\CommandInfo;
 
 #[Attribute(Attribute::TARGET_METHOD)]
-class DefaultTableFields implements AttributeInterface
+class DefaultTableFields
 {
     /**
      * @param $fields

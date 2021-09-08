@@ -45,6 +45,10 @@ class BespokeDocBlockParser
     {
         $doc = $this->reflection->getDocComment();
         $this->parseDocBlock($doc);
+        // Use a return type declaration.Takes precedence over @return in case of an annotated command.
+        if ($this->reflection->hasReturnType()) {
+            $this->commandInfo->setReturnType($this->reflection->getReturnType()->getName());
+        }
     }
 
     /**

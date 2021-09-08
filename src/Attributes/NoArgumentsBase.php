@@ -5,7 +5,7 @@ namespace Consolidation\AnnotatedCommand\Attributes;
 use Consolidation\AnnotatedCommand\Attributes\AttributeInterface;
 use Consolidation\AnnotatedCommand\Parser\CommandInfo;
 
-class Generic implements AttributeInterface
+abstract class NoArgumentsBase
 {
     protected const NAME = 'annotation-name';
 

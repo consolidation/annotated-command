@@ -29,13 +29,13 @@ class AttributesDocBlockParser
     {
         $attributes = $this->reflection->getAttributes();
         foreach ($attributes as $attribute) {
-            if (in_array(AttributeInterface::class, class_implements($attribute->getName()))) {
+            if (method_exists($attribute->getName(), 'handle')) {
                 call_user_func([$attribute->getName(), 'handle'], $attribute, $this->commandInfo);
             }
         }
-        // Use any return type declaration.
-        if ($type = $this->reflection->getReturnType()) {
-            $this->commandInfo->setReturnType($type->getName());
+        // Use the method's return type declaration. Takes precedence over @return in case of an annotated command.
+        if ($this->reflection->hasReturnType()) {
+            $this->commandInfo->setReturnType($this->reflection->getReturnType()->getName());
         }
     }
 }
