@@ -6,11 +6,11 @@ use Attribute;
 use Consolidation\AnnotatedCommand\Parser\CommandInfo;
 
 #[Attribute(Attribute::TARGET_METHOD | Attribute::IS_REPEATABLE)]
-class Param
+class Argument
 {
     /**
      * @param $name
-     *   The name of the parameter.
+     *   The name of the argument.
      * @param $description
      *   A one line description.
      */
