@@ -49,11 +49,11 @@ class CommandInfoTest extends TestCase
         );
     }
 
+    /**
+     * @requires PHP >= 8.0
+     */
     function testWithAttributes()
     {
-        if (version_compare(PHP_VERSION, '8.0.0') === -1) {
-            $this->markTestSkipped('Attribute parsing requires PHP version 8.x.');
-        }
         $commandInfo = CommandInfo::create('\Consolidation\TestUtils\ExampleAttributesCommandFile', 'testArithmatic');
         $this->assertCommandInfoIsAsExpected($commandInfo);
     }

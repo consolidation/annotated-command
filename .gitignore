@@ -2,6 +2,7 @@
 phpunit.xml
 vendor
 build
+.env
 tools
 .idea
 .phpunit.result.cache

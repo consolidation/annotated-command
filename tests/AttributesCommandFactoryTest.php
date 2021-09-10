@@ -2,6 +2,7 @@
 namespace Consolidation\AnnotatedCommand;
 
 use Consolidation\AnnotatedCommand\Options\AlterOptionsCommandEvent;
+use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\BufferedOutput;
@@ -13,13 +14,9 @@ class AttributesCommandFactoryTest extends TestCase
     protected $commandFileInstance;
     protected $commandFactory;
 
-    function setUp(): void
-    {
-        if (version_compare(PHP_VERSION, '8.0.0') === -1) {
-            $this->markTestSkipped('Attribute parsing requires PHP version 8.x.');
-        }
-    }
-
+    /**
+     * @requires PHP >= 8.0
+     */
     function testMyEchoCommand()
     {
         $this->commandFileInstance = new \Consolidation\TestUtils\ExampleAttributesCommandFile;
@@ -40,6 +37,9 @@ class AttributesCommandFactoryTest extends TestCase
         $this->assertRunCommandViaApplicationEquals($command, $input, 'alphabet');
     }
 
+    /**
+     * @requires PHP >= 8.0
+     */
     function testImprovedEchoCommand()
     {
         $this->commandFileInstance = new \Consolidation\TestUtils\ExampleAttributesCommandFile;
@@ -58,6 +58,18 @@ class AttributesCommandFactoryTest extends TestCase
 
         $input = new StringInput('improved:echo thing other the and that this --flip');
         $this->assertRunCommandViaApplicationEquals($command, $input, 'this that and the other thing');
+    }
+
+    /**
+     * @requires PHP >= 8.0
+     */
+    function testBirdsCommand()
+    {
+        $this->commandFileInstance = new \Consolidation\TestUtils\ExampleAttributesCommandFile;
+        $this->commandFactory = new AnnotatedCommandFactory();
+        $commandInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'birds');
+        $command = $this->commandFactory->createCommand($commandInfo, $this->commandFileInstance);
+        $this->assertEquals(RowsOfFields::class, $command->getReturnType());
     }
 
     function assertRunCommandViaApplicationEquals($command, $input, $expectedOutput, $expectedStatusCode = 0)
