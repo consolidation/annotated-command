@@ -266,7 +266,8 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
             get_class_methods($commandFileInstance) ?: [],
             function ($m) use ($commandFileInstance) {
                 $reflectionMethod = new \ReflectionMethod($commandFileInstance, $m);
-                return !$reflectionMethod->isStatic() && !preg_match('#^_#', $m);
+                $name = $reflectionMethod->getFileName();
+                return !$reflectionMethod->isStatic() && !preg_match('#^_#', $m) && basename($name) !== 'IO.php' && strpos($name, 'Trait') === false;
             }
         );
 
