@@ -1,5 +1,9 @@
 # Change Log
 
+### 4.3.2 - 19 September 2021
+
+- Less parsing by ignoring Traits and IO.php (for Drush) (#237)
+
 ### 4.3.1 - 29 August 2021
 
 - Fix bc break in 4.3.0. (#232)
