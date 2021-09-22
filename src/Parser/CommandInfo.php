@@ -830,6 +830,15 @@ class CommandInfo
             // into this object, using our accessors.
             CommandDocBlockParserFactory::parse($this, $this->reflection);
             $this->docBlockIsParsed = true;
+            // Use method's return type if @return is not present.
+            if ($this->reflection->hasReturnType() && !$this->getReturnType()) {
+                $type = $this->reflection->getReturnType();
+                if ($type instanceof \ReflectionUnionType) {
+                    // Use first declared type.
+                    $type = current($type->getTypes());
+                }
+                $this->setReturnType($type->getName());
+            }
         }
     }
 
