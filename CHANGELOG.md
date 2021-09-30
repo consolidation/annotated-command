@@ -1,6 +1,6 @@
 # Change Log
 
-### Unreleased
+### 4.4.0 - 29 September 2021
 
 - Add support for providing command information via php8 Attributes. (#239)
 
