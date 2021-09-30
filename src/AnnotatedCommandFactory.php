@@ -56,8 +56,9 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
      * backwards compatibility. Call this method to skip the parsing
      * of trait files for a performance boost.
      *
-     * In future versions, this property will default to 'true'. Use
-     * Robo plugins as the preferred method of distributing shared commands.
+     * In future versions, this property be removed, and commands will
+     * not be parsed from traits. Use Robo plugins as the preferred method
+     * of distributing shared commands.
      */
     public static function setIgnoreCommandsInTraits(bool $skipTraitFiles)
     {
