@@ -25,6 +25,9 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
 {
+    /** var bool */
+    protected static $ignoreCommandsInTraits = false;
+
     /** var CommandProcessor */
     protected $commandProcessor;
 
@@ -45,6 +48,22 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
 
     /** var string[] */
     protected $ignoredCommandsRegexps = [];
+
+    /**
+     * Typically, traits should not contain commands; however, some
+     * applications make use of this feature to package commands in
+     * libraries, so we must allow command files in traits to maintain
+     * backwards compatibility. Call this method to skip the parsing
+     * of trait files for a performance boost.
+     *
+     * In future versions, this property be removed, and commands will
+     * not be parsed from traits. Use Robo plugins as the preferred method
+     * of distributing shared commands.
+     */
+    public static function setIgnoreCommandsInTraits(bool $skipTraitFiles)
+    {
+        static::$ignoreCommandsInTraits = $skipTraitFiles;
+    }
 
     public function __construct()
     {
@@ -267,7 +286,13 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
             function ($m) use ($commandFileInstance) {
                 $reflectionMethod = new \ReflectionMethod($commandFileInstance, $m);
                 $name = $reflectionMethod->getFileName();
-                return !$reflectionMethod->isStatic() && !preg_match('#^_#', $m) && basename($name) !== 'IO.php' && strpos($name, 'Trait') === false;
+                if ($reflectionMethod->isStatic() || preg_match('#^_#', $m)) {
+                    return false;
+                }
+                if (!static::$ignoreCommandsInTraits) {
+                    return true;
+                }
+                return basename($name) !== 'IO.php' && strpos($name, 'Trait') === false;
             }
         );
 
