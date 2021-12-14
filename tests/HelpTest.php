@@ -150,10 +150,10 @@ class HelpTest extends TestCase
       <description>Display this application version</description>
     </option>
     <option name="--ansi" shortcut="" accept_value="0" is_value_required="0" is_multiple="0">
-      <description>Force ANSI output</description>
+      <description>Force (or disable --no-ansi) ANSI output</description>
     </option>
     <option name="--no-ansi" shortcut="" accept_value="0" is_value_required="0" is_multiple="0">
-      <description>Disable ANSI output</description>
+      <description>Negate the "--ansi" option</description>
     </option>
     <option name="--no-interaction" shortcut="-n" accept_value="0" is_value_required="0" is_multiple="0">
       <description>Do not ask any interactive question</description>
@@ -268,7 +268,7 @@ EOT;
             "accept_value": "0",
             "is_value_required": "0",
             "is_multiple": "0",
-            "description": "Force ANSI output"
+            "description": "Force (or disable --no-ansi) ANSI output"
         },
         "no-ansi": {
             "name": "--no-ansi",
@@ -276,7 +276,7 @@ EOT;
             "accept_value": "0",
             "is_value_required": "0",
             "is_multiple": "0",
-            "description": "Disable ANSI output"
+            "description": "Negate the \"--ansi\" option"
         },
         "no-interaction": {
             "name": "--no-interaction",
