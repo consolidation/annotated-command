@@ -53,12 +53,12 @@ jobs:
       - name: Install PHP with extensions
         uses: shivammathur/setup-php@v2
         with:
-          php-version: 8.1
+          php-version: 7.4
           coverage: none
           extensions: intl
 
       - name: Install dependencies
-        run: composer install --no-ansi --no-interaction --no-progress
+        run: composer update --no-ansi --no-interaction --no-progress
 
       - name: Install roave/backward-compatibility-check
         run: |
