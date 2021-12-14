@@ -31,7 +31,7 @@ class AnnotationData extends \ArrayObject
         return $this;
     }
 
-    public function append($key, $value = '')
+    public function append($key, $value = ''): void
     {
         $data = $this->offsetGet($key);
         if (is_array($data)) {
@@ -39,6 +39,6 @@ class AnnotationData extends \ArrayObject
         } elseif (is_scalar($data)) {
             $this->offsetSet($key, $data . $value);
         }
-        return $this;
+        // return $this;
     }
 }
