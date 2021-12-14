@@ -78,6 +78,7 @@ jobs:
       SHELL_INTERACTIVE: true
 
     strategy:
+      fail-fast: false
       matrix:
         os:
           - ubuntu-latest
