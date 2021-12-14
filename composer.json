@@ -19,7 +19,7 @@
         }
     },
     "require": {
-        "php": ">=7.3",
+        "php": ">=7.1.3",
         "consolidation/output-formatters": "^4.1.1",
         "psr/log": "^1|^2",
         "symfony/console": "^4.4.8|^5.2.0",
