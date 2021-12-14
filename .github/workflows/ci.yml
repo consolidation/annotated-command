@@ -93,7 +93,7 @@ jobs:
           - assert.exception=1, zend.assertions=1
 
         dependencies:
-          - locked
+          - highest
         
         codecov:
           - false
@@ -102,10 +102,6 @@ jobs:
           - os: ubuntu-latest
             php-version: "7.1"
             dependencies: lowest
-
-          - os: ubuntu-latest
-            php-version: "7.4"
-            dependencies: highest
 
           - os: ubuntu-latest
             php-version: "8.0"
