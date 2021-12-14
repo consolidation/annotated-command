@@ -85,6 +85,8 @@ jobs:
 
         php-version:
           - "7.4"
+          - "8.0"
+          - "8.1"
 
         php-ini-values:
           - assert.exception=1, zend.assertions=1
