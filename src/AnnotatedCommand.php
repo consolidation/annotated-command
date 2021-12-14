@@ -209,7 +209,11 @@ class AnnotatedCommand extends Command implements HelpDocumentAlter
                 $description = $automaticOptions[$name]->getDescription();
                 $inputOption = static::inputOptionSetDescription($inputOption, $description);
             }
-            $this->getDefinition()->addOption($inputOption);
+            if (method_exists($this, 'getNativeDefinition')) {
+                $this->getNativeDefinition()->addOption($inputOption);
+            } else {
+                $this->getDefinition()->addOption($inputOption);
+            }
         }
     }
 
