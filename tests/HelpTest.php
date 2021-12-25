@@ -105,6 +105,14 @@ class HelpTest extends TestCase
             $expectedNoAnsiMessage = 'Disable ANSI output';
         }
 
+        if (version_compare($symfonyConsoleVersion, '5.2.0', '>=')) {
+            $expectedHelpMessage = 'Display help for the given command. When no command is given display help for the <info>list</info> command';
+        } else {
+            $expectedHelpMessage = 'Display this help message';
+        }
+
+        $htmlEncodedHelpMessage = htmlspecialchars($expectedHelpMessage);
+
         $expectedXML = <<<EOT
 <?xml version="1.0" encoding="UTF-8"?>
 <command id="example:table" name="example:table">
@@ -148,7 +156,7 @@ class HelpTest extends TestCase
       <defaults/>
     </option>
     <option name="--help" shortcut="-h" accept_value="0" is_value_required="0" is_multiple="0">
-      <description>Display help for the given command. When no command is given display help for the &lt;info&gt;list&lt;/info&gt; command</description>\n
+      <description>$htmlEncodedHelpMessage</description>\n
     </option>
     <option name="--quiet" shortcut="-q" accept_value="0" is_value_required="0" is_multiple="0">
       <description>Do not output any message</description>
@@ -183,6 +191,7 @@ EOT;
 
         $encodedAnsiMessage = json_encode($expectedAnsiMessage);
         $encodedNoAnsiMessage = json_encode($expectedNoAnsiMessage);
+        $encodedHelpMessage = json_encode(strip_tags($expectedHelpMessage));
 
         $expectedJSON = <<<EOT
 {
@@ -248,7 +257,7 @@ EOT;
             "accept_value": "0",
             "is_value_required": "0",
             "is_multiple": "0",
-            "description": "Display help for the given command. When no command is given display help for the list command"
+            "description": $encodedHelpMessage
         },
         "quiet": {
             "name": "--quiet",
