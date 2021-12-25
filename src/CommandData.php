@@ -22,16 +22,20 @@ class CommandData
     protected $injectedInstances = [];
     /** @var FormatterOptions */
     protected $formatterOptions;
+    /** @var bool[] */
+    protected $parameterMap;
 
     public function __construct(
         AnnotationData $annotationData,
         InputInterface $input,
-        OutputInterface $output
+        OutputInterface $output,
+        $parameterMap = []
     ) {
         $this->annotationData = $annotationData;
         $this->input = $input;
         $this->output = $output;
         $this->includeOptionsInArgs = true;
+        $this->parameterMap = $parameterMap;
     }
 
     /**
@@ -193,9 +197,26 @@ class CommandData
     {
         // Get passthrough args, and add the options on the end.
         $args = $this->getArgsWithoutAppName();
+
+        // If this command has a mix of named arguments and options in its
+        // parameter list, then use the parameter map to insert the options
+        // into the correct spot in the parameters list.
+        if (!empty($this->parameterMap)) {
+            $mappedArgs = [];
+            foreach ($this->parameterMap as $name => $isOption) {
+                if ($isOption) {
+                    $mappedArgs[$name] = $this->input->getOption($name);
+                } else {
+                    $mappedArgs[$name] = array_shift($args);
+                }
+            }
+            $args = $mappedArgs;
+        }
+
         if ($this->includeOptionsInArgs) {
             $args['options'] = $this->options();
         }
+
         return $args;
     }
 }

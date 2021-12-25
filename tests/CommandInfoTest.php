@@ -49,6 +49,15 @@ class CommandInfoTest extends TestCase
         );
     }
 
+    /**
+     * @requires PHP >= 8.0
+     */
+    function testWithAttributes()
+    {
+        $commandInfo = CommandInfo::create('\Consolidation\TestUtils\ExampleAttributesCommandFile', 'testArithmatic');
+        $this->assertCommandInfoIsAsExpected($commandInfo);
+    }
+
     function assertCommandInfoIsAsExpected($commandInfo)
     {
         $this->assertEquals('test:arithmatic', $commandInfo->getName());

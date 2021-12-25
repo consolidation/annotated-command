@@ -119,7 +119,7 @@ class BespokeDocBlockParser
         if ($matches['variable'] == $this->optionParamName()) {
             return;
         }
-        $this->addOptionOrArgumentTag($tag, $this->commandInfo->arguments(), $matches['variable'], $matches['description']);
+        $this->commandInfo->addArgumentDescription($matches['variable'], static::removeLineBreaks($matches['description']));
     }
 
     /**
@@ -130,9 +130,10 @@ class BespokeDocBlockParser
         if (!$tag->hasVariable($matches)) {
             throw new \Exception('Could not determine option name from tag ' . (string)$tag);
         }
-        $this->addOptionOrArgumentTag($tag, $this->commandInfo->options(), $matches['variable'], $matches['description']);
+        $this->commandInfo->addOptionDescription($matches['variable'], static::removeLineBreaks($matches['description']));
     }
 
+    // @deprecated No longer called, only here for backwards compatibility (no clients should use "internal" classes anyway)
     protected function addOptionOrArgumentTag($tag, DefaultsWithDescriptions $set, $name, $description)
     {
         $variableName = $this->commandInfo->findMatchingOption($name);
@@ -144,6 +145,7 @@ class BespokeDocBlockParser
         }
     }
 
+    // @deprecated No longer called, only here for backwards compatibility (no clients should use "internal" classes anyway)
     protected function splitOutDefault($description)
     {
         if (!preg_match('#(.*)(Default: *)(.*)#', trim($description), $matches)) {
@@ -163,7 +165,7 @@ class BespokeDocBlockParser
             throw new \Exception('Could not determine parameter name for default value from tag ' . (string)$tag);
         }
         $variableName = $matches['variable'];
-        $defaultValue = $this->interpretDefaultValue($matches['description']);
+        $defaultValue = DefaultValueFromString::fromString($matches['description'])->value();
         if ($this->commandInfo->arguments()->exists($variableName)) {
             $this->commandInfo->arguments()->setDefaultValue($variableName, $defaultValue);
             return;
@@ -323,6 +325,7 @@ class BespokeDocBlockParser
         return $this->optionParamName;
     }
 
+    // @deprecated No longer called, only here for backwards compatibility (no clients should use "internal" classes anyway)
     protected function interpretDefaultValue($defaultValue)
     {
         $defaults = [
