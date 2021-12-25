@@ -243,6 +243,41 @@ class AnnotatedCommand extends Command implements HelpDocumentAlter
     }
 
     /**
+     * @deprecated since 4.5.0
+     */
+    protected static function inputOptionSetDescription($inputOption, $description)
+    {
+        @\trigger_error(
+            'Since consolidation/annotated-command 4.5: ' .
+            'AnnotatedCommand::inputOptionSetDescription method is deprecated and will be removed in 5.0',
+            \E_USER_DEPRECATED
+        );
+        // Recover the 'mode' value, because Symfony is stubborn
+        $mode = 0;
+        if ($inputOption->isValueRequired()) {
+            $mode |= InputOption::VALUE_REQUIRED;
+        }
+        if ($inputOption->isValueOptional()) {
+            $mode |= InputOption::VALUE_OPTIONAL;
+        }
+        if ($inputOption->isArray()) {
+            $mode |= InputOption::VALUE_IS_ARRAY;
+        }
+        if (!$mode) {
+            $mode = InputOption::VALUE_NONE;
+        }
+
+        $inputOption = new InputOption(
+            $inputOption->getName(),
+            $inputOption->getShortcut(),
+            $mode,
+            $description,
+            $inputOption->getDefault()
+        );
+        return $inputOption;
+    }
+
+    /**
      * Returns all of the hook names that may be called for this command.
      *
      * @return array
