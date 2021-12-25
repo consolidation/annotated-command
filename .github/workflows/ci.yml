@@ -40,6 +40,7 @@ jobs:
 
   backward-compatibility:
     name: Backward Compatibility
+    if: false # temporarily skip this job
 
     runs-on: ubuntu-latest
 
