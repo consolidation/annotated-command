@@ -1,6 +1,7 @@
 <?php
 namespace Consolidation\AnnotatedCommand;
 
+use Composer\InstalledVersions;
 use Consolidation\AnnotatedCommand\Help\HelpCommand;
 
 use Consolidation\AnnotatedCommand\Options\AlterOptionsCommandEvent;
@@ -95,6 +96,15 @@ class HelpTest extends TestCase
 
     function testHelp()
     {
+        $symfonyConsoleVersion = ltrim(InstalledVersions::getPrettyVersion('symfony/console'), 'v');
+        if (version_compare($symfonyConsoleVersion, '5.3.0', '>=')) {
+            $expectedAnsiMessage = 'Force (or disable --no-ansi) ANSI output';
+            $expectedNoAnsiMessage = 'Negate the "--ansi" option';
+        } else {
+            $expectedAnsiMessage = 'Force ANSI output';
+            $expectedNoAnsiMessage = 'Disable ANSI output';
+        }
+
         $expectedXML = <<<EOT
 <?xml version="1.0" encoding="UTF-8"?>
 <command id="example:table" name="example:table">
@@ -150,10 +160,10 @@ class HelpTest extends TestCase
       <description>Display this application version</description>
     </option>
     <option name="--ansi" shortcut="" accept_value="0" is_value_required="0" is_multiple="0">
-      <description>Force ANSI output</description>
+      <description>$expectedAnsiMessage</description>
     </option>
     <option name="--no-ansi" shortcut="" accept_value="0" is_value_required="0" is_multiple="0">
-      <description>Disable ANSI output</description>
+      <description>$expectedNoAnsiMessage</description>
     </option>
     <option name="--no-interaction" shortcut="-n" accept_value="0" is_value_required="0" is_multiple="0">
       <description>Do not ask any interactive question</description>
@@ -170,6 +180,9 @@ class HelpTest extends TestCase
 EOT;
 
         $this->assertRunCommandViaApplicationEquals('my-help --format=xml example:table', $expectedXML);
+
+        $encodedAnsiMessage = json_encode($expectedAnsiMessage);
+        $encodedNoAnsiMessage = json_encode($expectedNoAnsiMessage);
 
         $expectedJSON = <<<EOT
 {
@@ -268,7 +281,7 @@ EOT;
             "accept_value": "0",
             "is_value_required": "0",
             "is_multiple": "0",
-            "description": "Force ANSI output"
+            "description": $encodedAnsiMessage
         },
         "no-ansi": {
             "name": "--no-ansi",
@@ -276,7 +289,7 @@ EOT;
             "accept_value": "0",
             "is_value_required": "0",
             "is_multiple": "0",
-            "description": "Disable ANSI output"
+            "description": $encodedNoAnsiMessage
         },
         "no-interaction": {
             "name": "--no-interaction",
