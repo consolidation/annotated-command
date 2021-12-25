@@ -205,14 +205,16 @@ class AnnotatedCommand extends Command implements HelpDocumentAlter
 
             if (empty($description) && isset($automaticOptions[$name])) {
                 $description = $automaticOptions[$name]->getDescription();
-                $inputOption = static::inputOptionSetDescription($inputOption, $description);
+                $this->addInputOption($inputOption, $description);
+            } else {
+                $this->addInputOption($inputOption);
             }
-            $this->getDefinition()->addOption($inputOption);
         }
     }
 
-    protected static function inputOptionSetDescription($inputOption, $description)
+    private function addInputOption($inputOption, $description = null)
     {
+        $default = $inputOption->getDefault();
         // Recover the 'mode' value, because Symfony is stubborn
         $mode = 0;
         if ($inputOption->isValueRequired()) {
@@ -226,16 +228,16 @@ class AnnotatedCommand extends Command implements HelpDocumentAlter
         }
         if (!$mode) {
             $mode = InputOption::VALUE_NONE;
+            $default = null;
         }
 
-        $inputOption = new InputOption(
+        $this->addOption(
             $inputOption->getName(),
             $inputOption->getShortcut(),
             $mode,
-            $description,
-            $inputOption->getDefault()
+            $description ?? $inputOption->getDescription(),
+            $default
         );
-        return $inputOption;
     }
 
     /**
