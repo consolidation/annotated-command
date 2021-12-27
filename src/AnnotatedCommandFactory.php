@@ -26,7 +26,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
 {
     /** var bool */
-    protected static $ignoreCommandsInTraits = false;
+    protected static $ignoreCommandsInTraits = true;
 
     /** var CommandProcessor */
     protected $commandProcessor;
