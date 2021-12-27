@@ -1,5 +1,9 @@
 # Change Log
 
+### 4.4.0 - 29 September 2021
+
+- Add support for providing command information via php8 Attributes. (#239)
+
 ### 4.3.3 - 26 September 2021
 
 - Back out change from 4.3.2.  Will restore in 4.4.0, but with a switch that defaults to "off" (backwards-compatible).
