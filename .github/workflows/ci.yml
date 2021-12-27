@@ -40,7 +40,6 @@ jobs:
 
   backward-compatibility:
     name: Backward Compatibility
-    if: false # temporarily skip this job
 
     runs-on: ubuntu-latest
 
@@ -69,7 +68,7 @@ jobs:
           composer --working-dir=tools require roave/backward-compatibility-check:^5
 
       - name: Run roave/backward-compatibility-check
-        run: ./tools/vendor/bin/roave-backward-compatibility-check --from=4.3.0
+        run: ./tools/vendor/bin/roave-backward-compatibility-check --from=4.5.0
 
   tests:
     name: Tests
