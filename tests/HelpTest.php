@@ -113,6 +113,13 @@ class HelpTest extends TestCase
 
         $htmlEncodedHelpMessage = htmlspecialchars($expectedHelpMessage);
 
+        $outputFormattersVersion = ltrim(InstalledVersions::getPrettyVersion('consolidation/output-formatters'), 'v');
+        if (version_compare($outputFormattersVersion, '4.1.3', '>=')) {
+            $expectedFieldMessage = 'Select just one field, and force format to *string*.';
+        } else {
+            $expectedFieldMessage = "Select just one field, and force format to 'string'.";
+        }
+
         $expectedXML = <<<EOT
 <?xml version="1.0" encoding="UTF-8"?>
 <command id="example:table" name="example:table">
@@ -152,7 +159,7 @@ class HelpTest extends TestCase
       <defaults/>
     </option>
     <option name="--field" shortcut="" accept_value="1" is_value_required="1" is_multiple="0">
-      <description>Select just one field, and force format to 'string'.</description>
+      <description>$expectedFieldMessage</description>
       <defaults/>
     </option>
     <option name="--help" shortcut="-h" accept_value="0" is_value_required="0" is_multiple="0">
@@ -192,6 +199,7 @@ EOT;
         $encodedAnsiMessage = json_encode($expectedAnsiMessage);
         $encodedNoAnsiMessage = json_encode($expectedNoAnsiMessage);
         $encodedHelpMessage = json_encode(strip_tags($expectedHelpMessage));
+        $encodedFieldMessage = json_encode($expectedFieldMessage);
 
         $expectedJSON = <<<EOT
 {
@@ -249,7 +257,7 @@ EOT;
             "accept_value": "1",
             "is_value_required": "1",
             "is_multiple": "0",
-            "description": "Select just one field, and force format to 'string'."
+            "description": $encodedFieldMessage
         },
         "help": {
             "name": "--help",
