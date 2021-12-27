@@ -70,7 +70,7 @@ jobs:
       # Our b/c check is breaking every time to document b/c breaks from 4.x branch.
       # This will be updated with the first 5.x stable release.
       - name: Run roave/backward-compatibility-check
-        run: ./tools/vendor/bin/roave-backward-compatibility-check --from=4.5.0
+        run: ./tools/vendor/bin/roave-backward-compatibility-check --from=4.5.0 || true
 
   tests:
     name: Tests
