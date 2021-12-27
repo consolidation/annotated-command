@@ -5,9 +5,11 @@ on:
   pull_request:
     branches:
       - main
+      - 4.x
   push:
     branches:
       - main
+      - 4.x
 
 name: CI
 
@@ -38,7 +40,6 @@ jobs:
 
   backward-compatibility:
     name: Backward Compatibility
-    if: false # temporarily skip this job
 
     runs-on: ubuntu-latest
 
@@ -66,8 +67,10 @@ jobs:
           mkdir -p tools
           composer --working-dir=tools require roave/backward-compatibility-check:^5
 
+      # Our b/c check is breaking every time to document b/c breaks from 4.x branch.
+      # This will be updated with the first 5.x stable release.
       - name: Run roave/backward-compatibility-check
-        run: ./tools/vendor/bin/roave-backward-compatibility-check --from=4.3.0
+        run: ./tools/vendor/bin/roave-backward-compatibility-check --from=4.5.0 || true
 
   tests:
     name: Tests
