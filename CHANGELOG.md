@@ -1,5 +1,9 @@
 # Change Log
 
+### 4.5.1 - 29 December 2021
+
+- PHP 8.1
+
 ### 4.5.0 - 27 December 2021
 
 - Symfony 6 / Symfony 5.2 compatibility
