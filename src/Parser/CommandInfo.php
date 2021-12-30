@@ -380,7 +380,7 @@ class CommandInfo
      */
     public function setDescription($description)
     {
-        $this->description = str_replace("\n", ' ', $description);
+        $this->description = str_replace("\n", ' ', $description ?? '');
         return $this;
     }
 
