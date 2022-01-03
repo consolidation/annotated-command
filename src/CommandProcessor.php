@@ -254,7 +254,7 @@ class CommandProcessor implements LoggerAwareInterface
         $result = false;
         try {
             $args = $this->parameterInjection()->args($commandData);
-            $result = call_user_func_array($commandCallback, $args);
+            $result = call_user_func_array($commandCallback, array_values($args));
         } catch (\Exception $e) {
             $result = $this->commandErrorForException($e);
         }
