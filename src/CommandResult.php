@@ -41,17 +41,17 @@ class CommandResult implements ExitCodeInterface, OutputDataInterface
 
     public static function exitCode($exitCode)
     {
-        return new self(null, $exitCode);
+        return new static(null, $exitCode);
     }
 
     public static function data($data)
     {
-        return new self($data);
+        return new static($data);
     }
 
     public static function dataWithExitCode($data, $exitCode)
     {
-        return new self($data, $exitCode);
+        return new static($data, $exitCode);
     }
 
     public function getExitCode()
