@@ -125,8 +125,8 @@ class AnnotatedCommand extends Command implements HelpDocumentAlter
 
     public function setCommandInfo($commandInfo)
     {
-        $this->setDescription($commandInfo->getDescription());
-        $this->setHelp($commandInfo->getHelp());
+        $this->setDescription($commandInfo->getDescription() ?: '');
+        $this->setHelp($commandInfo->getHelp() ?: '');
         $this->setAliases($commandInfo->getAliases());
         $this->setAnnotationData($commandInfo->getAnnotations());
         $this->setTopics($commandInfo->getTopics());
