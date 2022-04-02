@@ -708,7 +708,7 @@ class CommandInfo
         if ($this->lastParameterIsOptionsArray()) {
             array_pop($params);
         }
-        while (!empty($params) && ($params[0]->getType() != null) && !($params[0]->getType()->isBuiltin())) {
+        while (!empty($params) && ($params[0]->getType() != null) && ($params[0]->getType() instanceof \ReflectionNamedType) && !($params[0]->getType()->isBuiltin())) {
             $param = array_shift($params);
             $injectedClass = $param->getType()->getName();
             array_unshift($this->injectedClasses, $injectedClass);
@@ -729,7 +729,7 @@ class CommandInfo
     {
         // Commandline arguments must be strings, so ignore any
         // parameter that is typehinted to any non-primitive class.
-        if ($param->getType() && !$param->getType()->isBuiltin()) {
+        if ($param->getType() && (!$param->getType() instanceof \ReflectionNamedType || !$param->getType()->isBuiltin())) {
             return;
         }
         $result->add($param->name);
