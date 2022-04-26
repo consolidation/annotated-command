@@ -1,5 +1,9 @@
 # Change Log
 
+### 4.5.5 - 26 April 2022
+
+- No functional change; new release to fix false positives in b/c check caused by lockfile problem.
+
 ### 4.5.4 - 5 April 2022
 
 - Allow psr/log ^3
