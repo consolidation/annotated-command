@@ -7,6 +7,8 @@ namespace Consolidation\AnnotatedCommand;
  */
 class ParameterInjection implements ParameterInjector
 {
+    protected $injectors = [];
+
     public function __construct()
     {
         $this->register('Symfony\Component\Console\Input\InputInterface', $this);
