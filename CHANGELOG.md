@@ -1,5 +1,9 @@
 # Change Log
 
+### 4.5.6 - 22 June 2022
+
+- PHP 8.2 compatibility: dynamic properties are deprecated (#271)
+
 ### 4.5.5 - 26 April 2022
 
 - No functional change; new release to fix false positives in b/c check caused by lockfile problem.
