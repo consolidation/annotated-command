@@ -4,7 +4,7 @@
 on:
   pull_request:
     branches:
-      - main
+      - 5.x
       - 4.x
   push:
     branches:
