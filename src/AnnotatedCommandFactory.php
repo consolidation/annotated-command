@@ -281,11 +281,15 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
 
         // Ignore special functions, such as __construct and __call, which
         // can never be commands.
+        $commandClass = get_class($commandFileInstance);
         $commandMethodNames = array_filter(
             get_class_methods($commandFileInstance) ?: [],
-            function ($m) use ($commandFileInstance) {
+            function ($m) use ($commandFileInstance, $commandClass) {
                 $reflectionMethod = new \ReflectionMethod($commandFileInstance, $m);
                 $name = $reflectionMethod->getFileName();
+                if ($reflectionMethod->getDeclaringClass()->getName() !== $commandClass) {
+                    return false;
+                }
                 if ($reflectionMethod->isStatic() || preg_match('#^_#', $m)) {
                     return false;
                 }
