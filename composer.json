@@ -34,10 +34,7 @@
     },
     "config": {
         "optimize-autoloader": true,
-        "sort-packages": true,
-        "allow-plugins": {
-            "ocramius/package-versions": true
-        }
+        "sort-packages": true
     },
     "scripts": {
         "cs": "phpcs --standard=PSR2 -n src",
