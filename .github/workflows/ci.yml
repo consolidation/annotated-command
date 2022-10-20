@@ -65,7 +65,9 @@ jobs:
       - name: Install roave/backward-compatibility-check
         run: |
           mkdir -p tools
-          composer --working-dir=tools require roave/backward-compatibility-check:^5
+          echo '{}' > tools/composer.json
+          composer --working-dir=tools config --no-plugins allow-plugins.ocramius/package-versions true
+          composer --working-dir=tools require roave/backward-compatibility-check:^7
 
       - name: Run roave/backward-compatibility-check
         run: ./tools/vendor/bin/roave-backward-compatibility-check --from=4.5.5
