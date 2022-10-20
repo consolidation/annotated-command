@@ -49,10 +49,5 @@
             "@unit",
             "@cs"
         ]
-    },
-    "extra": {
-        "branch-alias": {
-            "dev-main": "5.x-dev"
-        }
     }
 }

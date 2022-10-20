@@ -8,7 +8,7 @@ on:
       - 4.x
   push:
     branches:
-      - main
+      - 5.x
       - 4.x
 
 name: CI

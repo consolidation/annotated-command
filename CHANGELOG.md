@@ -1,5 +1,11 @@
 # Change Log
 
+### Unreleased (5.x)
+
+- PHP 8.2 compatibility: dynamic properties are deprecated (#271)
+- Stop loading commands from inherited classes (#272)
+- CommandResult inheritance (#259)
+
 ### 4.5.1 - 29 December 2021
 
 - PHP 8.1
