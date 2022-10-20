@@ -67,7 +67,7 @@ jobs:
           mkdir -p tools
           echo '{}' > tools/composer.json
           composer --working-dir=tools config --no-plugins allow-plugins.ocramius/package-versions true
-          composer --working-dir=tools require roave/backward-compatibility-check:^7
+          composer --working-dir=tools require roave/backward-compatibility-check:^5
 
       # Our b/c check is breaking every time to document b/c breaks from 4.x branch.
       # This will be updated with the first 5.x stable release.
