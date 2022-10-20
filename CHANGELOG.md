@@ -1,5 +1,9 @@
 # Change Log
 
+### 4.5.7 - 20 October 2022
+
+- Stop loading commands from inherited classes (#273)
+
 ### 4.5.6 - 22 June 2022
 
 - PHP 8.2 compatibility: dynamic properties are deprecated (#271)
