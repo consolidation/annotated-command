@@ -79,7 +79,7 @@ class AttributesCommandFactoryTest extends TestCase
     {
         $this->commandFileInstance = new \Consolidation\TestUtils\ExampleAttributesCommandFile;
         $this->commandFactory = new AnnotatedCommandFactory();
-        $commandInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'test:arithmetic');
+        $commandInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'test:test:arithmatic');
         $command = $this->commandFactory->createCommand($commandInfo, $this->commandFileInstance);
         $this->assertIsCallable($command->getCompletionCallback());
     }
