@@ -166,6 +166,11 @@ class AnnotatedCommand extends Command implements HelpDocumentAlter
         }
     }
 
+    public function getCompletionCallback()
+    {
+        return $this->completionCallback;
+    }
+
     public function helpAlter(\DomDocument $originalDom)
     {
         return HelpDocumentBuilder::alter($originalDom, $this);

@@ -72,6 +72,18 @@ class AttributesCommandFactoryTest extends TestCase
         $this->assertEquals(RowsOfFields::class, $command->getReturnType());
     }
 
+    /**
+     * @requires PHP >= 8.0
+     */
+    function testArithmeticCommand()
+    {
+        $this->commandFileInstance = new \Consolidation\TestUtils\ExampleAttributesCommandFile;
+        $this->commandFactory = new AnnotatedCommandFactory();
+        $commandInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'test:arithmetic');
+        $command = $this->commandFactory->createCommand($commandInfo, $this->commandFileInstance);
+        $this->assertIsCallable($command->getCompletionCallback());
+    }
+
     function assertRunCommandViaApplicationEquals($command, $input, $expectedOutput, $expectedStatusCode = 0)
     {
         list($statusCode, $commandOutput) = $this->runCommandViaApplication($command, $input);
