@@ -101,7 +101,7 @@ class ExampleAttributesCommandFile
     /*
      * An argument completion callback.
      */
-    protected function testArithmaticComplete(CompletionInput $input, CompletionSuggestions $suggestions): void
+    public function testArithmaticComplete(CompletionInput $input, CompletionSuggestions $suggestions): void
     {
         if ($input->mustSuggestArgumentValuesFor('one') || $input->mustSuggestArgumentValuesFor('two')) {
             $suggestions->suggestValues(range(0, 9));
