@@ -1,5 +1,9 @@
 # Change Log
 
+### 4.6.0 - 30 October 2022
+
+- Add support for command completion (#274)
+
 ### 4.5.7 - 20 October 2022
 
 - Stop loading commands from inherited classes (#273)
