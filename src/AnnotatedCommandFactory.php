@@ -497,6 +497,11 @@ class AnnotatedCommandFactory implements AutomaticOptionsProviderInterface
         $command = new AnnotatedCommand($commandInfo->getName());
         $commandCallback = [$commandFileInstance, $commandInfo->getMethodName()];
         $command->setCommandCallback($commandCallback);
+        $completionCallback = null;
+        if ($annotation = $commandInfo->getAnnotation('complete')) {
+            $completionCallback = is_callable($annotation) ?: [$commandFileInstance, $annotation];
+        }
+        $command->setCompletionCallback($completionCallback);
         $command->setCommandProcessor($this->commandProcessor);
         $command->setCommandInfo($commandInfo);
         $automaticOptions = $this->callAutomaticOptionsProviders($commandInfo);
