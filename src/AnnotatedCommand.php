@@ -9,6 +9,8 @@ use Consolidation\AnnotatedCommand\Parser\CommandInfo;
 use Consolidation\AnnotatedCommand\State\State;
 use Consolidation\AnnotatedCommand\State\StateHelper;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Completion\CompletionInput;
+use Symfony\Component\Console\Completion\CompletionSuggestions;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputAwareInterface;
 use Symfony\Component\Console\Input\InputInterface;
@@ -33,6 +35,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class AnnotatedCommand extends Command implements HelpDocumentAlter
 {
     protected $commandCallback;
+    protected $completionCallback;
     protected $commandProcessor;
     protected $annotationData;
     protected $examples = [];
@@ -67,6 +70,12 @@ class AnnotatedCommand extends Command implements HelpDocumentAlter
     public function setCommandCallback($commandCallback)
     {
         $this->commandCallback = $commandCallback;
+        return $this;
+    }
+
+    public function setCompletionCallback($completionCallback)
+    {
+        $this->completionCallback = $completionCallback;
         return $this;
     }
 
@@ -155,6 +164,11 @@ class AnnotatedCommand extends Command implements HelpDocumentAlter
         if (!empty($description)) {
             $this->examples[$usage] = $description;
         }
+    }
+
+    public function getCompletionCallback()
+    {
+        return $this->completionCallback;
     }
 
     public function helpAlter(\DomDocument $originalDom)
@@ -297,6 +311,16 @@ class AnnotatedCommand extends Command implements HelpDocumentAlter
             $this->getNames(),
             $this->annotationData
         );
+    }
+
+    /**
+     * Route a completion request to the specified Callable if available.
+     */
+    public function complete(CompletionInput $input, CompletionSuggestions $suggestions): void
+    {
+        if (is_callable($this->completionCallback)) {
+            call_user_func($this->completionCallback, $input, $suggestions);
+        }
     }
 
     public function optionsHookForHookAnnotations($commandInfoList)
