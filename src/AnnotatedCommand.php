@@ -248,18 +248,22 @@ class AnnotatedCommand extends Command implements HelpDocumentAlter
             $default = null;
         }
 
-        // Alas, Symfony provides no accessor.
-        $class = new \ReflectionClass($inputOption);
-        $property = $class->getProperty("suggestedValues");
-        $property->setAccessible(true);
-
+        $suggestedValues = [];
+        // Symfony 6.1+ feature https://symfony.com/blog/new-in-symfony-6-1-improved-console-autocompletion#completion-values-in-input-definitions
+        if (property_exists($inputOption, 'suggestedValues')) {
+            // Alas, Symfony provides no accessor.
+            $class = new \ReflectionClass($inputOption);
+            $property = $class->getProperty('suggestedValues');
+            $property->setAccessible(true);
+            $suggestedValues = $property->getValue($inputOption);
+        }
         $this->addOption(
             $inputOption->getName(),
             $inputOption->getShortcut(),
             $mode,
             $description ?? $inputOption->getDescription(),
             $default,
-            $property->getValue($inputOption)
+            $suggestedValues
         );
     }
 
