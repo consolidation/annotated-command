@@ -19,7 +19,7 @@ class Argument
     public function __construct(
         public string $name,
         public string $description,
-        public array|string $suggestedValues = []
+        public array|\Closure $suggestedValues = []
     ) {
     }
 

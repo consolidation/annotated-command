@@ -645,7 +645,7 @@ class CommandInfo
     protected function addOptionOrArgumentDescription(DefaultsWithDescriptions $set, $variableName, $description, $suggestedValues = [])
     {
         list($description, $defaultValue) = $this->splitOutDefault($description);
-        $set->add($variableName, $description,null, $suggestedValues);
+        $set->add($variableName, $description, null, $suggestedValues);
         if ($defaultValue !== null) {
             $set->setDefaultValue($variableName, $defaultValue);
         }
