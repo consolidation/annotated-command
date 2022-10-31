@@ -190,7 +190,8 @@ class AnnotatedCommand extends Command implements HelpDocumentAlter
             $description = $commandInfo->arguments()->getDescription($name);
             $hasDefault = $commandInfo->arguments()->hasDefault($name);
             $parameterMode = $this->getCommandArgumentMode($hasDefault, $defaultValue);
-            $this->addArgument($name, $parameterMode, $description, $defaultValue);
+            $suggestedValues = $commandInfo->arguments()->getSuggestedValues($name);
+            $this->addArgument($name, $parameterMode, $description, $defaultValue, $suggestedValues);
         }
         return $this;
     }
@@ -247,12 +248,18 @@ class AnnotatedCommand extends Command implements HelpDocumentAlter
             $default = null;
         }
 
+        // Alas, Symfony provides no accessor.
+        $class = new \ReflectionClass($inputOption);
+        $property = $class->getProperty("suggestedValues");
+        $property->setAccessible(true);
+
         $this->addOption(
             $inputOption->getName(),
             $inputOption->getShortcut(),
             $mode,
             $description ?? $inputOption->getDescription(),
-            $default
+            $default,
+            $property->getValue($inputOption)
         );
     }
 
@@ -318,6 +325,7 @@ class AnnotatedCommand extends Command implements HelpDocumentAlter
      */
     public function complete(CompletionInput $input, CompletionSuggestions $suggestions): void
     {
+        parent::complete($input, $suggestions);
         if (is_callable($this->completionCallback)) {
             call_user_func($this->completionCallback, $input, $suggestions);
         }
