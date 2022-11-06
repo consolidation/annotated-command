@@ -18,7 +18,7 @@ class Help
      */
     public function __construct(
         public string $description,
-        public ?string $synopsis,
+        public ?string $synopsis = null,
         public bool $hidden = false
     ) {
     }
