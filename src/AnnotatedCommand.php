@@ -221,10 +221,14 @@ class AnnotatedCommand extends Command implements HelpDocumentAlter
             $description = $inputOption->getDescription();
 
             if (empty($description) && isset($automaticOptions[$name])) {
+                // Unfortunately, Console forces us too construct a new InputOption to set a description.
                 $description = $automaticOptions[$name]->getDescription();
                 $this->addInputOption($inputOption, $description);
             } else {
-                $this->addInputOption($inputOption);
+                if ($native = $this->getNativeDefinition()) {
+                    $native->addOption($inputOption);
+                }
+                $this->getDefinition()->addOption($inputOption);
             }
         }
     }
