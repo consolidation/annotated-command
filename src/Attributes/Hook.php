@@ -18,7 +18,7 @@ class Hook
      */
     public function __construct(
         #[ExpectedValues(valuesFromClass: HookManager::class)] public string $type,
-        public ?string $target
+        public ?string $target = null
     ) {
     }
 
