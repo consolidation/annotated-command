@@ -565,6 +565,7 @@ class CommandInfo
         $opts = $this->options()->getValues();
         foreach ($opts as $name => $defaultValue) {
             $description = $this->options()->getDescription($name);
+            $suggestedValues = $this->options()->getSuggestedValues($name);
 
             $fullName = $name;
             $shortcut = '';
@@ -584,7 +585,7 @@ class CommandInfo
             if ($defaultValue === false) {
                 $explicitOptions[$fullName] = new InputOption($fullName, $shortcut, InputOption::VALUE_NONE, $description);
             } elseif ($defaultValue === InputOption::VALUE_REQUIRED) {
-                $explicitOptions[$fullName] = new InputOption($fullName, $shortcut, InputOption::VALUE_REQUIRED, $description);
+                $explicitOptions[$fullName] = new InputOption($fullName, $shortcut, InputOption::VALUE_REQUIRED, $description, null, $suggestedValues);
             } elseif (is_array($defaultValue)) {
                 $optionality = count($defaultValue) ? InputOption::VALUE_OPTIONAL : InputOption::VALUE_REQUIRED;
                 $explicitOptions[$fullName] = new InputOption(
@@ -592,10 +593,11 @@ class CommandInfo
                     $shortcut,
                     InputOption::VALUE_IS_ARRAY | $optionality,
                     $description,
-                    count($defaultValue) ? $defaultValue : null
+                    count($defaultValue) ? $defaultValue : null,
+                    $suggestedValues
                 );
             } else {
-                $explicitOptions[$fullName] = new InputOption($fullName, $shortcut, InputOption::VALUE_OPTIONAL, $description, $defaultValue);
+                $explicitOptions[$fullName] = new InputOption($fullName, $shortcut, InputOption::VALUE_OPTIONAL, $description, $defaultValue, $suggestedValues);
             }
         }
 
@@ -624,12 +626,12 @@ class CommandInfo
         return $this->findOptionAmongAlternatives($optionName);
     }
 
-    public function addArgumentDescription($name, $description)
+    public function addArgumentDescription($name, $description, $suggestions = [])
     {
-        $this->addOptionOrArgumentDescription($this->arguments(), $name, $description);
+        $this->addOptionOrArgumentDescription($this->arguments(), $name, $description, $suggestions);
     }
 
-    public function addOptionDescription($name, $description)
+    public function addOptionDescription($name, $description, $suggestedValues = [])
     {
         $variableName = $this->findMatchingOption($name);
         if ($this->simpleOptionParametersAllowed && $this->arguments()->exists($variableName)) {
@@ -637,13 +639,13 @@ class CommandInfo
             // One of our parameters is an option, not an argument. Flag it so that we can inject the right value when needed.
             $this->parameterMap[$variableName] = true;
         }
-        $this->addOptionOrArgumentDescription($this->options(), $variableName, $description);
+        $this->addOptionOrArgumentDescription($this->options(), $variableName, $description, $suggestedValues);
     }
 
-    protected function addOptionOrArgumentDescription(DefaultsWithDescriptions $set, $variableName, $description)
+    protected function addOptionOrArgumentDescription(DefaultsWithDescriptions $set, $variableName, $description, $suggestedValues = [])
     {
         list($description, $defaultValue) = $this->splitOutDefault($description);
-        $set->add($variableName, $description);
+        $set->add($variableName, $description, null, $suggestedValues);
         if ($defaultValue !== null) {
             $set->setDefaultValue($variableName, $defaultValue);
         }
