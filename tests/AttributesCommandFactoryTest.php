@@ -73,7 +73,7 @@ class AttributesCommandFactoryTest extends TestCase
         $this->assertEquals('This is the improved way to declare options.', $command->getDescription());
         $this->assertEquals("This command will echo its arguments and options", $command->getHelp());
         $this->assertEquals('c', implode(',', $command->getAliases()));
-        $this->assertEquals('improved:options [--o1] [--o2] [--] <a1> <a2>', $command->getSynopsis());
+        $this->assertEquals('improved:options [--o1 [O1]] [--o2 [O2]] [--] <a1> <a2>', $command->getSynopsis());
         $this->assertEquals('improved:options a b --o1=x --o2=y', implode(',', $command->getUsages()));
 
         $input = new StringInput('improved:options a b');
