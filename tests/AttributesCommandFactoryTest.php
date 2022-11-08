@@ -63,6 +63,32 @@ class AttributesCommandFactoryTest extends TestCase
     /**
      * @requires PHP >= 8.0
      */
+    function testImprovedOptionsCommand()
+    {
+        $this->commandFileInstance = new \Consolidation\TestUtils\ExampleAttributesCommandFile;
+        $this->commandFactory = new AnnotatedCommandFactory();
+        $commandInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'improvedOptions');
+
+        $command = $this->commandFactory->createCommand($commandInfo, $this->commandFileInstance);
+
+        $this->assertInstanceOf('\Symfony\Component\Console\Command\Command', $command);
+        $this->assertEquals('improved:options', $command->getName());
+        $this->assertEquals('This is the improved way to declare options.', $command->getDescription());
+        $this->assertEquals("This command will echo its arguments and options", $command->getHelp());
+        $this->assertEquals('c', implode(',', $command->getAliases()));
+        $this->assertEquals('improved:options [--o1 [O1]] [--o2 [O2]] [--] <a1> <a2>', $command->getSynopsis());
+        $this->assertEquals('improved:options a b --o1=x --o2=y', implode(',', $command->getUsages()));
+
+        $input = new StringInput('improved:options a b');
+        $this->assertRunCommandViaApplicationEquals($command, $input, "args are a and b, and options are 'one' and 'two'");
+
+        $input = new StringInput('improved:options a b --o1=x --o2=y');
+        $this->assertRunCommandViaApplicationEquals($command, $input, "args are a and b, and options are 'x' and 'y'");
+    }
+
+    /**
+     * @requires PHP >= 8.0
+     */
     function testBirdsCommand()
     {
         $this->commandFileInstance = new \Consolidation\TestUtils\ExampleAttributesCommandFile;
