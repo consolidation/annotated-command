@@ -60,6 +60,9 @@ class AttributesCommandFactoryTest extends TestCase
         $this->assertRunCommandViaApplicationEquals($command, $input, 'this that and the other thing');
     }
 
+    /**
+     * @requires PHP >= 8.0
+     */
     function testImprovedOptionsCommand()
     {
         $this->commandFileInstance = new \Consolidation\TestUtils\ExampleAttributesCommandFile;
