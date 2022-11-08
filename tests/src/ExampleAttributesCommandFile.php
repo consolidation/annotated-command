@@ -57,6 +57,19 @@ class ExampleAttributesCommandFile
         return implode(' ', $args);
     }
 
+    #[CLI\Command(name: 'improved:options', aliases: ['c'])]
+    #[CLI\Help(description: 'This is the improved way to declare options.', synopsis: "This command will echo its arguments and options")]
+
+    #[CLI\Argument(name: 'a1', description: 'an arg')]
+    #[CLI\Argument(name: 'a2', description: 'another arg')]
+    #[CLI\Option(name: 'o1', description: 'an option')]
+    #[CLI\Option(name: 'o2', description: 'another option')]
+    #[CLI\Usage(name: 'a b --o1=x --o2=y', description: 'Print some example values')]
+    public function improvedOptions($a1, $a2, $o1 = 'one', $o2 = 'two')
+    {
+        return "args are $a1 and $a2, and options are " . var_export($o1, true) . ' and ' . var_export($o2, true);
+    }
+
     #[CLI\Command(name: 'test:arithmatic', aliases: ['arithmatic'])]
     #[CLI\Help(description: 'This is the test:arithmatic command', synopsis: "This command will add one and two. If the --negate flag\nis provided, then the result is negated.",)]
     #[CLI\Argument(name: 'one', description: 'The first number to add.', suggestedValues: [1,2,3,4,5])]

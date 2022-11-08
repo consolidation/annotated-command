@@ -154,6 +154,25 @@ class ExampleCommandFile
     }
 
     /**
+     * This is the improved way to declare options.
+     *
+     * This command will echo its arguments and options
+     *
+     * @command improved:options
+     * @param string $a1 an arg
+     * @param string $a2 another arg
+     * @option $o1 an option
+     * @option $o2 another option
+     * @aliases c
+     * @usage a b --o1=x --o2=y
+     *   Print some example values
+     */
+    public function improvedOptions($a1, $a2, $o1 = 'one', $o2 = 'two')
+    {
+        return "args are $a1 and $a2, and options are " . var_export($o1, true) . ' and ' . var_export($o2, true);
+    }
+
+    /**
      * @command my:repeat
      */
     public function myRepeat($one, $two = '', array $options = ['repeat' => 1])
