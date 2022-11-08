@@ -74,7 +74,7 @@ or via PHP 8 attributes.
     #[CLI\Param(name: 'two', description: 'The other parameter')]
     #[CLI\Option(name: 'flip', description: 'Whether or not the second parameter should come first in the result.')]
     #[CLI\Usage(name: 'bet alpha --flip', description: 'Concatenate "alpha" and "bet".')]
-    public function myEcho($one, $two = '', array $options = ['flip' => false])
+    public function myEcho($one, $two = '', $flip = false)
     {
         if ($options['flip']) {
             return "{$two}{$one}";
