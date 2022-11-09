@@ -1,5 +1,12 @@
 # Change Log
 
+### 4.6.1 - 9 November 2022
+
+- Use Attributes to set suggestedValues for arg/option completion (#275)
+- Default value and therefore data type of parameter-defined cli options was being dropped (#280)
+- Make nullable properties in Attributes actually nullable (#278)
+- Only ignore commands in parent classes if flag is set (reverts backwards-compatibility break) (#277)
+
 ### 4.6.0 - 30 October 2022
 
 - Add support for command completion (#274)
