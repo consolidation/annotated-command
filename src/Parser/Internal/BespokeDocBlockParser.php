@@ -223,20 +223,11 @@ class BespokeDocBlockParser
         return $this->fqcnCache->qualify($this->reflection->getFileName(), $className);
     }
 
-    public static function stripLeadingCommentCharacters($doc)
-    {
-        // Remove the leading /** and the trailing */
-        $doc = preg_replace('#^\s*/\*+\s*#', '', $doc);
-        $doc = preg_replace('#\s*\*+/\s*#', '', $doc);
-        $doc = preg_replace('#^[ \t]*\** ?#m', '', $doc);
-
-        return $doc;
-    }
 
     private function parseDocBlock($doc)
     {
         // Remove the leading /** and the trailing */
-        $doc = static::stripLeadingCommentCharacters($doc);
+        $doc = DocBlockUtils::stripLeadingCommentCharacters($doc);
 
         // Nothing left? Exit.
         if (empty($doc)) {
@@ -283,14 +274,9 @@ class BespokeDocBlockParser
         $this->commandInfo->setHelp($help);
     }
 
-    public static function nextLineIsNotEmpty($lines)
+    protected function nextLineIsNotEmpty($lines)
     {
-        if (empty($lines)) {
-            return false;
-        }
-
-        $nextLine = trim($lines[0]);
-        return !empty($nextLine);
+        return DocBlockUtils::nextLineIsNotEmpty($lines);
     }
 
     protected function processAllTags($tags)

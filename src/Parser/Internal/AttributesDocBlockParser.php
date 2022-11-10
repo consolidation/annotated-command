@@ -37,13 +37,13 @@ class AttributesDocBlockParser
         // If 'CLI\Help' is not defined, then get the help from the docblock comment
         if (!$this->commandInfo->hasHelp()) {
             $doc = $this->reflection->getDocComment();
-            $doc = BespokeDocBlockParser::stripLeadingCommentCharacters($doc);
+            $doc = DocBlockUtils::stripLeadingCommentCharacters($doc);
 
             $lines = explode("\n", $doc);
 
             // Everything up to the first blank line goes in the description.
             $description = array_shift($lines);
-            while (BespokeDocBlockParser::nextLineIsNotEmpty($lines)) {
+            while (DocBlockUtils::nextLineIsNotEmpty($lines)) {
                 $description .= ' ' . array_shift($lines);
             }
 
