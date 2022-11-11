@@ -30,8 +30,13 @@ class ExampleAttributesCommandFile
         $this->output = $output;
     }
 
+    /**
+     * This is the my:echo command
+     *
+     * This command will concatenate two parameters. If the --flip flag
+     * is provided, then the result is the concatenation of two and one.
+     */
     #[CLI\Command(name: 'my:echo', aliases: ['c'])]
-    #[CLI\Help(description: 'This is the my:echo command', synopsis: "This command will concatenate two parameters. If the --flip flag\nis provided, then the result is the concatenation of two and one.",)]
     #[CLI\Argument(name: 'one', description: 'The first parameter')]
     #[CLI\Argument(name: 'two', description: 'The other parameter')]
     #[CLI\Option(name: 'flip', description: 'Whether or not the second parameter should come first in the result.')]
@@ -44,8 +49,13 @@ class ExampleAttributesCommandFile
         return "{$one}{$two}";
     }
 
+    /**
+     * This is the improved:echo command
+     *
+     * This command will concatenate two parameters. If the --flip flag
+     * is provided, then the result is the concatenation of two and one.
+     */
     #[CLI\Command(name: 'improved:echo', aliases: ['c'])]
-    #[CLI\Help(description: 'This is the improved:echo command', synopsis: "This command will concatenate two parameters. If the --flip flag\nis provided, then the result is the concatenation of two and one.",)]
     #[CLI\Argument(name: 'args', description: 'Any number of arguments separated by spaces.')]
     #[CLI\Option(name: 'flip', description: 'Whether or not the second parameter should come first in the result.')]
     #[CLI\Usage(name: 'bet alpha --flip', description: 'Concatenate "alpha" and "bet".')]
@@ -57,9 +67,12 @@ class ExampleAttributesCommandFile
         return implode(' ', $args);
     }
 
+    /**
+     * This is the improved way to declare options.
+     *
+     * This command will echo its arguments and options
+     */
     #[CLI\Command(name: 'improved:options', aliases: ['c'])]
-    #[CLI\Help(description: 'This is the improved way to declare options.', synopsis: "This command will echo its arguments and options")]
-
     #[CLI\Argument(name: 'a1', description: 'an arg')]
     #[CLI\Argument(name: 'a2', description: 'another arg')]
     #[CLI\Option(name: 'o1', description: 'an option')]
@@ -70,8 +83,19 @@ class ExampleAttributesCommandFile
         return "args are $a1 and $a2, and options are " . var_export($o1, true) . ' and ' . var_export($o2, true);
     }
 
+    /**
+     * This is the test:arithmatic command
+     *
+     * This command will add one and two. If the --negate flag
+     * is provided, then the result is negated.
+     *
+     * @param string $one The first parameter
+     * @param string $two The second parameter
+     * @param array $options The list of options
+     *
+     * Any text after the attributes is omitted from the help description.
+     */
     #[CLI\Command(name: 'test:arithmatic', aliases: ['arithmatic'])]
-    #[CLI\Help(description: 'This is the test:arithmatic command', synopsis: "This command will add one and two. If the --negate flag\nis provided, then the result is negated.",)]
     #[CLI\Argument(name: 'one', description: 'The first number to add.', suggestedValues: [1,2,3,4,5])]
     #[CLI\Argument(name: 'two', description: 'The other number to add.')]
     #[CLI\Option(name: 'negate', description: 'Whether or not the result should be negated.')]

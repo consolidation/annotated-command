@@ -385,6 +385,14 @@ class CommandInfo
     }
 
     /**
+     * Determine if help was provided for this command info
+     */
+    public function hasHelp()
+    {
+        return !empty($this->help) || !empty($this->description);
+    }
+
+    /**
      * Get the help text of the command (the description)
      */
     public function getHelp()

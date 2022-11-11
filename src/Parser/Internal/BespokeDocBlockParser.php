@@ -223,11 +223,11 @@ class BespokeDocBlockParser
         return $this->fqcnCache->qualify($this->reflection->getFileName(), $className);
     }
 
+
     private function parseDocBlock($doc)
     {
         // Remove the leading /** and the trailing */
-        $doc = preg_replace('#^\s*/\*+\s*#', '', $doc);
-        $doc = preg_replace('#\s*\*+/\s*#', '', $doc);
+        $doc = DocBlockUtils::stripLeadingCommentCharacters($doc);
 
         // Nothing left? Exit.
         if (empty($doc)) {
@@ -240,7 +240,6 @@ class BespokeDocBlockParser
         foreach (explode("\n", $doc) as $row) {
             // Remove trailing whitespace and leading space + '*'s
             $row = rtrim($row);
-            $row = preg_replace('#^[ \t]*\**#', '', $row);
 
             if (!$tagFactory->parseLine($row)) {
                 $lines[] = $row;
@@ -264,7 +263,7 @@ class BespokeDocBlockParser
 
         // Everything up to the first blank line goes in the description.
         $description = array_shift($lines);
-        while ($this->nextLineIsNotEmpty($lines)) {
+        while (static::nextLineIsNotEmpty($lines)) {
             $description .= ' ' . array_shift($lines);
         }
 
@@ -277,12 +276,7 @@ class BespokeDocBlockParser
 
     protected function nextLineIsNotEmpty($lines)
     {
-        if (empty($lines)) {
-            return false;
-        }
-
-        $nextLine = trim($lines[0]);
-        return !empty($nextLine);
+        return DocBlockUtils::nextLineIsNotEmpty($lines);
     }
 
     protected function processAllTags($tags)
