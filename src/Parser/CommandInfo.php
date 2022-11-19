@@ -658,10 +658,12 @@ class CommandInfo
             $defaultValue = $defaultFromParameter;
         }
         // "Avoid cannot set a default value except for InputArgument::OPTIONAL mode." error.
+        $set->add($variableName, $description, $defaultValue === [] ? null : $defaultValue, $suggestedValues);
+        // Now set the defaultValue if we fudged it above. This is more permissive.
+        // Note that there is no setSuggestions() method so it has to be set above.
         if ($defaultValue === []) {
-            $defaultValue = null;
+            $set->setDefaultValue($variableName, $defaultValue);
         }
-        $set->add($variableName, $description, $defaultValue, $suggestedValues);
     }
 
     protected function splitOutDefault($description)
