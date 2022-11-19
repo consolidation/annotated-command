@@ -6,6 +6,7 @@ use Consolidation\AnnotatedCommand\Hooks\HookManager;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Symfony\Component\Console\Completion\CompletionInput;
 use Symfony\Component\Console\Completion\CompletionSuggestions;
+use Symfony\Component\Console\Input\InputOption;
 
 /**
  * Test file used in the Annotation Factory tests.  It is also
@@ -96,13 +97,16 @@ class ExampleAttributesCommandFile
      * Any text after the attributes is omitted from the help description.
      */
     #[CLI\Command(name: 'test:arithmatic', aliases: ['arithmatic'])]
+    // suggestedValues available on Symfony 6.1+. Also see the CLI\Complete Attribute below.
     #[CLI\Argument(name: 'one', description: 'The first number to add.', suggestedValues: [1,2,3,4,5])]
     #[CLI\Argument(name: 'two', description: 'The other number to add.')]
-    #[CLI\Option(name: 'negate', description: 'Whether or not the result should be negated.')]
-    #[CLI\Usage(name: '2 2 --negate', description: 'Add two plus two and then negate.')]
+    // Use the Complete Attribute for dynamic values.
     #[CLI\Complete(method_name_or_callable: 'testArithmaticComplete')]
+    #[CLI\Option(name: 'negate', description: 'Whether or not the result should be negated.')]
+    #[CLI\Option(name: 'color', description: 'What color are you feeling.', suggestedValues: ['red', 'blue', 'green'])]
+    #[CLI\Usage(name: '2 2 --negate', description: 'Add two plus two and then negate.')]
     #[CLI\Misc(data: ['dup' => ['one', 'two']])]
-    public function testArithmatic($one, $two = 2, array $options = ['negate' => false, 'unused' => 'bob'])
+    public function testArithmatic($one, $two = 2, array $options = ['negate' => false, 'color' => InputOption::VALUE_REQUIRED, 'unused' => 'bob'])
     {
         $result = $one + $two;
         if ($options['negate']) {
@@ -141,7 +145,7 @@ class ExampleAttributesCommandFile
     public function testArithmaticComplete(CompletionInput $input, CompletionSuggestions $suggestions): void
     {
         if ($input->mustSuggestArgumentValuesFor('two')) {
-            $suggestions->suggestValues(range(10, 15));
+            $suggestions->suggestValues(range(118, 122));
         }
     }
 }

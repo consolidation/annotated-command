@@ -8,6 +8,7 @@ use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Console\Tester\CommandCompletionTester;
 
 class AttributesCommandFactoryTest extends TestCase
 {
@@ -108,6 +109,25 @@ class AttributesCommandFactoryTest extends TestCase
         $commandInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'testArithmatic');
         $command = $this->commandFactory->createCommand($commandInfo, $this->commandFileInstance);
         $this->assertIsCallable($command->getCompletionCallback());
+
+        if (!class_exists('\Symfony\Component\Console\Completion\Output\FishCompletionOutput')) {
+            $this->markTestSkipped('Symfony Console 6.1+ needed for rest of test.');
+        }
+
+        $tester = new CommandCompletionTester($command);
+        // Complete the input without any existing input (the empty string represents
+        // the position of the cursor)
+        $suggestions = $tester->complete(['']);
+        $this->assertSame(['1', '2', '3', '4', '5'], $suggestions);
+
+        $suggestions = $tester->complete(['1', '2', '--color']);
+        $this->assertSame(['red', 'blue', 'green'], $suggestions);
+
+        // CommandCompletionTester from Symfony doesnt test dynamic values as
+        // that is our feature. Symfony uses closures for this but we can't use closures
+        // in Attributes.
+        // $suggestions = $tester->complete(['1', '12']);
+        // $this->assertSame(['12', '121', '122'], $suggestions);
     }
 
     function assertRunCommandViaApplicationEquals($command, $input, $expectedOutput, $expectedStatusCode = 0)
