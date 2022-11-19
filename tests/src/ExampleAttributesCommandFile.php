@@ -59,7 +59,7 @@ class ExampleAttributesCommandFile
     #[CLI\Command(name: 'improved:echo', aliases: ['c'])]
     #[CLI\Argument(name: 'args', description: 'Any number of arguments separated by spaces.')]
     #[CLI\Option(name: 'flip', description: 'Whether or not the second parameter should come first in the result.')]
-    #[CLI\Usage(name: 'bet alTpha --flip', description: 'Concatenate "alpha" and "bet".')]
+    #[CLI\Usage(name: 'bet alpha --flip', description: 'Concatenate "alpha" and "bet".')]
     public function improvedEcho(array $args, $flip = false)
     {
         if ($flip) {
