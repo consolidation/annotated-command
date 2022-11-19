@@ -634,12 +634,12 @@ class CommandInfo
         return $this->findOptionAmongAlternatives($optionName);
     }
 
-    public function addArgumentDescription($name, $description, $suggestions = [])
+    public function addArgumentDescription($name, $description, $suggestedValues = [])
     {
-        $this->addOptionOrArgumentDescription($this->arguments(), $name, $description, $suggestions);
+        $this->addOptionOrArgumentDescription($this->arguments(), $name, $description, $suggestedValues);
     }
 
-    public function addOptionDescription($name, $description)
+    public function addOptionDescription($name, $description, $suggestedValues = [])
     {
         $variableName = $this->findMatchingOption($name);
         $defaultFromParameter = null;
@@ -648,18 +648,20 @@ class CommandInfo
             // One of our parameters is an option, not an argument. Flag it so that we can inject the right value when needed.
             $this->parameterMap[$variableName] = true;
         }
-        $this->addOptionOrArgumentDescription($this->options(), $variableName, $description, [], $defaultFromParameter);
+        $this->addOptionOrArgumentDescription($this->options(), $variableName, $description, $suggestedValues, $defaultFromParameter);
     }
 
-    // Note: 'suggestions' passed in, but not used
-    protected function addOptionOrArgumentDescription(DefaultsWithDescriptions $set, $variableName, $description, $suggestions = [], $defaultFromParameter = null)
+    protected function addOptionOrArgumentDescription(DefaultsWithDescriptions $set, $variableName, $description, $suggestedValues = [], $defaultFromParameter = null)
     {
         list($description, $defaultValue) = $this->splitOutDefault($description);
         if (empty($defaultValue) && !empty($defaultFromParameter)) {
             $defaultValue = $defaultFromParameter;
         }
-        $set->add($variableName, $description);
-        if ($defaultValue !== null) {
+        // "Avoid cannot set a default value except for InputArgument::OPTIONAL mode." error.
+        $set->add($variableName, $description, $defaultValue === [] ? null : $defaultValue, $suggestedValues);
+        // Now set the defaultValue if we fudged it above. This is more permissive.
+        // Note that there is no setSuggestions() method so it has to be set above.
+        if ($defaultValue === []) {
             $set->setDefaultValue($variableName, $defaultValue);
         }
     }
