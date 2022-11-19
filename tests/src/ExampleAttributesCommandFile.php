@@ -145,7 +145,7 @@ class ExampleAttributesCommandFile
     public function testArithmaticComplete(CompletionInput $input, CompletionSuggestions $suggestions): void
     {
         if ($input->mustSuggestArgumentValuesFor('two')) {
-            $suggestions->suggestValues(range(10, 15));
+            $suggestions->suggestValues(range(118, 122));
         }
     }
 }

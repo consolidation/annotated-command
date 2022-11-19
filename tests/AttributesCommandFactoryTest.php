@@ -122,6 +122,9 @@ class AttributesCommandFactoryTest extends TestCase
 
         $suggestions = $tester->complete(['1', '2', '--color']);
         $this->assertSame(['red', 'blue', 'green'], $suggestions);
+
+        $suggestions = $tester->complete(['1', '12']);
+        $this->assertSame(['12', '121', '122'], $suggestions);
     }
 
     function assertRunCommandViaApplicationEquals($command, $input, $expectedOutput, $expectedStatusCode = 0)
