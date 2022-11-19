@@ -657,6 +657,10 @@ class CommandInfo
         if (empty($defaultValue) && !empty($defaultFromParameter)) {
             $defaultValue = $defaultFromParameter;
         }
+        // "Avoid cannot set a default value except for InputArgument::OPTIONAL mode." error.
+        if ($defaultValue === []) {
+            $defaultValue = null;
+        }
         $set->add($variableName, $description, $defaultValue, $suggestedValues);
     }
 
