@@ -110,8 +110,8 @@ class AttributesCommandFactoryTest extends TestCase
         $command = $this->commandFactory->createCommand($commandInfo, $this->commandFileInstance);
         $this->assertIsCallable($command->getCompletionCallback());
 
-        if (!class_exists('\Symfony\Component\Console\Tester\CommandCompletionTester')) {
-            $this->markTestSkipped('Symfony Console 6+ needed.');
+        if (!class_exists('\Symfony\Component\Console\Completion\Output\FishCompletionOutput')) {
+            $this->markTestSkipped('Symfony Console 6.1+ needed for rest of test.');
         }
 
         $tester = new CommandCompletionTester($command);
