@@ -28,6 +28,6 @@ class Help
         $args = $attribute->getArguments();
         $commandInfo->setDescription($args['description']);
         $commandInfo->setHelp(@$args['synopsis']);
-        $commandInfo->setHidden(@$args['hidden']);
+        $commandInfo->addAnnotation(@$args['hidden']);
     }
 }
