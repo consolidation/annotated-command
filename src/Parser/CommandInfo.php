@@ -452,7 +452,7 @@ class CommandInfo
      */
     public function setHidden($hidden)
     {
-        $this->hidden = $hidden;
+        $this->AddAnnotation('hidden', $hidden);
         return $this;
     }
 
