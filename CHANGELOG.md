@@ -1,5 +1,11 @@
 # Change Log
 
+### 4.7.0 - 22 November 2022
+
+- Allow command help and descriptions to be defined via docblock comments (#281)
+- Fix hidden via Attribute (#283)
+- Fix command completion (#282)
+
 ### 4.6.1 - 9 November 2022
 
 - Use Attributes to set suggestedValues for arg/option completion (#275)
