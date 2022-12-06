@@ -1,5 +1,9 @@
 # Change Log
 
+### 4.7.1 - 6 December 2022
+
+- PHP 8.2 fixes
+
 ### 4.7.0 - 22 November 2022
 
 - Allow command help and descriptions to be defined via docblock comments (#281)
