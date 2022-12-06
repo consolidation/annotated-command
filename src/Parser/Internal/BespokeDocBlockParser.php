@@ -12,6 +12,9 @@ use Consolidation\AnnotatedCommand\Parser\DefaultsWithDescriptions;
 class BespokeDocBlockParser
 {
     protected $fqcnCache;
+    protected $commandInfo;
+    protected $reflection;
+    protected $optionParamName;
 
     /**
      * @var array
