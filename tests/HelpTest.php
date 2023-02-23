@@ -155,7 +155,7 @@ class HelpTest extends TestCase
       </defaults>
     </option>
     <option name="--fields" shortcut="" accept_value="1" is_value_required="0" is_multiple="0">
-      <description>Available fields: I (first), II (second), III (third)</description>
+      <description>Available fields: I (first), II (second), III (third), IV (fourth)</description>
       <defaults/>
     </option>
     <option name="--field" shortcut="" accept_value="1" is_value_required="1" is_multiple="0">
@@ -249,7 +249,7 @@ EOT;
             "accept_value": "1",
             "is_value_required": "0",
             "is_multiple": "0",
-            "description": "Available fields: I (first), II (second), III (third)"
+            "description": "Available fields: I (first), II (second), III (third), IV (fourth)"
         },
         "field": {
             "name": "--field",
