@@ -90,6 +90,9 @@ class AlphaCommandFile implements CustomEventAwareInterface
      *   first: I
      *   second: II
      *   third: III
+     *   fourth: IV
+     * @default-table-fields first,second,third
+     * @default-fields first,second,third,fourth
      * @usage example:table --format=yml
      *   Show the example table in yml format.
      * @usage example:table --fields=first,third
@@ -103,10 +106,10 @@ class AlphaCommandFile implements CustomEventAwareInterface
     public function exampleTable($unused = '', $options = ['format' => 'table', 'fields' => ''])
     {
         $outputData = [
-            [ 'first' => 'One',  'second' => 'Two',  'third' => 'Three' ],
-            [ 'first' => 'Eins', 'second' => 'Zwei', 'third' => 'Drei'  ],
-            [ 'first' => 'Ichi', 'second' => 'Ni',   'third' => 'San'   ],
-            [ 'first' => 'Uno',  'second' => 'Dos',  'third' => 'Tres'  ],
+            [ 'first' => 'One',  'second' => 'Two',  'third' => 'Three', 'fourth' => 'Four', ],
+            [ 'first' => 'Eins', 'second' => 'Zwei', 'third' => 'Drei', 'fourth' => 'Vier', ],
+            [ 'first' => 'Ichi', 'second' => 'Ni',   'third' => 'San', 'fourth' => 'Shi',  ],
+            [ 'first' => 'Uno',  'second' => 'Dos',  'third' => 'Tres', 'fourth' => 'Quatro', ],
         ];
         return CommandResult::data(new RowsOfFields($outputData));
     }
@@ -120,6 +123,7 @@ class AlphaCommandFile implements CustomEventAwareInterface
      *   first: I
      *   second: II
      *   third: III
+     *   fourth: IV
      * @usage example:table --format=yml
      *   Show the example table in yml format.
      * @usage example:table --fields=first,third
@@ -133,10 +137,10 @@ class AlphaCommandFile implements CustomEventAwareInterface
     public function exampleTableTwo($unused = '', $options = ['format' => 'table', 'fields' => ''])
     {
         $outputData = [
-            [ 'first' => 'One',  'second' => 'Two',  'third' => 'Three' ],
-            [ 'first' => 'Eins', 'second' => 'Zwei', 'third' => 'Drei'  ],
-            [ 'first' => 'Ichi', 'second' => 'Ni',   'third' => 'San'   ],
-            [ 'first' => 'Uno',  'second' => 'Dos',  'third' => 'Tres'  ],
+            [ 'first' => 'One',  'second' => 'Two',  'third' => 'Three', 'fourth' => 'Four', ],
+            [ 'first' => 'Eins', 'second' => 'Zwei', 'third' => 'Drei', 'fourth' => 'Vier', ],
+            [ 'first' => 'Ichi', 'second' => 'Ni',   'third' => 'San', 'fourth' => 'Shi',  ],
+            [ 'first' => 'Uno',  'second' => 'Dos',  'third' => 'Tres', 'fourth' => 'Quatro', ],
         ];
         return CommandResult::data(new RowsOfFields($outputData));
     }

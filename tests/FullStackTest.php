@@ -71,7 +71,7 @@ class FullStackTest extends TestCase
         $containsList =
         [
             '--format[=FORMAT]  Format the result data. Available formats: csv,json,list,null,php,print-r,sections,string,table,tsv,var_export,xml,yaml [default: "table"]',
-            '--fields[=FIELDS]  Available fields: I (first), II (second), III (third) [default: ""]',
+            '--fields[=FIELDS]  Available fields: I (first), II (second), III (third), IV (fourth) [default: ""]',
         ];
         $this->assertRunCommandViaApplicationContains('help ' . $commandName, $containsList);
     }
@@ -194,6 +194,37 @@ EOT;
         // When --field is specified (instead of --fields), then the format
         // is forced to 'string'.
         $this->assertRunCommandViaApplicationEquals('example:table --field=II', $expectedSingleField);
+
+        $expectedJson = <<<EOT
+[
+    {
+        "first": "One",
+        "second": "Two",
+        "third": "Three",
+        "fourth": "Four"
+    },
+    {
+        "first": "Eins",
+        "second": "Zwei",
+        "third": "Drei",
+        "fourth": "Vier"
+    },
+    {
+        "first": "Ichi",
+        "second": "Ni",
+        "third": "San",
+        "fourth": "Shi"
+    },
+    {
+        "first": "Uno",
+        "second": "Dos",
+        "third": "Tres",
+        "fourth": "Quatro"
+    }
+]
+EOT;
+
+        $this->assertRunCommandViaApplicationEquals('example:table --format=json', $expectedJson);
 
         // Check the help for the example table command and see if the options
         // from the alter hook were added.  We expect that we should not see
