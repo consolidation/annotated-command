@@ -28,8 +28,8 @@ class AttributesCommandFactoryTest extends TestCase
 
         $this->assertInstanceOf('\Symfony\Component\Console\Command\Command', $command);
         $this->assertEquals('my:echo', $command->getName());
-        $this->assertEquals('This is the my:echo command', $command->getDescription());
-        $this->assertEquals("This command will concatenate two parameters. If the --flip flag\nis provided, then the result is the concatenation of two and one.", $command->getHelp());
+        $this->assertEquals('This is the my:echo command', rtrim($command->getDescription(), PHP_EOL));
+        $this->assertEquals("This command will concatenate two parameters. If the --flip flag is provided, then the result is the concatenation of two and one.", preg_replace("#[\n\r\t ]+#", ' ', $command->getHelp()));
         $this->assertEquals('c', implode(',', $command->getAliases()));
         $this->assertEquals('my:echo [--flip] [--] <one> [<two>]', $command->getSynopsis());
         $this->assertEquals('my:echo bet alpha --flip', implode(',', $command->getUsages()));
@@ -51,8 +51,8 @@ class AttributesCommandFactoryTest extends TestCase
 
         $this->assertInstanceOf('\Symfony\Component\Console\Command\Command', $command);
         $this->assertEquals('improved:echo', $command->getName());
-        $this->assertEquals('This is the improved:echo command', $command->getDescription());
-        $this->assertEquals("This command will concatenate two parameters. If the --flip flag\nis provided, then the result is the concatenation of two and one.", $command->getHelp());
+        $this->assertEquals('This is the improved:echo command', rtrim($command->getDescription(), PHP_EOL));
+        $this->assertEquals("This command will concatenate two parameters. If the --flip flag is provided, then the result is the concatenation of two and one.", preg_replace("#[\n\r\t ]+#", ' ', $command->getHelp()));
         $this->assertEquals('c', implode(',', $command->getAliases()));
         $this->assertEquals('improved:echo [--flip] [--] [<args>...]', $command->getSynopsis());
         $this->assertEquals('improved:echo bet alpha --flip', implode(',', $command->getUsages()));
@@ -120,8 +120,8 @@ class AttributesCommandFactoryTest extends TestCase
 
         $this->assertInstanceOf('\Symfony\Component\Console\Command\Command', $command);
         $this->assertEquals('improved:options', $command->getName());
-        $this->assertEquals('This is the improved way to declare options.', $command->getDescription());
-        $this->assertEquals("This command will echo its arguments and options", $command->getHelp());
+        $this->assertEquals('This is the improved way to declare options.', rtrim($command->getDescription(), PHP_EOL));
+        $this->assertEquals("This command will echo its arguments and options", preg_replace("#[\n\r\t ]+#", ' ', $command->getHelp()));
         $this->assertEquals('c', implode(',', $command->getAliases()));
         $this->assertEquals('improved:options [--o1 [O1]] [--o2 [O2]] [--] <a1> <a2>', $command->getSynopsis());
         $this->assertEquals('improved:options a b --o1=x --o2=y', implode(',', $command->getUsages()));
