@@ -63,11 +63,11 @@ class CommandInfoTest extends TestCase
         $this->assertEquals('test:arithmatic', $commandInfo->getName());
         $this->assertEquals(
             'This is the test:arithmatic command',
-            $commandInfo->getDescription()
+            rtrim($commandInfo->getDescription(), PHP_EOL)
         );
         $this->assertEquals(
-            "This command will add one and two. If the --negate flag\nis provided, then the result is negated.",
-            $commandInfo->getHelp()
+            "This command will add one and two. If the --negate flag is provided, then the result is negated.",
+            preg_replace("#[\n\r\t ]+#", ' ', $commandInfo->getHelp())
         );
         $this->assertEquals('arithmatic', implode(',', $commandInfo->getAliases()));
         $this->assertEquals(
