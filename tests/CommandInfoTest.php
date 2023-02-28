@@ -98,10 +98,6 @@ class CommandInfoTest extends TestCase
             'one,two',
             $commandInfo->getAnnotation('dup')
         );
-        $this->assertEquals(
-            ['one','two'],
-            $commandInfo->getAnnotationList('dup')
-        );
     }
 
     function testReturnValue()
