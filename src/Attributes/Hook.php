@@ -31,8 +31,7 @@ class Hook
         $value = null;
         if ($instance->selector) {
             $value = '@' . $instance->selector;
-        }
-        elseif ($instance->target) {
+        } elseif ($instance->target) {
             $value = $instance->target;
         }
         $commandInfo->setName($value);
