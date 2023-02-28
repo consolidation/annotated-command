@@ -1,5 +1,10 @@
 # Change Log
 
+### 4.8.0 - 28 February 2023
+
+- Add HookSelector attribute and adjust Hook attribute accordingly (#290)
+- Allow for just one param to be passed in Help and Topics Attributes (#289)
+
 ### 4.7.1 - 6 December 2022
 
 - PHP 8.2 fixes
