@@ -94,6 +94,10 @@ class CommandInfoTest extends TestCase
             'bob',
             $commandInfo->options()->get('unused')
         );
+        $this->assertEquals(
+            'real good',
+            $commandInfo->getAnnotation('hookme')
+        );
     }
 
     function testReturnValue()

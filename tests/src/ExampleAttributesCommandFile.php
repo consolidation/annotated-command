@@ -105,7 +105,7 @@ class ExampleAttributesCommandFile
     #[CLI\Option(name: 'negate', description: 'Whether or not the result should be negated.')]
     #[CLI\Option(name: 'color', description: 'What color are you feeling.', suggestedValues: ['red', 'blue', 'green'])]
     #[CLI\Usage(name: '2 2 --negate', description: 'Add two plus two and then negate.')]
-    #[CLI\Misc(data: ['dup' => ['one', 'two']])]
+    #[CLI\HookSelector(name: 'hookme', value: 'real good')]
     public function testArithmatic($one, $two = 2, array $options = ['negate' => false, 'color' => InputOption::VALUE_REQUIRED, 'unused' => 'bob'])
     {
         $result = $one + $two;

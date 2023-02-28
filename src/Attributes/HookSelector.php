@@ -10,9 +10,9 @@ class HookSelector
 {
     /**
      * @param $name
-     *  The hook target which is being selected. If a hook has a target that begins with @, the remainder of the target is the name of the hook selector that must be present for that hook to run.
+     *  The name of the hook selector that must be present for that hook to run.
      * @param $value
-     *   A value which should can be used by the hook.
+     *   An value which can be used by the hook.
      */
     public function __construct(
         public string $name,
