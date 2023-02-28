@@ -1,6 +1,6 @@
 # Change Log
 
-### 4.8.0 - 28 February 2023
+### 4.8.0, 4.8.1 - 28 February 2023
 
 - Add HookSelector attribute and adjust Hook attribute accordingly (#290)
 - Allow for just one param to be passed in Help and Topics Attributes (#289)
