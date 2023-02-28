@@ -270,9 +270,7 @@ class ExampleCommandFile
      * @aliases arithmatic
      * @usage 2 2 --negate
      *   Add two plus two and then negate.
-     * @custom
-     * @dup one
-     * @dup two
+     * @hookme real good
      */
     public function testArithmatic($one, $two = 2, array $options = ['negate' => false, 'unused' => 'bob'])
     {
