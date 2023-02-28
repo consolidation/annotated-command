@@ -1,5 +1,35 @@
 # Change Log
 
+### 5.0.0-beta1 - 28 February 2023
+
+- Creating beta release of 5.x branch
+
+### 4.8.0 - 28 February 2023
+
+- Add HookSelector attribute and adjust Hook attribute accordingly (#290)
+- Allow for just one param to be passed in Help and Topics Attributes (#289)
+
+### 4.7.1 - 6 December 2022
+
+- PHP 8.2 fixes
+
+### 4.7.0 - 22 November 2022
+
+- Allow command help and descriptions to be defined via docblock comments (#281)
+- Fix hidden via Attribute (#283)
+- Fix command completion (#282)
+
+### 4.6.1 - 9 November 2022
+
+- Use Attributes to set suggestedValues for arg/option completion (#275)
+- Default value and therefore data type of parameter-defined cli options was being dropped (#280)
+- Make nullable properties in Attributes actually nullable (#278)
+- Only ignore commands in parent classes if flag is set (reverts backwards-compatibility break) (#277)
+
+### 4.6.0 - 30 October 2022
+
+- Add support for command completion (#274)
+
 ### 4.5.7 - 20 October 2022
 
 - Stop loading commands from inherited classes (#273)
@@ -238,7 +268,7 @@ DEPRECATED RELEASE. Do not use.
 
 ### 2.1.0 - 14 November 2016
 
-- Add support for output formatter wordwrapping 
+- Add support for output formatter wordwrapping
 - Fix version requirement for output-formatters in composer.json
 - Use output-formatters ~3
 - Move php_codesniffer back to require-dev (moved to require by mistake)
