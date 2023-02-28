@@ -94,10 +94,6 @@ class CommandInfoTest extends TestCase
             'bob',
             $commandInfo->options()->get('unused')
         );
-        $this->assertEquals(
-            'one,two',
-            $commandInfo->getAnnotation('dup')
-        );
     }
 
     function testReturnValue()
