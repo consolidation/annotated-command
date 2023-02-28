@@ -95,12 +95,8 @@ class CommandInfoTest extends TestCase
             $commandInfo->options()->get('unused')
         );
         $this->assertEquals(
-            'one,two',
-            $commandInfo->getAnnotation('dup')
-        );
-        $this->assertEquals(
-            ['one','two'],
-            $commandInfo->getAnnotationList('dup')
+            'real good',
+            $commandInfo->getAnnotation('hookme')
         );
     }
 
