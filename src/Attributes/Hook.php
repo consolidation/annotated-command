@@ -28,8 +28,14 @@ class Hook
     public static function handle(\ReflectionAttribute $attribute, CommandInfo $commandInfo)
     {
         $instance = $attribute->newInstance();
+        if ($instance->selector && $instance->target) {
+            throw new \Exception('Selector and Target may not be sent in the same Hook attribute.');
+        }
         $value = null;
         if ($instance->selector) {
+            if (strpos($instance->selector, '@') !== false) {
+                throw new \Exception('Selector may not contain an \'@\'');
+            }
             $value = '@' . $instance->selector;
         } elseif ($instance->target) {
             $value = $instance->target;
