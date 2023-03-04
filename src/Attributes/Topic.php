@@ -12,5 +12,4 @@ class Topic
     {
         $commandInfo->addAnnotation('topic', true);
     }
-
 }
