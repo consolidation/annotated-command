@@ -16,7 +16,7 @@ class HookSelector
      */
     public function __construct(
         public string $name,
-        public ?string $value = NULL,
+        public ?string $value = null,
     ) {
     }
 
