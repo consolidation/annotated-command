@@ -5,18 +5,18 @@ namespace Consolidation\AnnotatedCommand\Attributes;
 use Attribute;
 use Consolidation\AnnotatedCommand\Parser\CommandInfo;
 
-#[Attribute(Attribute::TARGET_METHOD)]
+#[Attribute(Attribute::TARGET_METHOD  | \Attribute::IS_REPEATABLE)]
 class HookSelector
 {
     /**
      * @param $name
      *  The name of the hook selector that must be present for that hook to run.
      * @param $value
-     *   An value which can be used by the hook.
+     *   A value which can may used by the hook.
      */
     public function __construct(
         public string $name,
-        public ?string $value,
+        public ?string $value = NULL,
     ) {
     }
 
