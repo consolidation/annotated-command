@@ -639,11 +639,14 @@ class CommandInfo
         $this->addOptionOrArgumentDescription($this->arguments(), $name, $description, $suggestedValues);
     }
 
-    public function addOptionDescriptionDefaultValue($name, $description, $suggestedValues = [], $defaultValue = null) {
+    public function addOption($name, $description, $suggestedValues = [], $defaultValue = null) {
         $this->addOptionOrArgumentDescription($this->options(), $name, $description, $suggestedValues, $defaultValue);
     }
 
-    public function addOptionDescription($name, $description, $suggestedValues = [])
+    /**
+     * @deprecated Use addOption() instead.
+     */
+    public function addOptionDescription($name, $description, $suggestedValues = [], $defaultValue = null)
     {
         $variableName = $this->findMatchingOption($name);
         $defaultFromParameter = null;
@@ -652,7 +655,7 @@ class CommandInfo
             // One of our parameters is an option, not an argument. Flag it so that we can inject the right value when needed.
             $this->parameterMap[$variableName] = true;
         }
-        $this->addOptionOrArgumentDescription($this->options(), $variableName, $description, $suggestedValues, $defaultFromParameter);
+        $this->addOptionOrArgumentDescription($this->options(), $variableName, $description, $suggestedValues, $defaultValue ?? $defaultFromParameter);
     }
 
     protected function addOptionOrArgumentDescription(DefaultsWithDescriptions $set, $variableName, $description, $suggestedValues = [], $defaultFromParameter = null)
