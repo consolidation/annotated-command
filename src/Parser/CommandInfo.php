@@ -639,6 +639,10 @@ class CommandInfo
         $this->addOptionOrArgumentDescription($this->arguments(), $name, $description, $suggestedValues);
     }
 
+    public function addOptionDescriptionDefaultValue($name, $description, $suggestedValues = [], $defaultValue = null) {
+        $this->addOptionOrArgumentDescription($this->options(), $name, $description, $suggestedValues, $defaultValue);
+    }
+
     public function addOptionDescription($name, $description, $suggestedValues = [])
     {
         $variableName = $this->findMatchingOption($name);
