@@ -140,6 +140,8 @@ class FullStackTest extends TestCase
         $this->assertRunCommandViaApplicationEquals('simulated:status', '42');
         $this->assertRunCommandViaApplicationEquals('example:output', 'Hello, World.');
         $this->assertRunCommandViaApplicationEquals('example:cat bet alpha --flip', 'alphabet');
+        $this->assertRunCommandViaApplicationEquals('example:snake bet alpha --flip-flag', 'alphabet');
+        $this->assertRunCommandViaApplicationEquals('example:camel bet alpha --flip-flag', 'alphabet');
         $this->assertRunCommandViaApplicationEquals('example:echo a b c', "a\tb\tc");
         $this->assertRunCommandViaApplicationEquals('example:message', 'Shipwrecked; send bananas.');
         $this->assertRunCommandViaApplicationEquals('command:with-one-optional-argument', 'Hello, world');
