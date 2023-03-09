@@ -69,6 +69,42 @@ class ExampleAttributesCommandFile
     }
 
     /**
+     * This is the snake_case version of the my:echo command
+     *
+     * This command will concatenate two parameters. If the --flip-flag
+     * is provided, then the result is the concatenation of two and one.
+     */
+    #[CLI\Command(name: 'snake:echo', aliases: ['c'])]
+    #[CLI\Argument(name: 'args', description: 'Any number of arguments separated by spaces.')]
+    #[CLI\Option(name: 'flip-flag', description: 'Whether or not the second parameter should come first in the result.')]
+    #[CLI\Usage(name: 'bet alpha --flip-flag', description: 'Concatenate "alpha" and "bet".')]
+    public function snakeCaseEcho(array $args, $flip_flag = false)
+    {
+        if ($flip_flag) {
+            $args = array_reverse($args);
+        }
+        return implode('', $args);
+    }
+
+    /**
+     * This is the camelCase version of the my:echo command
+     *
+     * This command will concatenate two parameters. If the --flip-flag
+     * is provided, then the result is the concatenation of two and one.
+     */
+    #[CLI\Command(name: 'camel:echo', aliases: ['c'])]
+    #[CLI\Argument(name: 'args', description: 'Any number of arguments separated by spaces.')]
+    #[CLI\Option(name: 'flip-flag', description: 'Whether or not the second parameter should come first in the result.')]
+    #[CLI\Usage(name: 'bet alpha --flip-flag', description: 'Concatenate "alpha" and "bet".')]
+    public function camelCaseEcho(array $args, $flipFlag = false)
+    {
+        if ($flipFlag) {
+            $args = array_reverse($args);
+        }
+        return implode('', $args);
+    }
+
+    /**
      * This is the improved way to declare options.
      *
      * This command will echo its arguments and options

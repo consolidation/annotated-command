@@ -64,6 +64,52 @@ class AttributesCommandFactoryTest extends TestCase
     /**
      * @requires PHP >= 8.0
      */
+    function testSnakeEchoCommand()
+    {
+        $this->commandFileInstance = new \Consolidation\TestUtils\ExampleAttributesCommandFile;
+        $this->commandFactory = new AnnotatedCommandFactory();
+        $commandInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'snakeCaseEcho');
+
+        $command = $this->commandFactory->createCommand($commandInfo, $this->commandFileInstance);
+
+        $this->assertInstanceOf('\Symfony\Component\Console\Command\Command', $command);
+        $this->assertEquals('snake:echo', $command->getName());
+        $this->assertEquals('This is the snake_case version of the my:echo command', $command->getDescription());
+        $this->assertEquals("This command will concatenate two parameters. If the --flip-flag\nis provided, then the result is the concatenation of two and one.", $command->getHelp());
+        $this->assertEquals('c', implode(',', $command->getAliases()));
+        $this->assertEquals('snake:echo [--flip-flag] [--] [<args>...]', $command->getSynopsis());
+        $this->assertEquals('snake:echo bet alpha --flip-flag', implode(',', $command->getUsages()));
+
+        $input = new StringInput('snake:echo bet alpha --flip-flag');
+        $this->assertRunCommandViaApplicationEquals($command, $input, 'alphabet');
+    }
+
+    /**
+     * @requires PHP >= 8.0
+     */
+    function testCamelEchoCommand()
+    {
+        $this->commandFileInstance = new \Consolidation\TestUtils\ExampleAttributesCommandFile;
+        $this->commandFactory = new AnnotatedCommandFactory();
+        $commandInfo = $this->commandFactory->createCommandInfo($this->commandFileInstance, 'camelCaseEcho');
+
+        $command = $this->commandFactory->createCommand($commandInfo, $this->commandFileInstance);
+
+        $this->assertInstanceOf('\Symfony\Component\Console\Command\Command', $command);
+        $this->assertEquals('camel:echo', $command->getName());
+        $this->assertEquals('This is the camelCase version of the my:echo command', $command->getDescription());
+        $this->assertEquals("This command will concatenate two parameters. If the --flip-flag\nis provided, then the result is the concatenation of two and one.", $command->getHelp());
+        $this->assertEquals('c', implode(',', $command->getAliases()));
+        $this->assertEquals('camel:echo [--flip-flag] [--] [<args>...]', $command->getSynopsis());
+        $this->assertEquals('camel:echo bet alpha --flip-flag', implode(',', $command->getUsages()));
+
+        $input = new StringInput('camel:echo bet alpha --flip-flag');
+        $this->assertRunCommandViaApplicationEquals($command, $input, 'alphabet');
+    }
+
+    /**
+     * @requires PHP >= 8.0
+     */
     function testImprovedOptionsCommand()
     {
         $this->commandFileInstance = new \Consolidation\TestUtils\ExampleAttributesCommandFile;
