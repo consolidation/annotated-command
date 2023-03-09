@@ -66,6 +66,32 @@ class AlphaCommandFile implements CustomEventAwareInterface
     }
 
     /**
+     * @command example:snake
+     *
+     * @option flip-flag A flag
+     */
+    public function exampleSnake($one, $two = '', $flip_flag = false)
+    {
+        if ($flip_flag) {
+            return "{$two}{$one}";
+        }
+        return "{$one}{$two}";
+    }
+
+    /**
+     * @command example:camel
+     *
+     * @option flip-flag A flag
+     */
+    public function exampleCamel($one, $two = '', $flipFlag = false)
+    {
+        if ($flipFlag) {
+            return "{$two}{$one}";
+        }
+        return "{$one}{$two}";
+    }
+
+    /**
      * @command example:echo
      */
     public function exampleEcho(array $args)

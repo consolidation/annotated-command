@@ -651,10 +651,11 @@ class CommandInfo
     {
         $variableName = $this->findMatchingOption($name);
         $defaultFromParameter = null;
-        if ($this->simpleOptionParametersAllowed && $this->arguments()->exists($variableName)) {
+        $parameterName = $this->arguments()->approximatelyMatchingKey($variableName);
+        if ($this->simpleOptionParametersAllowed && $parameterName) {
             $defaultFromParameter = $this->arguments()->removeMatching($variableName);
             // One of our parameters is an option, not an argument. Flag it so that we can inject the right value when needed.
-            $this->parameterMap[$variableName] = true;
+            $this->parameterMap[$parameterName] = $variableName;
         }
         $this->addOptionOrArgumentDescription($this->options(), $variableName, $description, $suggestedValues, $defaultValue ?? $defaultFromParameter);
     }
@@ -714,6 +715,9 @@ class CommandInfo
         // is @silent.
         foreach ($this->options()->getValues() as $name => $default) {
             if (in_array($optionName, explode('|', $name))) {
+                return $name;
+            }
+            if ($optionName == $this->convertArgumentName($name)) {
                 return $name;
             }
         }
@@ -838,9 +842,26 @@ class CommandInfo
      */
     protected function convertName($camel)
     {
-        $splitter="-";
+        $snake = $this->camelToSnake($camel, '-');
+        return preg_replace("/-/", ':', $snake, 1);
+    }
+
+    /**
+     * Convert an argument name from snake_case or camelCase
+     * to a hyphenated-string.
+     */
+    protected function convertArgumentName($camel)
+    {
+        $snake = $this->camelToSnake($camel, '-');
+        return strtr($snake, '_', '-');
+    }
+
+    /**
+     * Convert a camelCase string to a snake_case string.
+     */
+    protected function camelToSnake($camel, $splitter = '_')
+    {
         $camel=preg_replace('/(?!^)[[:upper:]][[:lower:]]/', '$0', preg_replace('/(?!^)[[:upper:]]+/', $splitter.'$0', $camel));
-        $camel = preg_replace("/$splitter/", ':', $camel, 1);
         return strtolower($camel);
     }
 
