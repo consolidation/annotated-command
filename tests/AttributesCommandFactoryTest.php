@@ -61,6 +61,9 @@ class AttributesCommandFactoryTest extends TestCase
         $this->assertRunCommandViaApplicationEquals($command, $input, 'this that and the other thing');
     }
 
+    /**
+     * @requires PHP >= 8.0
+     */
     function testSnakeEchoCommand()
     {
         $this->commandFileInstance = new \Consolidation\TestUtils\ExampleAttributesCommandFile;
@@ -81,6 +84,9 @@ class AttributesCommandFactoryTest extends TestCase
         $this->assertRunCommandViaApplicationEquals($command, $input, 'alphabet');
     }
 
+    /**
+     * @requires PHP >= 8.0
+     */
     function testCamelEchoCommand()
     {
         $this->commandFileInstance = new \Consolidation\TestUtils\ExampleAttributesCommandFile;
