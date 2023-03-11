@@ -11,11 +11,14 @@ class Topics
     /**
      * @param string[] $topics
      *   An array of topics that are related to this command.
+     * @param $isTopic
+     *   Mark this command as a topic itself.
      * @param $path
      *   The path to a markdown file, when this command is itself a topic.
      */
     public function __construct(
         public ?array $topics = [],
+        public bool $isTopic = false,
         public ?string $path = null,
     ) {
     }
@@ -24,8 +27,8 @@ class Topics
     {
         $instance = $attribute->newInstance();
         $commandInfo->addAnnotation('topics', $instance->topics);
-        if ($instance->path) {
-            $commandInfo->addAnnotation('topic', $instance->path);
+        if ($instance->isTopic || $instance->path) {
+            $commandInfo->addAnnotation('topic', $instance->path ?? true);
         }
     }
 }
