@@ -55,22 +55,17 @@ jobs:
       - name: Install PHP with extensions
         uses: shivammathur/setup-php@v2
         with:
-          php-version: 7.4
+          php-version: 8.0
           coverage: none
           extensions: intl
-
-      - name: Install dependencies
-        run: composer install --no-ansi --no-interaction --no-progress
 
       - name: Install roave/backward-compatibility-check
         run: |
           mkdir -p tools
-          echo '{}' > tools/composer.json
-          composer --working-dir=tools config --no-plugins allow-plugins.ocramius/package-versions true
-          composer --working-dir=tools require roave/backward-compatibility-check:^5
+          composer --working-dir=tools require roave/backward-compatibility-check:^7
 
       - name: Run roave/backward-compatibility-check
-        run: ./tools/vendor/bin/roave-backward-compatibility-check --from=4.5.5 || true
+        run: ./tools/vendor/bin/roave-backward-compatibility-check --from=4.5.5
 
   tests:
     name: Tests
@@ -95,7 +90,7 @@ jobs:
 
         dependencies:
           - locked
-        
+
         codecov:
           - false
 
@@ -150,7 +145,7 @@ jobs:
 
       - name: Make sure composer.json is valid before we start modifyig it
         run: composer validate
-        
+
       - name: Clear platform php configuration in case we need to update phpunit
         run: composer config --unset platform.php
 
@@ -170,7 +165,7 @@ jobs:
 
       - name: Run tests with phpunit
         run: vendor/bin/phpunit
-      
+
       - name: Publish code coverage to Codecov
         if: matrix.codecov == true
         run: bash <(curl -s https://codecov.io/bash)
