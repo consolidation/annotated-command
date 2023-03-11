@@ -74,8 +74,8 @@ class AttributesCommandFactoryTest extends TestCase
 
         $this->assertInstanceOf('\Symfony\Component\Console\Command\Command', $command);
         $this->assertEquals('snake:echo', $command->getName());
-        $this->assertEquals('This is the snake_case version of the my:echo command', $command->getDescription());
-        $this->assertEquals("This command will concatenate two parameters. If the --flip-flag\nis provided, then the result is the concatenation of two and one.", $command->getHelp());
+        $this->assertEquals('This is the snake_case version of the my:echo command', rtrim($command->getDescription(), PHP_EOL));
+        $this->assertEquals("This command will concatenate two parameters. If the --flip-flag is provided, then the result is the concatenation of two and one.", preg_replace("#[\n\r\t ]+#", ' ', $command->getHelp()));
         $this->assertEquals('c', implode(',', $command->getAliases()));
         $this->assertEquals('snake:echo [--flip-flag] [--] [<args>...]', $command->getSynopsis());
         $this->assertEquals('snake:echo bet alpha --flip-flag', implode(',', $command->getUsages()));
@@ -97,8 +97,8 @@ class AttributesCommandFactoryTest extends TestCase
 
         $this->assertInstanceOf('\Symfony\Component\Console\Command\Command', $command);
         $this->assertEquals('camel:echo', $command->getName());
-        $this->assertEquals('This is the camelCase version of the my:echo command', $command->getDescription());
-        $this->assertEquals("This command will concatenate two parameters. If the --flip-flag\nis provided, then the result is the concatenation of two and one.", $command->getHelp());
+        $this->assertEquals('This is the camelCase version of the my:echo command', rtrim($command->getDescription(), PHP_EOL));
+        $this->assertEquals("This command will concatenate two parameters. If the --flip-flag is provided, then the result is the concatenation of two and one.", preg_replace("#[\n\r\t ]+#", ' ', $command->getHelp()));
         $this->assertEquals('c', implode(',', $command->getAliases()));
         $this->assertEquals('camel:echo [--flip-flag] [--] [<args>...]', $command->getSynopsis());
         $this->assertEquals('camel:echo bet alpha --flip-flag', implode(',', $command->getUsages()));
