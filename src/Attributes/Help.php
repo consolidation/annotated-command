@@ -32,6 +32,8 @@ class Help
         if ($instance->synopsis) {
             $commandInfo->setHelp($instance->synopsis);
         }
-        $commandInfo->setHidden($instance->hidden);
+        if ($instance->hidden) {
+            $commandInfo->setHidden($instance->hidden);
+        }
     }
 }
