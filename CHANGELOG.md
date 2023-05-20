@@ -1,5 +1,10 @@
 # Change Log
 
+### 4.9.0 - 19 May 2023
+
+- Inject command metadata: make AnnotationData and FormatterOptions available (#301)
+- Only call setHidden() if value is true. (#299)
+
 ### 4.8.2 - 11 March 2023
 
 - Fix bug with simple options with dashes in their names. (#295)
