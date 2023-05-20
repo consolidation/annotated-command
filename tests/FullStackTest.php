@@ -146,6 +146,16 @@ class FullStackTest extends TestCase
         $this->assertRunCommandViaApplicationEquals('example:message', 'Shipwrecked; send bananas.');
         $this->assertRunCommandViaApplicationEquals('command:with-one-optional-argument', 'Hello, world');
         $this->assertRunCommandViaApplicationEquals('command:with-one-optional-argument Joe', 'Hello, Joe');
+        $this->assertRunCommandViaApplicationEquals('command:with-annotation-data', 'Annotation parameter is dynamic');
+
+        $this->assertRunCommandViaApplicationContains('command:with-format-options --format=json', 'The selected fields are first,second,third,fourth!');
+        $this->assertRunCommandViaApplicationContains('command:with-format-options --fields=I,II', 'The selected fields are I,II');
+        $this->assertRunCommandViaApplicationContains('command:with-format-options', 'The selected fields are first,third!');
+
+        $this->assertRunCommandViaApplicationContains('command:with-format-options --format=json', 'The slow value was computed');
+        $this->assertRunCommandViaApplicationContains('command:with-format-options --fields=I,III', 'The slow value was not computed');
+        $this->assertRunCommandViaApplicationContains('command:with-format-options --fields=I,II,III', 'The slow value was computed');
+        $this->assertRunCommandViaApplicationContains('command:with-format-options', 'The slow value was not computed');
 
         // Add some hooks.
         $factory->hookManager()->addValidator(new ExampleValidator());

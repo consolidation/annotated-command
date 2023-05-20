@@ -11,6 +11,7 @@ use Consolidation\AnnotatedCommand\CommandData;
 use Consolidation\AnnotatedCommand\Events\CustomEventAwareInterface;
 use Consolidation\AnnotatedCommand\Events\CustomEventAwareTrait;
 use Symfony\Component\Console\Command\Command;
+use Consolidation\OutputFormatters\Options\FormatterOptions;
 
 use Consolidation\TestUtils\ExampleCommandFile as ExampleAliasedClass;
 
@@ -300,6 +301,47 @@ class AlphaCommandFile implements CustomEventAwareInterface
         if (!$opts['silent']) {
             return "Hello, $who";
         }
+    }
+
+    /**
+     * @command command:with-annotation-data
+     *
+     * @custom dynamic
+     */
+    public function commandWithAnnotationData(AnnotationData $annotationData)
+    {
+        return "Annotation parameter is {$annotationData->get('custom')}";
+    }
+
+    /**
+     * Test command with formatters
+     *
+     * @command command:with-format-options
+     * @field-labels
+     *   first: I
+     *   second: II
+     *   third: III
+     *   fourth: IV
+     * @default-table-fields first,third
+     * @default-fields first,second,third,fourth
+     * @return \Consolidation\OutputFormatters\StructuredData\AssociativeList
+     */
+    public function commandWithFormatOptions(FormatterOptions $formatterOptions, $options = ['format' => 'table', 'fields' => ''])
+    {
+        $calculatedValue = '';
+        $reportedAction = 'The slow value was not computed';
+        if ($formatterOptions->fieldsContain('second')) {
+            $calculatedValue = 'A value that is slow to compute';
+            $reportedAction = 'The slow value was computed';
+        }
+
+        $outputData = [
+            'first' => "The selected fields are {$formatterOptions->fields()}!",
+            'second' => $calculatedValue,
+            'third' => $reportedAction,
+            'fourth' => 'Four',
+        ];
+        return CommandResult::data(new AssociativeList($outputData));
     }
 
     /**
