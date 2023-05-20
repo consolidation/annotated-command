@@ -246,8 +246,11 @@ class CommandProcessor implements LoggerAwareInterface
         $format = $formatterOptions->getFormat();
         if ($format) {
             $placeholderStructuredOutput = [];
-            $formatter = $this->formatterManager->getFormatter($format);
-            $options = $this->formatterManager->overrideOptions($formatter, $placeholderStructuredOutput, $formatterOptions);
+            try {
+                $formatter = $this->formatterManager->getFormatter($format);
+                $this->formatterManager->overrideOptions($formatter, $placeholderStructuredOutput, $formatterOptions);
+            } catch (\Exception $e) {
+            }
         }
     }
 
