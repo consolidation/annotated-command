@@ -356,6 +356,10 @@ EOT;
         $this->assertRunCommandViaApplicationEquals('get:serious', 'very serious');
         $this->assertRunCommandViaApplicationContains('get:lost', 'Command "get:lost" is not defined.', [], 1);
         $this->assertRunCommandViaApplicationContains('get:both', 'Here is some data.', [], 3);
+
+        // Test to see if an empty table omits the table headers (labels header)
+        $this->assertRunCommandViaApplicationContains('tabularify apples peaches pumpkin pie', '----');
+        $this->assertRunCommandViaApplicationEquals('tabularify', 'There are no items to list', 0);
     }
 
     function testCommandsAndHooksWithBetaFolder()
