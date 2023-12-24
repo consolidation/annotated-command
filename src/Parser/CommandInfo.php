@@ -183,7 +183,9 @@ class CommandInfo
      */
     public function getName()
     {
-        $this->parseDocBlock();
+        if (empty($this->name)) {
+            $this->parseDocBlock();
+        }
         return $this->name;
     }
 
