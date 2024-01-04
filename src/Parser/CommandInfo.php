@@ -553,24 +553,9 @@ class CommandInfo
         return $this->inputOptions;
     }
 
-    protected function addImplicitNoOptions()
-    {
-        $opts = $this->options()->getValues();
-        foreach ($opts as $name => $defaultValue) {
-            if ($defaultValue === true) {
-                $key = 'no-' . $name;
-                if (!array_key_exists($key, $opts)) {
-                    $description = "Negate --$name option.";
-                    $this->options()->add($key, $description, false);
-                }
-            }
-        }
-    }
-
     protected function createInputOptions()
     {
         $explicitOptions = [];
-        $this->addImplicitNoOptions();
 
         $opts = $this->options()->getValues();
         foreach ($opts as $name => $defaultValue) {
@@ -592,7 +577,13 @@ class CommandInfo
                 $defaultValue = null;
             }
 
-            if ($defaultValue === false) {
+            if ($defaultValue === true) {
+                $explicitOptions[$fullName] = new InputOption(
+                    $fullName,
+                    $shortcut,
+                    InputOption::VALUE_NONE | InputOption::VALUE_NEGATABLE,
+                    $description);
+            } elseif ($defaultValue === false) {
                 $explicitOptions[$fullName] = new InputOption($fullName, $shortcut, InputOption::VALUE_NONE, $description);
             } elseif ($defaultValue === InputOption::VALUE_REQUIRED) {
                 $explicitOptions[$fullName] = new InputOption($fullName, $shortcut, InputOption::VALUE_REQUIRED, $description, null, $suggestedValues);
