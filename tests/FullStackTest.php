@@ -358,6 +358,46 @@ EOT;
         $this->assertRunCommandViaApplicationContains('get:both', 'Here is some data.', [], 3);
     }
 
+    /**
+     * @requires PHP 8.0
+     */
+    function testAttributeCommands()
+    {
+        // First, search for commandfiles in the 'alpha'
+        // directory. Note that this same functionality
+        // is tested more thoroughly in isolation in
+        // testCommandFileDiscovery.php
+        $discovery = new CommandFileDiscovery();
+        $discovery
+          ->setSearchPattern('*CommandFile.php')
+          ->setIncludeFilesAtBase(false)
+          ->setSearchLocations(['alpha']);
+
+        chdir(__DIR__);
+        $commandFiles = $discovery->discover('.', '\Consolidation\TestUtils');
+
+        $formatter = new FormatterManager();
+        $formatter->addDefaultFormatters();
+        $formatter->addDefaultSimplifiers();
+        $hookManager = new HookManager();
+        $commandProcessor = new CommandProcessor($hookManager);
+        $commandProcessor->setFormatterManager($formatter);
+
+        // Create a new factory, and load all of the files
+        // discovered above.  The command factory class is
+        // tested in isolation in testAnnotatedCommandFactory.php,
+        // but this is the only place where
+        $factory = new AnnotatedCommandFactory();
+        $factory->setCommandProcessor($commandProcessor);
+        // $factory->addListener(...);
+        $factory->setIncludeAllPublicMethods(true);
+        $this->addDiscoveredCommands($factory, $commandFiles);
+
+        // Test to see if an empty table omits the table headers (labels header)
+        $this->assertRunCommandViaApplicationContains('tabularify apples peaches pumpkin pie', '----');
+        $this->assertRunCommandViaApplicationEquals('tabularify', 'There are no items to list', 0);
+    }
+
     function testCommandsAndHooksWithBetaFolder()
     {
         // First, search for commandfiles in the 'alpha'

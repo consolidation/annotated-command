@@ -7,20 +7,20 @@ use Consolidation\AnnotatedCommand\Parser\CommandInfo;
 use Consolidation\OutputFormatters\Options\FormatterOptions;
 
 #[Attribute(Attribute::TARGET_METHOD)]
-class DefaultFields
+class TableEmptyMessage
 {
     /**
-     * @param $fields
-     *   An array of field names to show by default.
+     * @param $labels
+     *   An associative array of field names and labels for display.
      */
     public function __construct(
-        public array $fields,
+        public array $message
     ) {
     }
 
     public static function handle(\ReflectionAttribute $attribute, CommandInfo $commandInfo)
     {
         $args = $attribute->getArguments();
-        $commandInfo->addAnnotation(FormatterOptions::DEFAULT_FIELDS, $args['fields']);
+        $commandInfo->addAnnotation(FormatterOptions::TABLE_EMPTY_MESSAGE, $args['message']);
     }
 }

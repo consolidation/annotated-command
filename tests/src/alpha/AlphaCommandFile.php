@@ -14,6 +14,7 @@ use Symfony\Component\Console\Command\Command;
 use Consolidation\OutputFormatters\Options\FormatterOptions;
 
 use Consolidation\TestUtils\ExampleCommandFile as ExampleAliasedClass;
+use Consolidation\AnnotatedCommand\Attributes as CLI;
 
 /**
  * Test file used in the testCommandDiscovery() test.
@@ -25,6 +26,29 @@ use Consolidation\TestUtils\ExampleCommandFile as ExampleAliasedClass;
 class AlphaCommandFile implements CustomEventAwareInterface
 {
     use CustomEventAwareTrait;
+
+    /**
+     * This command prints its args in a table.
+     */
+    #[CLI\Command(name: 'tabularify')]
+    #[CLI\Argument(name: 'args', description: 'Any number of arguments separated by spaces.')]
+    #[CLI\Usage(name: 'tabularify apples peaches pumpkin pie', description: 'Show a list of things in a table.')]
+    #[CLI\FieldLabels(labels: ['label' => 'Label', 'value' => 'Value'])]
+    #[CLI\TableEmptyMessage(message: 'There are no items to list')]
+    public function tabularify(array $args, $options = ['format' => 'table']): RowsOfFields
+    {
+        $labels = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eigth'];
+
+        $rows = [];
+        foreach ($args as $arg) {
+            $label = array_shift($labels);
+
+            if (!empty($label)) {
+                $rows[$label] = ['label' => $label, 'value' => $arg];
+            }
+        }
+        return new RowsOfFields($rows);
+    }
 
     /**
      * @command always:fail
