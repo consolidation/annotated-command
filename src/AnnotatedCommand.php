@@ -161,6 +161,7 @@ class AnnotatedCommand extends Command implements HelpDocumentAlter
 
     public function addUsageOrExample($usage, $description)
     {
+        $usage = htmlentities($usage);
         $this->addUsage($usage);
         if (!empty($description)) {
             $this->examples[$usage] = $description;
