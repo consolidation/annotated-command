@@ -96,6 +96,10 @@ class HelpTest extends TestCase
 
     function testHelp()
     {
+        if (version_compare(PHP_VERSION, '7.4.0', '<')) {
+            $this->markTestSkipped("Help tests don't work on very old versions of PHP; we expect help itself is still working, but support for these old versions is limited.");
+        }
+
         $symfonyConsoleVersion = ltrim(InstalledVersions::getPrettyVersion('symfony/console'), 'v');
         if (version_compare($symfonyConsoleVersion, '5.3.0', '>=')) {
             $expectedAnsiMessage = 'Force (or disable --no-ansi) ANSI output';
