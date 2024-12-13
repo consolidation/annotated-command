@@ -273,13 +273,13 @@ class ExampleCommandFile
     /**
      * This command has no arguments--only options
      *
-     * Return a result only if not silent.
+     * Return a result only if not silence.
      *
-     * @option silent Supress output.
+     * @option silence Supress output.
      */
-    public function commandWithNoArguments(array $opts = ['silent|s' => false])
+    public function commandWithNoArguments(array $opts = ['silence|s' => false])
     {
-        if (!$opts['silent']) {
+        if (!$opts['silence']) {
             return "Hello, world";
         }
     }
@@ -290,11 +290,11 @@ class ExampleCommandFile
      * This command defines the option shortcut on the annotation instead of in the options array.
      *
      * @param $opts The options
-     * @option silent|s Supress output.
+     * @option silence|s Supress output.
      */
-    public function shortcutOnAnnotation(array $opts = ['silent' => false])
+    public function shortcutOnAnnotation(array $opts = ['silence' => false])
     {
-        if (!$opts['silent']) {
+        if (!$opts['silence']) {
             return "Hello, world";
         }
     }

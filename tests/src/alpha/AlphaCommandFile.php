@@ -294,11 +294,11 @@ class AlphaCommandFile implements CustomEventAwareInterface
      *
      * Return a result only if not silent.
      *
-     * @option silent Supress output.
+     * @option silence Supress output.
      */
-    public function commandWithOneOptionalArgument($who = 'world', $opts = ['silent|s' => false])
+    public function commandWithOneOptionalArgument($who = 'world', $opts = ['silence|s' => false])
     {
-        if (!$opts['silent']) {
+        if (!$opts['silence']) {
             return "Hello, $who";
         }
     }
