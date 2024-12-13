@@ -96,10 +96,6 @@ class HelpTest extends TestCase
 
     function testHelp()
     {
-        if (version_compare(PHP_VERSION, '7.4.0', '<')) {
-            $this->markTestSkipped("Help tests don't work on very old versions of PHP; we expect help itself is still working, but support for these old versions is limited.");
-        }
-
         $symfonyConsoleVersion = ltrim(InstalledVersions::getPrettyVersion('symfony/console'), 'v');
         if (version_compare($symfonyConsoleVersion, '5.3.0', '>=')) {
             $expectedAnsiMessage = 'Force (or disable --no-ansi) ANSI output';
@@ -124,8 +120,7 @@ class HelpTest extends TestCase
             $expectedFieldMessage = "Select just one field, and force format to 'string'.";
         }
 
-        $expectedXML = [
-<<<EOT
+        $expectedXMLBeginning = <<<EOT
 <?xml version="1.0" encoding="UTF-8"?>
 <command id="example:table" name="example:table">
   <usages>
@@ -170,8 +165,9 @@ class HelpTest extends TestCase
     <option name="--help" shortcut="-h" accept_value="0" is_value_required="0" is_multiple="0">
       <description>$htmlEncodedHelpMessage</description>\n
     </option>
-EOT,
-<<<EOT
+EOT;
+
+    $expectedXMLEnd = <<<EOT
     <option name="--verbose" shortcut="-v" shortcuts="-v|-vv|-vvv" accept_value="0" is_value_required="0" is_multiple="0">
       <description>Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug</description>
     </option>
@@ -196,7 +192,9 @@ EOT,
     <topic>docs-tables</topic>
   </topics>
 </command>
-EOT];
+EOT;
+
+        $expectedXML = [ $expectedXMLBeginning, $expectedXMLEnd ];
 
         $this->assertRunCommandViaApplicationContains('my-help --format=xml example:table', $expectedXML);
 
@@ -205,8 +203,7 @@ EOT];
         $encodedHelpMessage = json_encode(strip_tags($expectedHelpMessage));
         $encodedFieldMessage = json_encode($expectedFieldMessage);
 
-        $expectedJSON = [
-<<<EOT
+        $expectedJSONBeginning = <<<EOT
 {
     "id": "example:table",
     "name": "example:table",
@@ -272,8 +269,9 @@ EOT];
             "is_multiple": "0",
             "description": $encodedHelpMessage
         },
-EOT,
-<<<EOT
+EOT;
+
+        $expectedJSONEnd = <<<EOT
         "verbose": {
             "name": "--verbose",
             "shortcut": "-v",
@@ -324,7 +322,9 @@ EOT,
         "docs-tables"
     ]
 }
-EOT];
+EOT;
+        $expectedJSON = [ $expectedJSONBeginning, $expectedJSONEnd ];
+
         $this->assertRunCommandViaApplicationContains('my-help --format=json example:table', $expectedJSON);
     }
 }
