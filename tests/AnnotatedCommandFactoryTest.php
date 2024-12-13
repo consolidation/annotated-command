@@ -667,14 +667,14 @@ EOT;
         $this->assertInstanceOf('\Symfony\Component\Console\Command\Command', $command);
         $this->assertEquals('command:with-no-arguments', $command->getName());
         $this->assertEquals('This command has no arguments--only options', $command->getDescription());
-        $this->assertEquals("Return a result only if not silent.", $command->getHelp());
-        $this->assertEquals('command:with-no-arguments [-s|--silent]', $command->getSynopsis());
+        $this->assertEquals("Return a result only if not silence.", $command->getHelp());
+        $this->assertEquals('command:with-no-arguments [-s|--silence]', $command->getSynopsis());
 
         $input = new StringInput('command:with-no-arguments');
         $this->assertRunCommandViaApplicationEquals($command, $input, 'Hello, world');
         $input = new StringInput('command:with-no-arguments -s');
         $this->assertRunCommandViaApplicationEquals($command, $input, '');
-        $input = new StringInput('command:with-no-arguments --silent');
+        $input = new StringInput('command:with-no-arguments --silence');
         $this->assertRunCommandViaApplicationEquals($command, $input, '');
     }
 
@@ -690,13 +690,13 @@ EOT;
         $this->assertEquals('shortcut:on-annotation', $command->getName());
         $this->assertEquals('Shortcut on annotation', $command->getDescription());
         $this->assertEquals("This command defines the option shortcut on the annotation instead of in the options array.", $command->getHelp());
-        $this->assertEquals('shortcut:on-annotation [-s|--silent]', $command->getSynopsis());
+        $this->assertEquals('shortcut:on-annotation [-s|--silence]', $command->getSynopsis());
 
         $input = new StringInput('shortcut:on-annotation');
         $this->assertRunCommandViaApplicationEquals($command, $input, 'Hello, world');
         $input = new StringInput('shortcut:on-annotation -s');
         $this->assertRunCommandViaApplicationEquals($command, $input, '');
-        $input = new StringInput('shortcut:on-annotation --silent');
+        $input = new StringInput('shortcut:on-annotation --silence');
         $this->assertRunCommandViaApplicationEquals($command, $input, '');
     }
 

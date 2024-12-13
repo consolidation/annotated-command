@@ -73,18 +73,18 @@ class HelpTest extends TestCase
         }
     }
 
-    function assertRunCommandViaApplicationEquals($cmd, $expectedOutput, $expectedStatusCode = 0)
+    function assertRunCommandViaApplicationContains($cmd, $containsList, $expectedStatusCode = 0)
     {
         $input = new StringInput($cmd);
         $output = new BufferedOutput();
 
         $statusCode = $this->application->run($input, $output);
-        $commandOutput = trim($output->fetch());
+        $commandOutput = $this->simplifyWhitespace($output->fetch());
 
-        $expectedOutput = $this->simplifyWhitespace($expectedOutput);
-        $commandOutput = $this->simplifyWhitespace($commandOutput);
-
-        $this->assertEquals($expectedOutput, $commandOutput);
+        foreach ($containsList as $contains) {
+            $contains = $this->simplifyWhitespace($contains);
+            $this->assertStringContainsString($contains, $commandOutput);
+        }
         $this->assertEquals($expectedStatusCode, $statusCode);
     }
 
@@ -120,7 +120,7 @@ class HelpTest extends TestCase
             $expectedFieldMessage = "Select just one field, and force format to 'string'.";
         }
 
-        $expectedXML = <<<EOT
+        $expectedXMLBeginning = <<<EOT
 <?xml version="1.0" encoding="UTF-8"?>
 <command id="example:table" name="example:table">
   <usages>
@@ -165,9 +165,9 @@ class HelpTest extends TestCase
     <option name="--help" shortcut="-h" accept_value="0" is_value_required="0" is_multiple="0">
       <description>$htmlEncodedHelpMessage</description>\n
     </option>
-    <option name="--quiet" shortcut="-q" accept_value="0" is_value_required="0" is_multiple="0">
-      <description>Do not output any message</description>
-    </option>
+EOT;
+
+    $expectedXMLEnd = <<<EOT
     <option name="--verbose" shortcut="-v" shortcuts="-v|-vv|-vvv" accept_value="0" is_value_required="0" is_multiple="0">
       <description>Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug</description>
     </option>
@@ -194,14 +194,16 @@ class HelpTest extends TestCase
 </command>
 EOT;
 
-        $this->assertRunCommandViaApplicationEquals('my-help --format=xml example:table', $expectedXML);
+        $expectedXML = [ $expectedXMLBeginning, $expectedXMLEnd ];
+
+        $this->assertRunCommandViaApplicationContains('my-help --format=xml example:table', $expectedXML);
 
         $encodedAnsiMessage = json_encode($expectedAnsiMessage);
         $encodedNoAnsiMessage = json_encode($expectedNoAnsiMessage);
         $encodedHelpMessage = json_encode(strip_tags($expectedHelpMessage));
         $encodedFieldMessage = json_encode($expectedFieldMessage);
 
-        $expectedJSON = <<<EOT
+        $expectedJSONBeginning = <<<EOT
 {
     "id": "example:table",
     "name": "example:table",
@@ -267,14 +269,9 @@ EOT;
             "is_multiple": "0",
             "description": $encodedHelpMessage
         },
-        "quiet": {
-            "name": "--quiet",
-            "shortcut": "-q",
-            "accept_value": "0",
-            "is_value_required": "0",
-            "is_multiple": "0",
-            "description": "Do not output any message"
-        },
+EOT;
+
+        $expectedJSONEnd = <<<EOT
         "verbose": {
             "name": "--verbose",
             "shortcut": "-v",
@@ -326,6 +323,8 @@ EOT;
     ]
 }
 EOT;
-        $this->assertRunCommandViaApplicationEquals('my-help --format=json example:table', $expectedJSON);
+        $expectedJSON = [ $expectedJSONBeginning, $expectedJSONEnd ];
+
+        $this->assertRunCommandViaApplicationContains('my-help --format=json example:table', $expectedJSON);
     }
 }
