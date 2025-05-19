@@ -52,8 +52,8 @@ class MyCommandClass
      * @param bool $flip The "flip" option
      * @option flip Whether or not the second parameter should come first in the result.
      * @aliases c
-     * @usage bet alpha --flip
-     *   Concatenate "alpha" and "bet".
+     * @usage beta alpha --flip
+     *   Concatenate "alpha" and "beta".
      */
     public function myEcho($one, $two, $flip = false)
     {
@@ -73,7 +73,7 @@ or via PHP 8 attributes.
     #[CLI\Param(name: 'one', description: 'The first parameter')]
     #[CLI\Param(name: 'two', description: 'The other parameter')]
     #[CLI\Option(name: 'flip', description: 'Whether or not the second parameter should come first in the result.')]
-    #[CLI\Usage(name: 'bet alpha --flip', description: 'Concatenate "alpha" and "bet".')]
+    #[CLI\Usage(name: 'beta alpha --flip', description: 'Concatenate "alpha" and "beta".')]
     public function myEcho($one, $two = '', $flip = false)
     {
         if ($options['flip']) {
@@ -100,8 +100,8 @@ class MyCommandClass
      * @param array $options An option that takes multiple values.
      * @option flip Whether or not the second parameter should come first in the result.
      * @aliases c
-     * @usage bet alpha --flip
-     *   Concatenate "alpha" and "bet".
+     * @usage beta alpha --flip
+     *   Concatenate "alpha" and "beta".
      */
     public function myEcho($one, $two, $options = ['flip' => false])
     {
