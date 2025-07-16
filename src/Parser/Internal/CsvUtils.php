@@ -26,7 +26,7 @@ class CsvUtils
     public static function csvEscape(array $data, $delimiter = ',')
     {
         $buffer = fopen('php://temp', 'r+');
-        fputcsv($buffer, $data, $delimiter);
+        fputcsv($buffer, $data, $delimiter, '"', "\\");
         rewind($buffer);
         $csv = fgets($buffer);
         fclose($buffer);
