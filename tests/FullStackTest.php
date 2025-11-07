@@ -512,7 +512,7 @@ EOT;
     function callProtected($object, $method, $args = [])
     {
         $r = new \ReflectionMethod($object, $method);
-        $r->setAccessible(true);
+        (\PHP_VERSION_ID < 80100) and $r->setAccessible(true);
         return $r->invokeArgs($object, $args);
     }
 
