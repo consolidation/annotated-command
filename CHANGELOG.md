@@ -1,5 +1,9 @@
 # Change Log
 
+### 4.10.3 - 14 Nov 2025
+
+- PHP 8.5 support
+
 ### 4.10.2 - 16 Jul 2025
 
 - Fix a PHP 8.4 deprecation (fputcsv default args).
