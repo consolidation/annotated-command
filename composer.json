@@ -34,10 +34,7 @@
     },
     "config": {
         "optimize-autoloader": true,
-        "sort-packages": true,
-        "platform": {
-            "php": "8.2.17"
-        }
+        "sort-packages": true
     },
     "scripts": {
         "cs": "phpcs --standard=PSR2 -n src",
