@@ -358,7 +358,7 @@ class AnnotatedCommand extends Command implements HelpDocumentAlter
     /**
      * {@inheritdoc}
      */
-    protected function interact(InputInterface $input, OutputInterface $output)
+    protected function interact(InputInterface $input, OutputInterface $output): void
     {
         $state = $this->injectIntoCommandfileInstance($input, $output);
         $this->commandProcessor()->interact(
