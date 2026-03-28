@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "10cf436dde9b0d51719c72995572903a",
+    "content-hash": "059c4db307c5209f8b09816dd8fec98e",
     "packages": [
         {
             "name": "consolidation/output-formatters",
