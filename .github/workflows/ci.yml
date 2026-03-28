@@ -199,7 +199,7 @@ jobs:
 
       - name: Require Symfony ${{ matrix.symfony }}
         if: matrix.symfony != ''
-        run: composer require --no-interaction --no-progress symfony/console:^${{ matrix.symfony }} symfony/event-dispatcher:^${{ matrix.symfony }} symfony/finder:^${{ matrix.symfony }}
+        run: composer require --no-interaction --no-progress --with-all-dependencies symfony/console:^${{ matrix.symfony }} symfony/event-dispatcher:^${{ matrix.symfony }} symfony/finder:^${{ matrix.symfony }}
 
       - name: Run tests with phpunit
         run: vendor/bin/phpunit
