@@ -66,7 +66,7 @@ class FullStackTest extends TestCase
         $commandInfo = $this->commandFactory->createCommandInfo($commandFileInstance, $functionName);
 
         $command = $this->commandFactory->createCommand($commandInfo, $commandFileInstance);
-        $this->application->add($command);
+        method_exists($this->application, 'addCommand') ? $this->application->addCommand($command) : $this->application->add($command);
 
         $containsList =
         [
@@ -462,7 +462,7 @@ EOT;
             $commandInstance = new $commandClass();
             $commandList = $factory->createCommandsFromClass($commandInstance);
             foreach ($commandList as $command) {
-                $this->application->add($command);
+                method_exists($this->application, 'addCommand') ? $this->application->addCommand($command) : $this->application->add($command);
             }
         }
     }

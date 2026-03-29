@@ -26,7 +26,7 @@ jobs:
       - name: Install PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: 8.2
+          php-version: 8.5
           coverage: none
 
       - name: Install dependencies
@@ -55,20 +55,20 @@ jobs:
       - name: Install PHP with extensions
         uses: shivammathur/setup-php@v2
         with:
-          php-version: 8.2
+          php-version: 8.5
           coverage: none
           extensions: intl
 
       - name: Install roave/backward-compatibility-check
         run: |
           mkdir -p tools
-          composer --working-dir=tools require roave/backward-compatibility-check:^7
+          composer --working-dir=tools require roave/backward-compatibility-check:^8
 
       - name: Run roave/backward-compatibility-check
         run: ./tools/vendor/bin/roave-backward-compatibility-check --from=4.5.5 || true
 
   tests:
-    name: Tests
+    name: Tests ${{ matrix.symfony && format('(Symfony {0})', matrix.symfony) || '' }}
 
     runs-on: ${{ matrix.os }}
 
@@ -80,46 +80,49 @@ jobs:
       matrix:
         os:
           - ubuntu-latest
-          - windows-latest
 
         php-version:
-          - "8.2"
+          - "8.5"
 
         php-ini-values:
-          - assert.exception=1, zend.assertions=1
+          - assert.exception=1, zend.assertions=1, opcache.enable=1, opcache.enable_cli=1, opcache.optimization_level=-1, opcache.jit_buffer_size=4096M, opcache.jit=1205
 
         dependencies:
-          - locked
+          - highest
 
         codecov:
           - false
 
+        symfony:
+          - "8"
+
         include:
           - os: ubuntu-latest
-            php-version: "7.1"
-            dependencies: lowest
-
-          - os: ubuntu-latest
             php-version: "7.4"
-            dependencies: highest
+            php-ini-values: assert.exception=1, zend.assertions=1
+            dependencies: lowest
+            symfony: "5"
 
           - os: ubuntu-latest
             php-version: "8.1"
-            dependencies: highest
+            dependencies: lowest
             codecov: true
             php-ini-values: assert.exception=1, zend.assertions=1, opcache.enable=1, opcache.enable_cli=1, opcache.optimization_level=-1, opcache.jit_buffer_size=4096M, opcache.jit=1205
+            symfony: "6"
 
           - os: ubuntu-latest
             php-version: "8.4"
             dependencies: highest
-            codecov: true
+            codecov: false
             php-ini-values: assert.exception=1, zend.assertions=1, opcache.enable=1, opcache.enable_cli=1, opcache.optimization_level=-1, opcache.jit_buffer_size=4096M, opcache.jit=1205
+            symfony: "7"
 
-          - os: ubuntu-latest
+          - os: windows-latest
             php-version: "8.5"
             dependencies: highest
-            codecov: true
+            codecov: false
             php-ini-values: assert.exception=1, zend.assertions=1, opcache.enable=1, opcache.enable_cli=1, opcache.optimization_level=-1, opcache.jit_buffer_size=4096M, opcache.jit=1205
+            symfony: "8"
 
     steps:
       - name: Checkout
@@ -155,11 +158,13 @@ jobs:
       - name: Clear platform php configuration in case we need to update phpunit
         run: composer config --unset platform.php
 
-      - name: Update phpunit if dependencies are locked in case phpunit version in lock file is not compatible
-        if: matrix.dependencies == 'locked'
-        run: |
-          composer install --no-ansi --no-interaction --no-progress
-          composer update --no-ansi --no-interaction --no-progress phpunit/phpunit --with-all-dependencies
+      - name: Pre-install lowest dependencies before updating Symfony to the desired version
+        if: matrix.dependencies == 'lowest'
+        run: composer update --no-ansi --no-interaction --no-progress --prefer-lowest
+
+      - name: Require Symfony ${{ matrix.symfony }}
+        if: matrix.symfony != ''
+        run: composer require --no-interaction --no-progress --with-all-dependencies --no-install symfony/console:^${{ matrix.symfony }} symfony/event-dispatcher:^${{ matrix.symfony }} symfony/finder:^${{ matrix.symfony }}
 
       - name: Install lowest dependencies with composer
         if: matrix.dependencies == 'lowest'

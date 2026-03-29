@@ -32,7 +32,7 @@ class AnnotatedCommandTest extends TestCase
 
         $application = new Application('TestApplication', '0.0.0');
         $application->setAutoExit(false);
-        $application->add($command);
+        method_exists($application, 'addCommand') ? $application->addCommand($command) : $application->add($command);
 
         $statusCode = $application->run($input, $output);
         $commandOutput = trim($output->fetch());

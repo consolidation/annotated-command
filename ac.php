@@ -14,6 +14,6 @@ $commandFactory->commandProcessor()->setFormatterManager(new \Consolidation\Outp
 $commandList = $commandFactory->createCommandsFromClass($myCommandClassInstance);
 $application = new \Symfony\Component\Console\Application('ac');
 foreach ($commandList as $command) {
-    $application->add($command);
+    method_exists($application, 'addCommand') ? $application->addCommand($command) : $application->add($command);
 }
 $application->run();

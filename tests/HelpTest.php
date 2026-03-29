@@ -55,7 +55,7 @@ class HelpTest extends TestCase
         $helpCommandfile = new HelpCommand($this->application);
         $commandList = $this->commandFactory->createCommandsFromClass($helpCommandfile);
         foreach ($commandList as $command) {
-            $this->application->add($command);
+            method_exists($this->application, 'addCommand') ? $this->application->addCommand($command) : $this->application->add($command);
         }
     }
 
@@ -68,7 +68,7 @@ class HelpTest extends TestCase
             $commandInstance = new $commandClass();
             $commandList = $factory->createCommandsFromClass($commandInstance);
             foreach ($commandList as $command) {
-                $this->application->add($command);
+                method_exists($this->application, 'addCommand') ? $this->application->addCommand($command) : $this->application->add($command);
             }
         }
     }
