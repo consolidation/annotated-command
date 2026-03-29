@@ -101,7 +101,7 @@ jobs:
             php-version: "7.4"
             php-ini-values: assert.exception=1, zend.assertions=1
             dependencies: lowest
-            symfony: "6"
+            symfony: "5"
 
           - os: ubuntu-latest
             php-version: "8.1"
