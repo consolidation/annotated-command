@@ -1,5 +1,9 @@
 # Change Log
 
+### 4.10.5 - 28 Mar 2026
+
+- Support Symfony 8
+
 ### 4.10.3, 4.10.4 - 14 Nov 2025
 
 - PHP 8.5 support
