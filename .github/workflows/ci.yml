@@ -83,23 +83,24 @@ jobs:
           - windows-latest
 
         php-version:
-          - "8.2"
+          - "8.5"
 
         php-ini-values:
-          - assert.exception=1, zend.assertions=1
+          - assert.exception=1, zend.assertions=1, opcache.enable=1, opcache.enable_cli=1, opcache.optimization_level=-1, opcache.jit_buffer_size=4096M, opcache.jit=1205
 
         dependencies:
-          - locked
+          - highest
 
         codecov:
           - false
 
         symfony:
-          - ""
+          - "8"
 
         include:
           - os: ubuntu-latest
             php-version: "7.4"
+            php-ini-values: assert.exception=1, zend.assertions=1
             dependencies: lowest
             symfony: "6"
 
@@ -113,16 +114,9 @@ jobs:
           - os: ubuntu-latest
             php-version: "8.4"
             dependencies: highest
-            codecov: true
+            codecov: false
             php-ini-values: assert.exception=1, zend.assertions=1, opcache.enable=1, opcache.enable_cli=1, opcache.optimization_level=-1, opcache.jit_buffer_size=4096M, opcache.jit=1205
             symfony: "7"
-
-          - os: ubuntu-latest
-            php-version: "8.5"
-            dependencies: highest
-            codecov: true
-            php-ini-values: assert.exception=1, zend.assertions=1, opcache.enable=1, opcache.enable_cli=1, opcache.optimization_level=-1, opcache.jit_buffer_size=4096M, opcache.jit=1205
-            symfony: "8"
 
     steps:
       - name: Checkout
