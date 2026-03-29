@@ -1261,7 +1261,7 @@ EOT;
         $application->setDispatcher($eventDispatcher);
 
         $application->setAutoExit(false);
-        $application->add($command);
+        method_exists($application, 'addCommand') ? $application->addCommand($command) : $application->add($command);
 
         $statusCode = $application->run($input, $output);
         $commandOutput = trim(str_replace("\r", '', $output->fetch()));
