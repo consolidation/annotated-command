@@ -88,9 +88,6 @@ jobs:
         php-ini-values:
           - assert.exception=1, zend.assertions=1
 
-        dependencies:
-          - locked
-
         codecov:
           - false
 
@@ -100,26 +97,22 @@ jobs:
         include:
           - os: ubuntu-latest
             php-version: "7.4"
-            dependencies: highest
             symfony: "6"
 
           - os: ubuntu-latest
             php-version: "8.1"
-            dependencies: highest
             codecov: true
             php-ini-values: assert.exception=1, zend.assertions=1, opcache.enable=1, opcache.enable_cli=1, opcache.optimization_level=-1, opcache.jit_buffer_size=4096M, opcache.jit=1205
             symfony: "6"
 
           - os: ubuntu-latest
             php-version: "8.4"
-            dependencies: highest
             codecov: true
             php-ini-values: assert.exception=1, zend.assertions=1, opcache.enable=1, opcache.enable_cli=1, opcache.optimization_level=-1, opcache.jit_buffer_size=4096M, opcache.jit=1205
             symfony: "7"
 
           - os: ubuntu-latest
             php-version: "8.5"
-            dependencies: highest
             codecov: true
             php-ini-values: assert.exception=1, zend.assertions=1, opcache.enable=1, opcache.enable_cli=1, opcache.optimization_level=-1, opcache.jit_buffer_size=4096M, opcache.jit=1205
             symfony: "8"
@@ -148,29 +141,15 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ env.COMPOSER_CACHE_DIR }}
-          key: php${{ matrix.php-version }}-composer-${{ matrix.dependencies }}-${{ hashFiles('**/composer.json') }}
+          key: php${{ matrix.php-version }}-composer-${{ matrix.symfony }}-${{ hashFiles('**/composer.json') }}
           restore-keys: |
-            php${{ matrix.php-version }}-composer-${{ matrix.dependencies }}-
+            php${{ matrix.php-version }}-composer-${{ matrix.symfony }}-
 
       - name: Make sure composer.json is valid before we start modifyig it
         run: composer validate
 
       - name: Clear platform php configuration in case we need to update phpunit
         run: composer config --unset platform.php
-
-      - name: Update phpunit if dependencies are locked in case phpunit version in lock file is not compatible
-        if: matrix.dependencies == 'locked'
-        run: |
-          composer install --no-ansi --no-interaction --no-progress
-          composer update --no-ansi --no-interaction --no-progress phpunit/phpunit --with-all-dependencies
-
-      - name: Install lowest dependencies with composer
-        if: matrix.dependencies == 'lowest'
-        run: composer update --no-ansi --no-interaction --no-progress --prefer-lowest
-
-      - name: Install highest dependencies with composer
-        if: matrix.dependencies == 'highest'
-        run: composer update --no-ansi --no-interaction --no-progress
 
       - name: Require Symfony ${{ matrix.symfony }}
         if: matrix.symfony != ''
