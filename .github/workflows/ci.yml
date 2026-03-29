@@ -62,7 +62,7 @@ jobs:
       - name: Install roave/backward-compatibility-check
         run: |
           mkdir -p tools
-          composer --working-dir=tools require roave/backward-compatibility-check:^7
+          composer --working-dir=tools require roave/backward-compatibility-check:^8
 
       - name: Run roave/backward-compatibility-check
         run: ./tools/vendor/bin/roave-backward-compatibility-check --from=4.5.5 || true
@@ -151,6 +151,10 @@ jobs:
 
       - name: Clear platform php configuration in case we need to update phpunit
         run: composer config --unset platform.php
+
+      - name: Pre-install lowest dependencies before updating Symfony to the desired version
+        if: matrix.dependencies == 'lowest'
+        run: composer update --no-ansi --no-interaction --no-progress --prefer-lowest
 
       - name: Require Symfony ${{ matrix.symfony }}
         if: matrix.symfony != ''
