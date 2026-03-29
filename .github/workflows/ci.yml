@@ -80,7 +80,6 @@ jobs:
       matrix:
         os:
           - ubuntu-latest
-          - windows-latest
 
         php-version:
           - "8.5"
@@ -117,6 +116,13 @@ jobs:
             codecov: false
             php-ini-values: assert.exception=1, zend.assertions=1, opcache.enable=1, opcache.enable_cli=1, opcache.optimization_level=-1, opcache.jit_buffer_size=4096M, opcache.jit=1205
             symfony: "7"
+
+          - os: windows-latest
+            php-version: "8.5"
+            dependencies: highest
+            codecov: false
+            php-ini-values: assert.exception=1, zend.assertions=1, opcache.enable=1, opcache.enable_cli=1, opcache.optimization_level=-1, opcache.jit_buffer_size=4096M, opcache.jit=1205
+            symfony: "8"
 
     steps:
       - name: Checkout
