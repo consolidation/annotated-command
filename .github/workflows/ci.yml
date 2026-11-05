@@ -68,7 +68,7 @@ jobs:
         run: ./tools/vendor/bin/roave-backward-compatibility-check --from=4.5.5 || true
 
   tests:
-    name: Tests ${{ matrix.symfony && format('(Symfony {0})', matrix.symfony) || '' }}
+    name: Tests (PHP ${{ matrix.php-version }}${{ matrix.symfony && format(', Symfony {0}', matrix.symfony) || '' }})
 
     runs-on: ${{ matrix.os }}
 
