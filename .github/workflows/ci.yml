@@ -68,7 +68,7 @@ jobs:
         run: ./tools/vendor/bin/roave-backward-compatibility-check --from=4.5.5 || true
 
   tests:
-    name: Tests ${{ matrix.symfony && format('(Symfony {0})', matrix.symfony) || '' }}
+    name: Tests (PHP ${{ matrix.php-version }}${{ matrix.symfony && format(', Symfony {0}', matrix.symfony) || '' }})
 
     runs-on: ${{ matrix.os }}
 
@@ -116,6 +116,13 @@ jobs:
             codecov: false
             php-ini-values: assert.exception=1, zend.assertions=1, opcache.enable=1, opcache.enable_cli=1, opcache.optimization_level=-1, opcache.jit_buffer_size=4096M, opcache.jit=1205
             symfony: "7"
+
+          - os: ubuntu-latest
+            php-version: "8.6"
+            dependencies: highest
+            codecov: false
+            php-ini-values: assert.exception=1, zend.assertions=1, opcache.enable=1, opcache.enable_cli=1, opcache.optimization_level=-1, opcache.jit_buffer_size=4096M, opcache.jit=1205
+            symfony: "8"
 
           - os: windows-latest
             php-version: "8.5"
