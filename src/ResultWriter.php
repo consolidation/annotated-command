@@ -70,7 +70,7 @@ class ResultWriter
             }
         }
         // If the result is an integer and no separate status code was provided, then use the result as the status and do no output.
-        if (is_integer($result) && !isset($status)) {
+        if (is_int($result) && !isset($status)) {
             return $result;
         }
         $status = $this->interpretStatusCode($status);
